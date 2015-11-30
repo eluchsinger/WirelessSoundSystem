@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -9,22 +10,32 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.BorderPane?>
 
-
-<BorderPane prefHeight="600.0" prefWidth="800.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/null" fx:controller="wirelesssoundsystem.server.viewmodels.MainWindowViewModel">
-   <center>
-      <ListView prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-   </center>
+<BorderPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" fx:controller="wirelesssoundsystem.server.viewmodels.MainWindowViewModel">
    <top>
       <BorderPane prefHeight="111.0" prefWidth="800.0" BorderPane.alignment="CENTER">
          <center>
-            <TextField fx:id="textFieldFolder" promptText="Pfad zum Ordner" BorderPane.alignment="CENTER" />
+            <TextField fx:id="textFieldFolder" disable="true" promptText="Pfad zum Ordner" BorderPane.alignment="CENTER" />
          </center>
          <right>
             <Button fx:id="buttonSearch" mnemonicParsing="false" onAction="#onSearchButtonClicked" text="Suchen" BorderPane.alignment="CENTER" />
          </right>
          <top>
-            <Label text="Ordner auswählen" BorderPane.alignment="CENTER" />
+            <BorderPane prefHeight="75.0" prefWidth="800.0" BorderPane.alignment="CENTER">
+               <top>
+                  <Label text="Musik auswählen" BorderPane.alignment="CENTER">
+                     <font>
+                        <Font size="22.0" />
+                     </font>
+                  </Label>
+               </top>
+               <center>
+                  <Label text="Wählen Sie einen Ordner mit Ihrer Musik aus" BorderPane.alignment="CENTER" />
+               </center>
+            </BorderPane>
          </top>
       </BorderPane>
    </top>
+   <center>
+      <ListView prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+   </center>
 </BorderPane>
