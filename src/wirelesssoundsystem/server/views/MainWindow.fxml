@@ -1,8 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.GridPane?>
-
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<GridPane fx:controller="wirelesssoundsystem.server.viewmodels.MainWindowViewModel"
-          xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="10" vgap="10">
-</GridPane>
+<?import javafx.scene.layout.BorderPane?>
+
+
+<BorderPane prefHeight="600.0" prefWidth="800.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/null" fx:controller="wirelesssoundsystem.server.viewmodels.MainWindowViewModel">
+   <center>
+      <ListView prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+   </center>
+   <top>
+      <BorderPane prefHeight="111.0" prefWidth="800.0" BorderPane.alignment="CENTER">
+         <center>
+            <TextField fx:id="textFieldFolder" promptText="Pfad zum Ordner" BorderPane.alignment="CENTER" />
+         </center>
+         <right>
+            <Button fx:id="buttonSearch" mnemonicParsing="false" onAction="#onSearchButtonClicked" text="Suchen" BorderPane.alignment="CENTER" />
+         </right>
+         <top>
+            <Label text="Ordner auswählen" BorderPane.alignment="CENTER" />
+         </top>
+      </BorderPane>
+   </top>
+</BorderPane>
