@@ -2,6 +2,7 @@ package wirelesssoundsystem.server.controllers;
 
 import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.UnsupportedTagException;
+import wirelesssoundsystem.server.models.songs.Mp3Song;
 import wirelesssoundsystem.server.models.songs.Song;
 
 import java.io.File;
@@ -41,7 +42,7 @@ public class SongsHandler {
         for(File file : files){
             try {
                 // Todo: Uncomment
-                //Song song = new Mp3Song(file.getPath());
+                Song song = new Mp3Song(file.getPath());
                 songList.add(song);
                 System.out.println("Song: " + song.getTitle());
 

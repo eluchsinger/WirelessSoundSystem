@@ -3,9 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="cdb932d9-7e58-4d94-93a9-e7b232ef17da" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/wirelesssoundsystem/server/models/songs/Song.java" afterPath="$PROJECT_DIR$/src/wirelesssoundsystem/server/models/songs/Song.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/wirelesssoundsystem/server/viewmodels/MainWindowViewModel.java" afterPath="$PROJECT_DIR$/src/wirelesssoundsystem/server/viewmodels/MainWindowViewModel.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/wirelesssoundsystem/server/views/MainWindow.fxml" afterPath="$PROJECT_DIR$/src/wirelesssoundsystem/server/views/MainWindow.fxml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/wirelesssoundsystem/server/controllers/SongsHandler.java" afterPath="$PROJECT_DIR$/src/wirelesssoundsystem/server/controllers/SongsHandler.java" />
     </list>
     <ignored path="JavaFxApplication.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -93,17 +91,29 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Mp3Song.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="SongsHandler.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/controllers/SongsHandler.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.36177474">
+              <caret line="44" column="39" selection-start-line="44" selection-start-column="39" selection-end-line="44" selection-end-column="39" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Mp3Song.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/models/songs/Mp3Song.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.75938565">
-              <caret line="31" column="50" selection-start-line="31" selection-start-column="50" selection-end-line="31" selection-end-column="50" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="60" column="0" selection-start-line="60" selection-start-column="0" selection-end-line="60" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#1096#1097#0" expanded="true" />
-                <element signature="e#1142#1143#0" expanded="true" />
-                <element signature="e#1187#1188#0" expanded="true" />
-                <element signature="e#1252#1253#0" expanded="true" />
+                <element signature="e#1222#1223#0" expanded="true" />
+                <element signature="e#1259#1260#0" expanded="true" />
+                <element signature="e#1303#1304#0" expanded="true" />
+                <element signature="e#1349#1350#0" expanded="true" />
+                <element signature="e#1394#1395#0" expanded="true" />
+                <element signature="e#1459#1460#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -143,11 +153,11 @@
         <option value="$PROJECT_DIR$/src/wirelesssoundsystem/server/models/songs/MP3Song.java" />
         <option value="$PROJECT_DIR$/src/wirelesssoundsystem/server/views/Test.form" />
         <option value="$PROJECT_DIR$/src/wirelesssoundsystem/server/controllers/Main.java" />
-        <option value="$PROJECT_DIR$/src/wirelesssoundsystem/server/controllers/SongsHandler.java" />
         <option value="$PROJECT_DIR$/src/wirelesssoundsystem/server/views/MainWindow.fxml" />
         <option value="$PROJECT_DIR$/src/wirelesssoundsystem/server/viewmodels/MainWindowViewModel.java" />
         <option value="$PROJECT_DIR$/src/wirelesssoundsystem/server/models/songs/Song.java" />
         <option value="$PROJECT_DIR$/src/wirelesssoundsystem/server/models/songs/Mp3Song.java" />
+        <option value="$PROJECT_DIR$/src/wirelesssoundsystem/server/controllers/SongsHandler.java" />
       </list>
     </option>
   </component>
@@ -834,7 +844,7 @@
       <workItem from="1448892392834" duration="1752000" />
       <workItem from="1448900590120" duration="2251000" />
       <workItem from="1448903777427" duration="15000" />
-      <workItem from="1448904184060" duration="11862000" />
+      <workItem from="1448904184060" duration="12275000" />
     </task>
     <task id="LOCAL-00001" summary="First running commit.">
       <created>1448879856281</created>
@@ -860,11 +870,29 @@
       <option name="project" value="LOCAL" />
       <updated>1448915253316</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Can play songs. Tweaks on the Model.">
+      <created>1448923344430</created>
+      <option name="number" value="00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1448923344430</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Fixing GitHub Bug">
+      <created>1448923677061</created>
+      <option name="number" value="00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1448923677061</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Re-Added Mp3Song Class.">
+      <created>1448923718629</created>
+      <option name="number" value="00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1448923718629</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="18203000" />
+    <option name="totallyTimeSpent" value="18616000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -885,13 +913,13 @@
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32896176" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3298479" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32896176" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33114755" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32896176" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24893162" sideWeight="0.6703755" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24893162" sideWeight="0.6703755" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3298479" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32896176" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -927,7 +955,9 @@
     <MESSAGE value="Added OpenDirectoryDialog, can now read MP3 files." />
     <MESSAGE value="Now shows the MP3 Songs inside the ListView." />
     <MESSAGE value="Can play songs. Tweaks on the Model." />
-    <option name="LAST_COMMIT_MESSAGE" value="Can play songs. Tweaks on the Model." />
+    <MESSAGE value="Fixing GitHub Bug" />
+    <MESSAGE value="Re-Added Mp3Song Class." />
+    <option name="LAST_COMMIT_MESSAGE" value="Re-Added Mp3Song Class." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1121,16 +1151,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/controllers/SongsHandler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.77065766">
-          <caret line="57" column="23" selection-start-line="57" selection-start-column="23" selection-end-line="57" selection-end-column="23" />
-          <folding>
-            <element signature="imports" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/views/MainWindow.fxml">
       <provider selected="true" editor-type-id="JavaFX-Scene-Builder">
         <state />
@@ -1170,17 +1190,43 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.6118068">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitattributes">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/models/songs/Mp3Song.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.75938565">
-          <caret line="31" column="50" selection-start-line="31" selection-start-column="50" selection-end-line="31" selection-end-column="50" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="60" column="0" selection-start-line="60" selection-start-column="0" selection-end-line="60" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#1096#1097#0" expanded="true" />
-            <element signature="e#1142#1143#0" expanded="true" />
-            <element signature="e#1187#1188#0" expanded="true" />
-            <element signature="e#1252#1253#0" expanded="true" />
+            <element signature="e#1222#1223#0" expanded="true" />
+            <element signature="e#1259#1260#0" expanded="true" />
+            <element signature="e#1303#1304#0" expanded="true" />
+            <element signature="e#1349#1350#0" expanded="true" />
+            <element signature="e#1394#1395#0" expanded="true" />
+            <element signature="e#1459#1460#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/controllers/SongsHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.36177474">
+          <caret line="44" column="39" selection-start-line="44" selection-start-column="39" selection-end-line="44" selection-end-column="39" />
+          <folding />
         </state>
       </provider>
     </entry>
