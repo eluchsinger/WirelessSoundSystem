@@ -2,13 +2,11 @@ package wirelesssoundsystem.server.controllers;
 
 import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.UnsupportedTagException;
-import wirelesssoundsystem.server.models.songs.Mp3Song;
 import wirelesssoundsystem.server.models.songs.Song;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -42,7 +40,8 @@ public class SongsHandler {
         // Transform all songs into Song.
         for(File file : files){
             try {
-                Song song = new Mp3Song(file.getPath());
+                // Todo: Uncomment
+                //Song song = new Mp3Song(file.getPath());
                 songList.add(song);
                 System.out.println("Song: " + song.getTitle());
 
