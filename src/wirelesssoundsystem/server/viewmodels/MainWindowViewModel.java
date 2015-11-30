@@ -2,13 +2,18 @@ package wirelesssoundsystem.server.viewmodels;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 import wirelesssoundsystem.server.controllers.SongsHandler;
+import wirelesssoundsystem.server.models.songs.Song;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Created by eluch on 30.11.2015.
@@ -16,6 +21,7 @@ import java.io.File;
 public class MainWindowViewModel {
     // Properties
     private StringProperty pathToFolder;
+    private ObservableList<Song> songObservableList;
 
     /* Elements */
     @FXML
@@ -23,6 +29,9 @@ public class MainWindowViewModel {
 
     @FXML
     private TextField textFieldFolder;
+
+    @FXML
+    private ListView<Song> listViewSongs;
 
     /* Constructor */
     /**
@@ -32,6 +41,8 @@ public class MainWindowViewModel {
     protected void initialize(){
         this.pathToFolder = new SimpleStringProperty();
         this.textFieldFolder.textProperty().bindBidirectional(getPathToFolderProperty());
+        this.songObservableList = FXCollections.observableArrayList();
+        this.listViewSongs.setItems(songObservableList);
     }
 
     /* Properties */
@@ -57,6 +68,7 @@ public class MainWindowViewModel {
         this.setPathToFolder(file.getPath());
 
         SongsHandler handler = new SongsHandler();
-        handler.loadSongsFromDir(file.getPath());
+        List<Song> songs = handler.loadSongsFromDir(file.getPath());
+        this.songObservableList.setAll(songs);
     }
 }
