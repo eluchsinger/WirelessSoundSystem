@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.paint.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.text.*?>
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
@@ -38,4 +40,18 @@
    <center>
       <ListView fx:id="listViewSongs" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
    </center>
+   <bottom>
+      <FlowPane alignment="CENTER_RIGHT" columnHalignment="RIGHT" prefHeight="80.0" prefWidth="800.0" rowValignment="TOP" BorderPane.alignment="CENTER">
+         <children>
+            <ToggleButton fx:id="buttonPlayPause" mnemonicParsing="false" onAction="#onButtonPlayPauseClicked" prefHeight="69.0" prefWidth="116.0" text="PLAY">
+               <font>
+                  <Font size="20.0" />
+               </font>
+            </ToggleButton>
+         </children>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+      </FlowPane>
+   </bottom>
 </BorderPane>
