@@ -1,4 +1,4 @@
-package wirelesssoundsystem.server.controllers;
+package wirelesssoundsystem.server.controllers.io;
 
 import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.UnsupportedTagException;

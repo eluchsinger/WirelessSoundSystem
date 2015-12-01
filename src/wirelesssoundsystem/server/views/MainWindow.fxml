@@ -53,7 +53,7 @@
       </FlowPane>
    </bottom>
    <center>
-      <TableView fx:id="tableViewSongs" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: BBB;" BorderPane.alignment="CENTER">
+      <TableView fx:id="tableViewSongs" style="-fx-border-color: BBB;" BorderPane.alignment="CENTER">
          <columns>
             <TableColumn fx:id="tableColumnTitle" editable="false" prefWidth="168.0" sortable="false" text="SONG" />
             <TableColumn fx:id="tableColumnArtist" editable="false" prefWidth="75.0" sortable="false" text="KÜNSTLER" />
@@ -72,7 +72,7 @@
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
         </columnConstraints>
         <rowConstraints>
-          <RowConstraints maxHeight="198.0" minHeight="10.0" prefHeight="27.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="198.0" minHeight="10.0" prefHeight="27.0" vgrow="NEVER" />
           <RowConstraints maxHeight="415.0" minHeight="10.0" prefHeight="412.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>

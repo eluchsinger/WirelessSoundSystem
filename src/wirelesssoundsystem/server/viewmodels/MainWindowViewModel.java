@@ -12,12 +12,11 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.Track;
 import javafx.stage.DirectoryChooser;
-import wirelesssoundsystem.server.controllers.SongsHandler;
+import wirelesssoundsystem.server.controllers.io.SongsHandler;
 import wirelesssoundsystem.server.models.Client;
 import wirelesssoundsystem.server.models.songs.Song;
 
 import java.io.File;
-import java.net.URI;
 import java.util.List;
 
 /**
