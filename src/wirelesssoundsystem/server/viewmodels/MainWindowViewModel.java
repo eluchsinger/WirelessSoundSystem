@@ -1,13 +1,12 @@
 package wirelesssoundsystem.server.viewmodels;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.media.AudioTrack;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -43,6 +42,15 @@ public class MainWindowViewModel {
     @FXML
     private ListView<Song> listViewSongs;
 
+    @FXML
+    private TableView<Song> tableViewSongs;
+
+    @FXML
+    private TableColumn tableColumnTitle;
+
+    @FXML
+    private TableColumn tableColumnArtist;
+
     /* Constructor */
 
     /**
@@ -55,7 +63,19 @@ public class MainWindowViewModel {
         this.textFieldFolder.textProperty().bindBidirectional(this.getPathToFolderProperty());
 
         this.songObservableList = FXCollections.observableArrayList();
-        this.listViewSongs.setItems(songObservableList);
+        this.tableViewSongs.setItems(this.songObservableList);
+        this.tableViewSongs.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+
+        tableColumnTitle.setCellValueFactory(
+                new PropertyValueFactory<Song, String>("title")
+        );
+
+        tableColumnArtist.setCellValueFactory(
+                new PropertyValueFactory<Song, String>("artist")
+        );
+
+//        this.listViewSongs.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+//        this.listViewSongs.setItems(songObservableList);
     }
 
     /* Properties */
@@ -77,23 +97,27 @@ public class MainWindowViewModel {
      * @return Returns the selected song item. If there many items selected, the last one selected is returned.
      */
     public final Song getSelectedSong() {
-        return this.listViewSongs.getSelectionModel().getSelectedItem();
+        return this.tableViewSongs.getSelectionModel().getSelectedItem();
     }
 
     /* Events */
+
     @FXML
     public void onSearchButtonClicked() {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Ordner auswählen");
-        File file = directoryChooser.showDialog(null);
+        File file = directoryChooser.showDialog(this.buttonSearch.getScene().getWindow());
 
-        // Sets the property for the textBox.
-        this.setPathToFolder(file.getPath());
+        if(file != null) {
 
-        // Loads the songs.
-        SongsHandler handler = new SongsHandler();
-        List<Song> songs = handler.loadSongsFromDir(file.getPath());
-        this.songObservableList.setAll(songs);
+            // Sets the property for the textBox.
+            this.setPathToFolder(file.getPath());
+
+            // Loads the songs.
+            SongsHandler handler = new SongsHandler();
+            List<Song> songs = handler.loadSongsFromDir(file.getPath());
+            this.songObservableList.setAll(songs);
+        }
     }
 
     @FXML
@@ -129,6 +153,7 @@ public class MainWindowViewModel {
 
         Media media = new Media(tempFile.toURI().toString());
 
+        // DOES NOT WORK ANYWAYS!
         for (Track track : media.getTracks()) {
             if (AudioTrack.class.isInstance(track.getClass())) {
 

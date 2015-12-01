@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.effect.*?>
 <?import javafx.scene.paint.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.text.*?>
@@ -37,11 +38,8 @@
          </top>
       </BorderPane>
    </top>
-   <center>
-      <ListView fx:id="listViewSongs" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-   </center>
    <bottom>
-      <FlowPane alignment="CENTER_RIGHT" columnHalignment="RIGHT" prefHeight="80.0" prefWidth="800.0" rowValignment="TOP" BorderPane.alignment="CENTER">
+      <FlowPane alignment="CENTER_LEFT" columnHalignment="RIGHT" prefHeight="80.0" prefWidth="800.0" rowValignment="TOP" BorderPane.alignment="CENTER">
          <children>
             <ToggleButton fx:id="buttonPlayPause" mnemonicParsing="false" onAction="#onButtonPlayPauseClicked" prefHeight="69.0" prefWidth="116.0" text="PLAY">
                <font>
@@ -54,4 +52,15 @@
          </opaqueInsets>
       </FlowPane>
    </bottom>
+   <center>
+      <TableView fx:id="tableViewSongs" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <columns>
+            <TableColumn fx:id="tableColumnTitle" editable="false" prefWidth="168.0" sortable="false" text="SONG" />
+            <TableColumn fx:id="tableColumnArtist" editable="false" prefWidth="75.0" sortable="false" text="KÜNSTLER" />
+         </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
+      </TableView>
+   </center>
 </BorderPane>

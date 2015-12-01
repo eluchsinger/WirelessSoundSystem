@@ -41,7 +41,6 @@ public class SongsHandler {
         // Transform all songs into Song.
         for(File file : files){
             try {
-                // Todo: Uncomment
                 Song song = new Mp3Song(file.getPath());
                 songList.add(song);
                 System.out.println("Song: " + song.getTitle());
