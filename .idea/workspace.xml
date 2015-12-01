@@ -3,7 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="cdb932d9-7e58-4d94-93a9-e7b232ef17da" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/wirelesssoundsystem/server/views/MainWindow.fxml" afterPath="$PROJECT_DIR$/src/wirelesssoundsystem/server/views/MainWindow.fxml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
     </list>
     <ignored path="JavaFxApplication.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -64,7 +64,7 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="450">
-      <file leaf-file-name="MainWindow.fxml" pinned="false" current-in-tab="true">
+      <file leaf-file-name="MainWindow.fxml" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/views/MainWindow.fxml">
           <provider selected="true" editor-type-id="JavaFX-Scene-Builder">
             <state />
@@ -72,6 +72,16 @@
           <provider editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
               <caret line="98" column="0" selection-start-line="98" selection-start-column="0" selection-end-line="98" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="README.md" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/README.md">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.36042404">
+              <caret line="12" column="79" selection-start-line="12" selection-start-column="79" selection-end-line="12" selection-end-column="79" />
               <folding />
             </state>
           </provider>
@@ -147,7 +157,6 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/src/wirelesssoundsystem/server/views/sample.fxml" />
-        <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/src/wirelesssoundsystem/server/models/Song.java" />
         <option value="$PROJECT_DIR$/src/wirelesssoundsystem/server/Client.java" />
         <option value="$PROJECT_DIR$/src/wirelesssoundsystem/server/models/songs/MP3Song.java" />
@@ -158,6 +167,7 @@
         <option value="$PROJECT_DIR$/src/wirelesssoundsystem/server/models/songs/Mp3Song.java" />
         <option value="$PROJECT_DIR$/src/wirelesssoundsystem/server/viewmodels/MainWindowViewModel.java" />
         <option value="$PROJECT_DIR$/src/wirelesssoundsystem/server/views/MainWindow.fxml" />
+        <option value="$PROJECT_DIR$/README.md" />
       </list>
     </option>
   </component>
@@ -848,7 +858,7 @@
       <workItem from="1448904184060" duration="12321000" />
       <workItem from="1448960103798" duration="4042000" />
       <workItem from="1448966163699" duration="1021000" />
-      <workItem from="1448967200407" duration="817000" />
+      <workItem from="1448967200407" duration="1094000" />
     </task>
     <task id="LOCAL-00001" summary="First running commit.">
       <created>1448879856281</created>
@@ -904,11 +914,17 @@
       <option name="project" value="LOCAL" />
       <updated>1448966224478</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Added Styles on the MainWindow. Added a &quot;Speakers&quot; ListView on the left side.">
+      <created>1448968053219</created>
+      <option name="number" value="00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1448968053219</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="24542000" />
+    <option name="totallyTimeSpent" value="24819000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -974,7 +990,8 @@
     <MESSAGE value="Fixing GitHub Bug" />
     <MESSAGE value="Re-Added Mp3Song Class." />
     <MESSAGE value="Changed ListView to TableView for more flexibility." />
-    <option name="LAST_COMMIT_MESSAGE" value="Changed ListView to TableView for more flexibility." />
+    <MESSAGE value="Added Styles on the MainWindow. Added a &quot;Speakers&quot; ListView on the left side." />
+    <option name="LAST_COMMIT_MESSAGE" value="Added Styles on the MainWindow. Added a &quot;Speakers&quot; ListView on the left side." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1262,13 +1279,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.11923689">
-          <caret line="3" column="0" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/models/Client.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1349,6 +1359,14 @@
       <provider editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="98" column="0" selection-start-line="98" selection-start-column="0" selection-end-line="98" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.36042404">
+          <caret line="12" column="79" selection-start-line="12" selection-start-column="79" selection-end-line="12" selection-end-column="79" />
           <folding />
         </state>
       </provider>
