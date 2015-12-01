@@ -13,6 +13,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.Track;
 import javafx.stage.DirectoryChooser;
 import wirelesssoundsystem.server.controllers.SongsHandler;
+import wirelesssoundsystem.server.models.Client;
 import wirelesssoundsystem.server.models.songs.Song;
 
 import java.io.File;
@@ -28,6 +29,7 @@ public class MainWindowViewModel {
     // Properties
     private StringProperty pathToFolder;
     private ObservableList<Song> songObservableList;
+    private ObservableList<Client> clientObservableList;
 
     /* Elements */
     @FXML
@@ -40,7 +42,7 @@ public class MainWindowViewModel {
     private TextField textFieldFolder;
 
     @FXML
-    private ListView<Song> listViewSongs;
+    private ListView<Client> listViewClients;
 
     @FXML
     private TableView<Song> tableViewSongs;
@@ -74,8 +76,16 @@ public class MainWindowViewModel {
                 new PropertyValueFactory<Song, String>("artist")
         );
 
-//        this.listViewSongs.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-//        this.listViewSongs.setItems(songObservableList);
+        this.clientObservableList = FXCollections.observableArrayList();
+        this.listViewClients.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        this.listViewClients.setItems(this.clientObservableList);
+
+        //DEMO DATA
+        this.clientObservableList.add(new Client("Wohnzimmer"));
+        this.clientObservableList.add(new Client("Küche"));
+        this.clientObservableList.add(new Client("Schlafzimmer"));
+        this.clientObservableList.add(new Client("Eingang"));
+        this.clientObservableList.add(new Client("Dusche"));
     }
 
     /* Properties */

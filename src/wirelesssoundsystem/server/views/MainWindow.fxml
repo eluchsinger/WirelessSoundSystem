@@ -85,7 +85,7 @@
                   </Label>
                </children>
             </HBox>
-            <ListView prefHeight="408.0" prefWidth="186.0" style="-fx-border-color: BBB;" GridPane.rowIndex="1" />
+            <ListView fx:id="listViewClients" prefHeight="408.0" prefWidth="186.0" style="-fx-border-color: BBB;" GridPane.rowIndex="1" />
          </children>
          <opaqueInsets>
             <Insets />
