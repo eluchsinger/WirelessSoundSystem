@@ -162,17 +162,6 @@ public class MainWindowViewModel {
 
         Media media = new Media(tempFile.toURI().toString());
 
-        // DOES NOT WORK ANYWAYS!
-        for (Track track : media.getTracks()) {
-            if (AudioTrack.class.isInstance(track.getClass())) {
-
-                System.out.println("Is an AudioTrack");
-
-
-                System.out.println("With name: " + ((AudioTrack) track).getName());
-            }
-        }
-
         this.mediaPlayer = new MediaPlayer(media);
         mediaPlayer.play();
     }

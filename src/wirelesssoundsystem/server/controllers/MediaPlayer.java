@@ -35,5 +35,4 @@ public interface MediaPlayer {
     void getVolume();
     void setVolume();
     SimpleDoubleProperty getVolumeProperty();
-
 }
