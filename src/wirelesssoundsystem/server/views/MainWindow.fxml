@@ -53,7 +53,7 @@
       </FlowPane>
    </bottom>
    <center>
-      <TableView fx:id="tableViewSongs" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: BBB;" BorderPane.alignment="CENTER">
+      <TableView fx:id="tableViewSongs" style="-fx-border-color: BBB;" BorderPane.alignment="CENTER">
          <columns>
             <TableColumn fx:id="tableColumnTitle" editable="false" prefWidth="168.0" sortable="false" text="SONG" />
             <TableColumn fx:id="tableColumnArtist" editable="false" prefWidth="75.0" sortable="false" text="KÜNSTLER" />
@@ -72,8 +72,8 @@
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
         </columnConstraints>
         <rowConstraints>
-          <RowConstraints maxHeight="198.0" minHeight="10.0" prefHeight="27.0" vgrow="SOMETIMES" />
-          <RowConstraints maxHeight="415.0" minHeight="10.0" prefHeight="412.0" vgrow="SOMETIMES" />
+          <RowConstraints fillHeight="false" maxHeight="27.0" minHeight="27.0" prefHeight="27.0" valignment="TOP" vgrow="NEVER" />
+          <RowConstraints vgrow="ALWAYS" />
         </rowConstraints>
          <children>
             <HBox alignment="CENTER" prefHeight="62.0" prefWidth="181.0" style="-fx-background-color: -fx-box-border, -fx-inner-border, -fx-body-color; -fx-background-insets: 0, 1, 2; -fx-background-radius: 5 5 0 0, 4 4 0 0, 3 3 0 0; -fx-padding: 0.166667em 0.833333em 0.25em 0.833333em;">
@@ -85,7 +85,7 @@
                   </Label>
                </children>
             </HBox>
-            <ListView prefHeight="408.0" prefWidth="186.0" style="-fx-border-color: BBB;" GridPane.rowIndex="1" />
+            <ListView fx:id="listViewClients" style="-fx-border-color: BBB;" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
          </children>
          <opaqueInsets>
             <Insets />

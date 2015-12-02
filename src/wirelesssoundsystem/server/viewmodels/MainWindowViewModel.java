@@ -12,11 +12,11 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.Track;
 import javafx.stage.DirectoryChooser;
-import wirelesssoundsystem.server.controllers.SongsHandler;
+import wirelesssoundsystem.server.controllers.io.SongsHandler;
+import wirelesssoundsystem.server.models.Client;
 import wirelesssoundsystem.server.models.songs.Song;
 
 import java.io.File;
-import java.net.URI;
 import java.util.List;
 
 /**
@@ -28,6 +28,7 @@ public class MainWindowViewModel {
     // Properties
     private StringProperty pathToFolder;
     private ObservableList<Song> songObservableList;
+    private ObservableList<Client> clientObservableList;
 
     /* Elements */
     @FXML
@@ -40,7 +41,7 @@ public class MainWindowViewModel {
     private TextField textFieldFolder;
 
     @FXML
-    private ListView<Song> listViewSongs;
+    private ListView<Client> listViewClients;
 
     @FXML
     private TableView<Song> tableViewSongs;
@@ -74,8 +75,16 @@ public class MainWindowViewModel {
                 new PropertyValueFactory<Song, String>("artist")
         );
 
-//        this.listViewSongs.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-//        this.listViewSongs.setItems(songObservableList);
+        this.clientObservableList = FXCollections.observableArrayList();
+        this.listViewClients.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        this.listViewClients.setItems(this.clientObservableList);
+
+        //DEMO DATA
+        this.clientObservableList.add(new Client("Wohnzimmer"));
+        this.clientObservableList.add(new Client("Küche"));
+        this.clientObservableList.add(new Client("Schlafzimmer"));
+        this.clientObservableList.add(new Client("Eingang"));
+        this.clientObservableList.add(new Client("Dusche"));
     }
 
     /* Properties */
@@ -152,17 +161,6 @@ public class MainWindowViewModel {
         File tempFile = new File(song.getPath());
 
         Media media = new Media(tempFile.toURI().toString());
-
-        // DOES NOT WORK ANYWAYS!
-        for (Track track : media.getTracks()) {
-            if (AudioTrack.class.isInstance(track.getClass())) {
-
-                System.out.println("Is an AudioTrack");
-
-
-                System.out.println("With name: " + ((AudioTrack) track).getName());
-            }
-        }
 
         this.mediaPlayer = new MediaPlayer(media);
         mediaPlayer.play();
