@@ -12,11 +12,11 @@ import java.net.*;
  * Created by Esteban Luchsinger on 03.12.2015.
  */
 public class Mp3NetworkStream implements NetworkStream<Song> {
-    private final int clientSocketPort = 55654;
-    private Socket streamSocket;
+    private final int clientSocketPort = 23546;
+    private ServerSocket streamSocket;
 
     public Mp3NetworkStream() throws IOException {
-        this.streamSocket = new Socket(Utility.getBroadcastAddress4(), clientSocketPort);
+        this.streamSocket = new ServerSocket(this.clientSocketPort);
     }
 
     @Override
