@@ -1,4 +1,4 @@
-package wirelesssoundsystem.server.controllers;
+package wirelesssoundsystem.server.controllers.media;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
