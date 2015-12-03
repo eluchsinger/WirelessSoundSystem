@@ -1,4 +1,4 @@
-package wirelesssoundsystem.server.controllers;
+package ch.wirelesssoundsystem.server.controllers;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

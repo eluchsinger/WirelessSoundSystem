@@ -13,7 +13,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" fx:controller="wirelesssoundsystem.server.viewmodels.MainWindowViewModel">
+<BorderPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ch.wirelesssoundsystem.server.viewmodels.MainWindowViewModel">
    <top>
       <BorderPane prefHeight="111.0" prefWidth="800.0" BorderPane.alignment="CENTER">
          <center>

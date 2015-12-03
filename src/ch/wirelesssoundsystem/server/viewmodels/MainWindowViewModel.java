@@ -1,5 +1,8 @@
-package wirelesssoundsystem.server.viewmodels;
+package ch.wirelesssoundsystem.server.viewmodels;
 
+import ch.wirelesssoundsystem.server.controllers.io.SongsHandler;
+import ch.wirelesssoundsystem.server.models.Client;
+import ch.wirelesssoundsystem.server.models.songs.Song;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -7,14 +10,9 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.media.AudioTrack;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.Track;
 import javafx.stage.DirectoryChooser;
-import wirelesssoundsystem.server.controllers.io.SongsHandler;
-import wirelesssoundsystem.server.models.Client;
-import wirelesssoundsystem.server.models.songs.Song;
 
 import java.io.File;
 import java.util.List;

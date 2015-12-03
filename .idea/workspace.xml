@@ -2,9 +2,21 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="cdb932d9-7e58-4d94-93a9-e7b232ef17da" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/controllers/networking/NetworkStream.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/controllers/networking/Utility.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/controllers/networking/music/Mp3NetworkStream.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/models/playlists/Playlist.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/models/playlists/music/SongPlaylist.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/wirelesssoundsystem/server/controllers/AudioPlayer.java" afterPath="$PROJECT_DIR$/src/wirelesssoundsystem/server/controllers/media/AudioPlayer.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/wirelesssoundsystem/server/controllers/MediaPlayer.java" afterPath="$PROJECT_DIR$/src/wirelesssoundsystem/server/controllers/media/MediaPlayer.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/wirelesssoundsystem/server/controllers/Main.java" afterPath="$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/controllers/Main.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/wirelesssoundsystem/server/controllers/io/SongsHandler.java" afterPath="$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/controllers/io/SongsHandler.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/wirelesssoundsystem/server/controllers/media/AudioPlayer.java" afterPath="$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/controllers/media/AudioPlayer.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/wirelesssoundsystem/server/controllers/media/MediaPlayer.java" afterPath="$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/controllers/media/MediaPlayer.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/wirelesssoundsystem/server/models/Client.java" afterPath="$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/models/Client.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/wirelesssoundsystem/server/models/songs/Mp3Song.java" afterPath="$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/models/songs/Mp3Song.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/wirelesssoundsystem/server/models/songs/Song.java" afterPath="$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/models/songs/Song.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/wirelesssoundsystem/server/viewmodels/MainWindowViewModel.java" afterPath="$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/viewmodels/MainWindowViewModel.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/wirelesssoundsystem/server/views/MainWindow.fxml" afterPath="$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/views/MainWindow.fxml" />
     </list>
     <ignored path="JavaFxApplication.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -64,7 +76,52 @@
     <favorites_list name="JavaFxApplication" />
   </component>
   <component name="FileEditorManager">
-    <leaf />
+    <leaf>
+      <file leaf-file-name="NetworkStream.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/controllers/networking/NetworkStream.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="7" column="22" selection-start-line="7" selection-start-column="22" selection-end-line="7" selection-end-column="22" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Mp3NetworkStream.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/controllers/networking/music/Mp3NetworkStream.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.5267423">
+              <caret line="23" column="0" selection-start-line="23" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Playlist.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/models/playlists/Playlist.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="8" column="1" selection-start-line="8" selection-start-column="1" selection-end-line="8" selection-end-column="1" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="SongPlaylist.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/models/playlists/music/SongPlaylist.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="8" column="54" selection-start-line="8" selection-start-column="54" selection-end-line="8" selection-end-column="54" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -103,6 +160,18 @@
         <option value="$PROJECT_DIR$/src/wirelesssoundsystem/server/viewmodels/MainWindowViewModel.java" />
         <option value="$PROJECT_DIR$/src/wirelesssoundsystem/server/views/MainWindow.fxml" />
         <option value="$PROJECT_DIR$/README.md" />
+        <option value="$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/controllers/networking/NetworkStreamer.java" />
+        <option value="$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/controllers/networking/Mp3NetworkStreamer.java" />
+        <option value="$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/controllers/networking/Mp3NetworkStream.java" />
+        <option value="$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/models/Playlist.java" />
+        <option value="$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/models/BufferedPlaylist.java" />
+        <option value="$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/models/playlists/BufferedPlaylist.java" />
+        <option value="$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/models/playlists/music/BufferedPlaylist.java" />
+        <option value="$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/models/playlists/music/SongPlaylist.java" />
+        <option value="$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/models/playlists/music/BufferedSongPlaylist.java" />
+        <option value="$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/controllers/networking/NetworkStream.java" />
+        <option value="$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/controllers/networking/Utility.java" />
+        <option value="$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/controllers/networking/music/Mp3NetworkStream.java" />
       </list>
     </option>
   </component>
@@ -167,6 +236,20 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="WirelessSoundSystem.Server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="WirelessSoundSystem.Server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="WirelessSoundSystem.Server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -280,7 +363,171 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="models" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="playlists" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="WirelessSoundSystem.Server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="WirelessSoundSystem.Server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="models" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="playlists" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="music" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="WirelessSoundSystem.Server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="WirelessSoundSystem.Server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="controllers" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="WirelessSoundSystem.Server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="WirelessSoundSystem.Server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="controllers" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="networking" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="WirelessSoundSystem.Server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="WirelessSoundSystem.Server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="controllers" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="networking" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="music" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="WirelessSoundSystem.Server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="WirelessSoundSystem.Server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="controllers" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="media" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="WirelessSoundSystem.Server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="WirelessSoundSystem.Server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="controllers" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="io" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -764,10 +1011,10 @@
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="MAIN_CLASS_NAME" value="wirelesssoundsystem.server.controllers.Main" />
-      <option name="VM_PARAMETERS" />
-      <option name="PROGRAM_PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="MAIN_CLASS_NAME" value="ch.wirelesssoundsystem.server.controllers.Main" />
+      <option name="VM_PARAMETERS" value="" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
       <option name="ENABLE_SWING_INSPECTOR" value="false" />
@@ -808,7 +1055,7 @@
       <workItem from="1448967200407" duration="1094000" />
       <workItem from="1449086894347" duration="38000" />
       <workItem from="1449086959504" duration="93000" />
-      <workItem from="1449133990049" duration="110000" />
+      <workItem from="1449133990049" duration="4529000" />
     </task>
     <task id="LOCAL-00001" summary="First running commit.">
       <created>1448879856281</created>
@@ -876,11 +1123,17 @@
       <option name="project" value="LOCAL" />
       <updated>1449086992267</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Added Media and Networking Package.">
+      <created>1449134207222</created>
+      <option name="number" value="00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1449134207222</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="25060000" />
+    <option name="totallyTimeSpent" value="29479000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -893,7 +1146,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="1909" y="-11" width="1942" height="1162" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32896176" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -905,7 +1158,7 @@
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3271605" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32896176" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24811219" sideWeight="0.6703755" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24811219" sideWeight="0.6703755" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -948,7 +1201,9 @@
     <MESSAGE value="Changed ListView to TableView for more flexibility." />
     <MESSAGE value="Added Styles on the MainWindow. Added a &quot;Speakers&quot; ListView on the left side." />
     <MESSAGE value="Fix some behavior with Workspace.xml&#10;" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix some behavior with Workspace.xml&#10;" />
+    <MESSAGE value="Added Media and Networking Package." />
+    <MESSAGE value="Added Network  classes and Socket Handling." />
+    <option name="LAST_COMMIT_MESSAGE" value="Added Network  classes and Socket Handling." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -961,7 +1216,7 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/views/MainWindow.fxml">
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/views/MainWindow.fxml">
       <provider selected="true" editor-type-id="JavaFX-Scene-Builder">
         <state />
       </provider>
@@ -979,24 +1234,23 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/viewmodels/MainWindowViewModel.java">
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/viewmodels/MainWindowViewModel.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="108" column="88" selection-start-line="108" selection-start-column="88" selection-end-line="108" selection-end-column="88" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/models/songs/Song.java">
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/models/songs/Song.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="15" column="19" selection-start-line="15" selection-start-column="11" selection-end-line="15" selection-end-column="19" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/models/songs/Mp3Song.java">
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/models/songs/Mp3Song.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="35" column="13" selection-start-line="35" selection-start-column="13" selection-end-line="35" selection-end-column="13" />
@@ -1004,7 +1258,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/views/MainWindow.fxml">
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/views/MainWindow.fxml">
       <provider selected="true" editor-type-id="JavaFX-Scene-Builder">
         <state />
       </provider>
@@ -1015,24 +1269,23 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/viewmodels/MainWindowViewModel.java">
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/viewmodels/MainWindowViewModel.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="108" column="88" selection-start-line="108" selection-start-column="88" selection-end-line="108" selection-end-column="88" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/models/songs/Song.java">
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/models/songs/Song.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="15" column="19" selection-start-line="15" selection-start-column="11" selection-end-line="15" selection-end-column="19" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/models/songs/Mp3Song.java">
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/models/songs/Mp3Song.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="35" column="13" selection-start-line="35" selection-start-column="13" selection-end-line="35" selection-end-column="13" />
@@ -1040,7 +1293,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/views/MainWindow.fxml">
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/views/MainWindow.fxml">
       <provider selected="true" editor-type-id="JavaFX-Scene-Builder">
         <state />
       </provider>
@@ -1051,24 +1304,23 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/viewmodels/MainWindowViewModel.java">
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/viewmodels/MainWindowViewModel.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="108" column="88" selection-start-line="108" selection-start-column="88" selection-end-line="108" selection-end-column="88" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/models/songs/Song.java">
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/models/songs/Song.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="15" column="19" selection-start-line="15" selection-start-column="11" selection-end-line="15" selection-end-column="19" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/models/songs/Mp3Song.java">
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/models/songs/Mp3Song.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="35" column="13" selection-start-line="35" selection-start-column="13" selection-end-line="35" selection-end-column="13" />
@@ -1076,7 +1328,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/views/MainWindow.fxml">
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/views/MainWindow.fxml">
       <provider selected="true" editor-type-id="JavaFX-Scene-Builder">
         <state />
       </provider>
@@ -1087,17 +1339,15 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/viewmodels/MainWindowViewModel.java">
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/viewmodels/MainWindowViewModel.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="122" column="41" selection-start-line="122" selection-start-column="41" selection-end-line="122" selection-end-column="41" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/models/songs/Mp3Song.java">
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/models/songs/Mp3Song.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="60" column="0" selection-start-line="60" selection-start-column="0" selection-end-line="60" selection-end-column="0" />
@@ -1105,7 +1355,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/views/MainWindow.fxml">
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/views/MainWindow.fxml">
       <provider selected="true" editor-type-id="JavaFX-Scene-Builder">
         <state />
       </provider>
@@ -1116,17 +1366,15 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/viewmodels/MainWindowViewModel.java">
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/viewmodels/MainWindowViewModel.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/views/MainWindow.fxml">
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/views/MainWindow.fxml">
       <provider selected="true" editor-type-id="JavaFX-Scene-Builder">
         <state />
       </provider>
@@ -1137,34 +1385,31 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/viewmodels/MainWindowViewModel.java">
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/viewmodels/MainWindowViewModel.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/controllers/Main.java">
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/controllers/Main.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="18" column="0" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/viewmodels/MainWindowViewModel.java">
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/viewmodels/MainWindowViewModel.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/views/MainWindow.fxml">
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/views/MainWindow.fxml">
       <provider editor-type-id="JavaFX-Scene-Builder">
         <state />
       </provider>
@@ -1175,24 +1420,26 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/models/songs/Song.java">
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/models/songs/Song.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="6" column="28" selection-start-line="6" selection-start-column="28" selection-end-line="6" selection-end-column="28" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/models/Client.java">
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/models/Client.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/controllers/Main.java">
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/controllers/Main.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="18" column="0" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1203,7 +1450,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/views/MainWindow.fxml">
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/views/MainWindow.fxml">
       <provider editor-type-id="JavaFX-Scene-Builder">
         <state />
       </provider>
@@ -1214,24 +1461,23 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/viewmodels/MainWindowViewModel.java">
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/viewmodels/MainWindowViewModel.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="5" column="32" selection-start-line="5" selection-start-column="32" selection-end-line="5" selection-end-column="32" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/controllers/Main.java">
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/controllers/Main.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/views/MainWindow.fxml">
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/views/MainWindow.fxml">
       <provider editor-type-id="JavaFX-Scene-Builder">
         <state />
       </provider>
@@ -1242,17 +1488,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/models/Client.java">
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/models/Client.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="7" column="0" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/controllers/Main.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.3153457">
-          <caret line="11" column="59" selection-start-line="11" selection-start-column="59" selection-end-line="11" selection-end-column="59" />
         </state>
       </provider>
     </entry>
@@ -1277,17 +1516,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/views/MainWindow.fxml">
-      <provider selected="true" editor-type-id="JavaFX-Scene-Builder">
-        <state />
-      </provider>
-      <provider editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="98" column="0" selection-start-line="98" selection-start-column="0" selection-end-line="98" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.2347526">
@@ -1295,28 +1523,93 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/viewmodels/MainWindowViewModel.java">
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/models/songs/Song.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.018973215">
-          <caret line="108" column="88" selection-start-line="108" selection-start-column="88" selection-end-line="108" selection-end-column="88" />
+        <state vertical-scroll-proportion="0.22767857">
+          <caret line="15" column="19" selection-start-line="15" selection-start-column="11" selection-end-line="15" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/models/songs/Mp3Song.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.52566963">
+          <caret line="35" column="13" selection-start-line="35" selection-start-column="13" selection-end-line="35" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/controllers/Main.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.60777956">
+          <caret line="19" column="21" selection-start-line="19" selection-start-column="21" selection-end-line="19" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/views/MainWindow.fxml">
+      <provider editor-type-id="JavaFX-Scene-Builder">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.41284403">
+          <caret line="15" column="146" selection-start-line="15" selection-start-column="96" selection-end-line="15" selection-end-column="146" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/viewmodels/MainWindowViewModel.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.12155592">
+          <caret line="3" column="50" selection-start-line="3" selection-start-column="50" selection-end-line="3" selection-end-column="50" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/models/playlists/music/SongPlaylist.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="8" column="54" selection-start-line="8" selection-start-column="54" selection-end-line="8" selection-end-column="54" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/models/songs/Song.java">
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/models/playlists/Playlist.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.22767857">
-          <caret line="15" column="19" selection-start-line="15" selection-start-column="11" selection-end-line="15" selection-end-column="19" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="8" column="1" selection-start-line="8" selection-start-column="1" selection-end-line="8" selection-end-column="1" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/wirelesssoundsystem/server/models/songs/Mp3Song.java">
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/controllers/networking/NetworkStream.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.52566963">
-          <caret line="35" column="13" selection-start-line="35" selection-start-column="13" selection-end-line="35" selection-end-column="13" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="7" column="22" selection-start-line="7" selection-start-column="22" selection-end-line="7" selection-end-column="22" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/controllers/networking/Utility.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="1.2155591">
+          <caret line="30" column="9" selection-start-line="30" selection-start-column="9" selection-end-line="30" selection-end-column="9" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="method#getBroadcastAddress4#0;class#Utility#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ch/wirelesssoundsystem/server/controllers/networking/music/Mp3NetworkStream.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5267423">
+          <caret line="23" column="0" selection-start-line="23" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

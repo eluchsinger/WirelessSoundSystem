@@ -1,4 +1,4 @@
-package wirelesssoundsystem.server.models;
+package ch.wirelesssoundsystem.server.models;
 
 import javafx.beans.property.SimpleStringProperty;
 

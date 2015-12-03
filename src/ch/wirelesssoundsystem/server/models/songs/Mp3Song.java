@@ -1,4 +1,4 @@
-package wirelesssoundsystem.server.models.songs;
+package ch.wirelesssoundsystem.server.models.songs;
 
 
 import com.mpatric.mp3agic.*;

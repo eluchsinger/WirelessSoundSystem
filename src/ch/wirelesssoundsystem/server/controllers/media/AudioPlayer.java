@@ -1,4 +1,4 @@
-package wirelesssoundsystem.server.controllers.media;
+package ch.wirelesssoundsystem.server.controllers.media;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -6,7 +6,7 @@ import javafx.beans.property.SimpleObjectProperty;
 
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import wirelesssoundsystem.server.models.songs.Song;
+import ch.wirelesssoundsystem.server.models.songs.Song;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ import java.util.Optional;
 /**
  * Created by eluch on 01.12.2015.
  */
-public class AudioPlayer implements wirelesssoundsystem.server.controllers.media.MediaPlayer {
+public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.media.MediaPlayer {
 
     // WATCH OUT! JavaFx MediaPlayer!
     private MediaPlayer mediaPlayer;

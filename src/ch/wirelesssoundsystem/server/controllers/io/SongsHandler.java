@@ -1,9 +1,9 @@
-package wirelesssoundsystem.server.controllers.io;
+package ch.wirelesssoundsystem.server.controllers.io;
 
+import ch.wirelesssoundsystem.server.models.songs.Mp3Song;
 import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.UnsupportedTagException;
-import wirelesssoundsystem.server.models.songs.Mp3Song;
-import wirelesssoundsystem.server.models.songs.Song;
+import ch.wirelesssoundsystem.server.models.songs.Song;
 
 import java.io.File;
 import java.io.IOException;
