@@ -11,3 +11,5 @@ The server is written in Java using the JavaFX Framework.
 - Create Speaker Model.
 - Add Speakers to the ListView.
 - Optional: Create a "Right Now" Info-View on the right side of the MainWindow.
+- Develop "Discovery" Protocol.
+- Implement Streaming protocol with NETTY.
