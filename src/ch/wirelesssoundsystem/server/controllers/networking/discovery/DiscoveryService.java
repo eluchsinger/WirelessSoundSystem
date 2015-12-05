@@ -19,8 +19,8 @@ public class DiscoveryService {
      */
     private ScheduledExecutorService discoveryScheduledService;
 
-    // Waiting delay for the task to run again in milliseconds.
-    private final long delay = 1000;
+    // Waiting delay for the task to run again in seconds.
+    private final long delay = 5;
 
     public static DiscoveryService getInstance() {
         return ourInstance;
@@ -34,12 +34,9 @@ public class DiscoveryService {
         if(this.discoveryScheduledService == null || this.discoveryScheduledService.isShutdown() || this.discoveryScheduledService.isTerminated()) {
             this.discoveryScheduledService = Executors.newScheduledThreadPool(1);
 
-            this.discoveryScheduledService.scheduleAtFixedRate(new Runnable() {
-                @Override
-                public void run() {
-                    discover();
-                }
-            }, 0, 2, TimeUnit.SECONDS);
+            this.discoveryScheduledService.scheduleAtFixedRate(() -> {
+                this.discover();
+            }, 0, this.delay, TimeUnit.SECONDS);
         }
     }
 

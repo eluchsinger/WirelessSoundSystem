@@ -17,10 +17,14 @@ public class Main extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("../views/MainWindow.fxml"));
         primaryStage.setTitle("Wireless Sound System");
         primaryStage.setScene(new Scene(root, 800, 600));
+
+        primaryStage.setOnCloseRequest((event) -> {
+            System.out.println("Stopping discovery Service...");
+            DiscoveryService.getInstance().stop();
+        });
+
         primaryStage.show();
 
-        System.out.println("Stopping discovery Service...");
-        DiscoveryService.getInstance().stop();
     }
 
 

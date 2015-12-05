@@ -18,7 +18,7 @@ import java.io.File;
 import java.util.List;
 
 /**
- * Created by eluch on 30.11.2015.
+ * Created by Esteban Luchsinger on 30.11.2015.
  */
 public class MainWindowViewModel {
     private MediaPlayer mediaPlayer;
@@ -77,12 +77,8 @@ public class MainWindowViewModel {
         this.listViewClients.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         this.listViewClients.setItems(this.clientObservableList);
 
-        //DEMO DATA
-        this.clientObservableList.add(new Client("Wohnzimmer"));
-        this.clientObservableList.add(new Client("Küche"));
-        this.clientObservableList.add(new Client("Schlafzimmer"));
-        this.clientObservableList.add(new Client("Eingang"));
-        this.clientObservableList.add(new Client("Dusche"));
+        this.addDemoData();
+
     }
 
     /* Properties */
@@ -133,21 +129,21 @@ public class MainWindowViewModel {
             switch(this.mediaPlayer.getStatus()){
                 case PLAYING:
                     this.mediaPlayer.pause();
-                    this.buttonPlayPause.setText("PLAY");
+                    this.buttonPlayPause.setText(">");
                     break;
                 case PAUSED:
                     mediaPlayer.play();
-                    this.buttonPlayPause.setText("PAUSE");
+                    this.buttonPlayPause.setText("||");
                     break;
                 default:
                     startPlaying(this.getSelectedSong());
-                    this.buttonPlayPause.setText("PAUSE");
+                    this.buttonPlayPause.setText("||");
                     break;
             }
         }
         else{
             startPlaying(this.getSelectedSong());
-            this.buttonPlayPause.setText("PAUSE");
+            this.buttonPlayPause.setText("||");
         }
     }
 
@@ -162,5 +158,14 @@ public class MainWindowViewModel {
 
         this.mediaPlayer = new MediaPlayer(media);
         mediaPlayer.play();
+    }
+
+    private void addDemoData(){
+        //DEMO DATA
+        this.clientObservableList.add(new Client("Wohnzimmer"));
+        this.clientObservableList.add(new Client("Küche"));
+        this.clientObservableList.add(new Client("Schlafzimmer"));
+        this.clientObservableList.add(new Client("Eingang"));
+        this.clientObservableList.add(new Client("Dusche"));
     }
 }
