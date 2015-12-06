@@ -2,6 +2,8 @@ package ch.wirelesssoundsystem.server.controllers.media.music;
 
 import javafx.beans.property.*;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import ch.wirelesssoundsystem.server.models.songs.Song;
@@ -16,7 +18,7 @@ import java.util.Optional;
 /**
  * Created by eluch on 01.12.2015.
  */
-public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.media.MediaPlayer {
+public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.media.MediaPlayer<Song> {
 
     /**
      * Access only with the Accessor-Methods!
@@ -27,16 +29,16 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
     private ReadOnlyObjectProperty<Duration> currentMediaTime;
     private ReadOnlyObjectProperty<Duration> totalMediaDuration;
 
-    private List<Song> playlist;
+    private ObservableList<Song> playlist;
     private Song lastPlayed;
 
     public AudioPlayer(){
         // Call parameterized constructor with a new list.
-        this(new ArrayList<>());
+        this(FXCollections.observableArrayList());
     }
 
-    public AudioPlayer(Collection<Song> songs){
-        this.playlist = new ArrayList<>(songs);
+    public AudioPlayer(ObservableList<Song> songs){
+        this.playlist = songs;
 
         this.isPlaying = new SimpleBooleanProperty();
         this.currentMediaTime = new SimpleObjectProperty<>();
@@ -63,6 +65,11 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
     }
 
     @Override
+    public void play(Song track){
+
+    }
+
+    @Override
     public void pause() {
         if(this.getMediaPlayer() != null){
             this.getMediaPlayer().pause();
@@ -76,7 +83,17 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
 
     @Override
     public boolean isPlaying() {
-        return this.isPlaying.getValue();
+        if(this.getMediaPlayer() == null || this.getMediaPlayer().getStatus() == null){
+            return false;
+        }
+
+        switch(this.getMediaPlayer().getStatus()){
+            case PLAYING:
+                return true;
+            default:
+                return false;
+        }
+//        return this.isPlaying.getValue();
     }
 
     @Override
@@ -84,23 +101,33 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
         return this.isPlaying;
     }
 
+    /**
+     * Toggles playing.
+     * If it is playing, it pauses.
+     * If it is paused, it plays.
+     */
     @Override
-    public void nextTrack() {
+    public void togglePlay() {
 
     }
 
     @Override
-    public void previousTrack() {
-
+    public Song getNextTrack() {
+        return null;
     }
 
     @Override
-    public void getCurrentTrack() {
-
+    public Song getPreviousTrack() {
+        return null;
     }
 
     @Override
-    public SimpleObjectProperty<?> currentTrackProperty() {
+    public Song getCurrentTrack() {
+        return null;
+    }
+
+    @Override
+    public SimpleObjectProperty<Song> currentTrackProperty() {
         return null;
     }
 

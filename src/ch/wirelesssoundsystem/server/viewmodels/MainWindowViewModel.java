@@ -83,6 +83,10 @@ public class MainWindowViewModel {
         this.addDemoData();
         this.mediaPlayer = new AudioPlayer(this.songObservableList);
 
+//        this.mediaPlayer.isPlayingProperty().addListener((observable, oldValue, newValue) -> {
+//                System.out.println("New isPlayingPropertyValue (" + newValue + ")");
+//        });
+
     }
 
     /* Properties */
@@ -129,7 +133,15 @@ public class MainWindowViewModel {
 
     @FXML
     public void onButtonPlayPauseClicked() {
-        this.mediaPlayer.play();
+
+        if(this.mediaPlayer.isPlaying()){
+            this.mediaPlayer.pause();
+            this.buttonPlayPause.setText(">");
+        }
+        else {
+            this.mediaPlayer.play();
+            this.buttonPlayPause.setText("||");
+        }
 //        if (this.mediaPlayer != null){
 //            switch(this.mediaPlayer.getStatus()){
 //                case PLAYING:

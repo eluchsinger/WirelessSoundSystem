@@ -8,8 +8,9 @@ import javafx.beans.property.SimpleObjectProperty;
 /**
  * Created by Esteban Luchsinger on 01.12.2015.
  */
-public interface MediaPlayer {
+public interface MediaPlayer<T> {
     void play();
+    void play(T track);
     void pause();
     void stop();
     boolean isPlaying();
@@ -27,11 +28,11 @@ public interface MediaPlayer {
             this.play();
     }
 
-    void nextTrack();
-    void previousTrack();
+    T getNextTrack();
+    T getPreviousTrack();
 
-    void getCurrentTrack();
-    SimpleObjectProperty<?> currentTrackProperty();
+    T getCurrentTrack();
+    SimpleObjectProperty<T> currentTrackProperty();
 
     void getVolume();
     void setVolume();
