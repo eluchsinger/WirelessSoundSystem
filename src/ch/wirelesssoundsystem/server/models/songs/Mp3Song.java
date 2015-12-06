@@ -3,12 +3,14 @@ package ch.wirelesssoundsystem.server.models.songs;
 
 import com.mpatric.mp3agic.*;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 
 /**
  * Created by eluch on 30.11.2015.
  */
-public class Mp3Song implements Song {
+public class Mp3Song implements Song, Comparable<Song> {
     private final String extension = "mp3";
     private Mp3File file;
 
@@ -56,5 +58,40 @@ public class Mp3Song implements Song {
     @Override
     public String toString(){
         return this.getTitle() + " - " + this.getArtist();
+    }
+
+    /**
+     * Compares the Title of both songs.
+     * If it is the same title, they are the same song.
+     * @param otherSong
+     * @return
+     */
+    @Override
+    public int compareTo(Song otherSong) {
+
+        // Compare to the title.
+        int result = this.getTitle().compareTo(otherSong.getTitle());
+
+        // Todo: Check if I should compare other stuff too.
+
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Mp3Song)) return false;
+
+        Mp3Song mp3Song = (Mp3Song) o;
+
+        return this.getTitle().equals(mp3Song.getTitle())
+                && this.getPath().equals(mp3Song.getPath());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = this.getTitle() != null ? this.getTitle().hashCode() : 0;
+        result = 31 * result + (this.getPath() != null ? this.getPath().hashCode() : 0);
+        return result;
     }
 }

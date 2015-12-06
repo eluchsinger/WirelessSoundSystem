@@ -1,6 +1,7 @@
 package ch.wirelesssoundsystem.server.viewmodels;
 
 import ch.wirelesssoundsystem.server.controllers.io.SongsHandler;
+import ch.wirelesssoundsystem.server.controllers.media.AudioPlayer;
 import ch.wirelesssoundsystem.server.models.Client;
 import ch.wirelesssoundsystem.server.models.songs.Song;
 import javafx.beans.property.SimpleStringProperty;
@@ -125,26 +126,28 @@ public class MainWindowViewModel {
 
     @FXML
     public void onButtonPlayPauseClicked() {
-        if (this.mediaPlayer != null){
-            switch(this.mediaPlayer.getStatus()){
-                case PLAYING:
-                    this.mediaPlayer.pause();
-                    this.buttonPlayPause.setText(">");
-                    break;
-                case PAUSED:
-                    mediaPlayer.play();
-                    this.buttonPlayPause.setText("||");
-                    break;
-                default:
-                    startPlaying(this.getSelectedSong());
-                    this.buttonPlayPause.setText("||");
-                    break;
-            }
-        }
-        else{
-            startPlaying(this.getSelectedSong());
-            this.buttonPlayPause.setText("||");
-        }
+        ch.wirelesssoundsystem.server.controllers.media.MediaPlayer mediaPlayer = new AudioPlayer(this.songObservableList);
+        mediaPlayer.play();
+//        if (this.mediaPlayer != null){
+//            switch(this.mediaPlayer.getStatus()){
+//                case PLAYING:
+//                    this.mediaPlayer.pause();
+//                    this.buttonPlayPause.setText(">");
+//                    break;
+//                case PAUSED:
+//                    mediaPlayer.play();
+//                    this.buttonPlayPause.setText("||");
+//                    break;
+//                default:
+//                    startPlaying(this.getSelectedSong());
+//                    this.buttonPlayPause.setText("||");
+//                    break;
+//            }
+//        }
+//        else{
+//            startPlaying(this.getSelectedSong());
+//            this.buttonPlayPause.setText("||");
+//        }
     }
 
     private void startPlaying(Song song){
