@@ -1,5 +1,6 @@
 package ch.wirelesssoundsystem.server.controllers.media;
 
+import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -12,7 +13,7 @@ public interface MediaPlayer {
     void pause();
     void stop();
     boolean isPlaying();
-    SimpleBooleanProperty getIsPlayingProperty();
+    ReadOnlyBooleanProperty isPlayingProperty();
 
     /**
      * Toggles playing.
@@ -30,9 +31,9 @@ public interface MediaPlayer {
     void previousTrack();
 
     void getCurrentTrack();
-    SimpleObjectProperty<?> getCurrentTrackProperty();
+    SimpleObjectProperty<?> currentTrackProperty();
 
     void getVolume();
     void setVolume();
-    SimpleDoubleProperty getVolumeProperty();
+    SimpleDoubleProperty volumeProperty();
 }

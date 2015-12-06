@@ -1,18 +1,20 @@
 package ch.wirelesssoundsystem.server.viewmodels;
 
 import ch.wirelesssoundsystem.server.controllers.io.SongsHandler;
-import ch.wirelesssoundsystem.server.controllers.media.AudioPlayer;
+import ch.wirelesssoundsystem.server.controllers.media.MediaPlayer;
+import ch.wirelesssoundsystem.server.controllers.media.music.AudioPlayer;
 import ch.wirelesssoundsystem.server.models.Client;
 import ch.wirelesssoundsystem.server.models.songs.Song;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
 import javafx.stage.DirectoryChooser;
 
 import java.io.File;
@@ -79,6 +81,7 @@ public class MainWindowViewModel {
         this.listViewClients.setItems(this.clientObservableList);
 
         this.addDemoData();
+        this.mediaPlayer = new AudioPlayer(this.songObservableList);
 
     }
 
@@ -126,8 +129,7 @@ public class MainWindowViewModel {
 
     @FXML
     public void onButtonPlayPauseClicked() {
-        ch.wirelesssoundsystem.server.controllers.media.MediaPlayer mediaPlayer = new AudioPlayer(this.songObservableList);
-        mediaPlayer.play();
+        this.mediaPlayer.play();
 //        if (this.mediaPlayer != null){
 //            switch(this.mediaPlayer.getStatus()){
 //                case PLAYING:
@@ -150,18 +152,18 @@ public class MainWindowViewModel {
 //        }
     }
 
-    private void startPlaying(Song song){
-        // Get selected file
-        System.out.println("Current Selected Song: " + song.getTitle());
-
-        // Have to create a temporary file to convert the path to a URI.
-        File tempFile = new File(song.getPath());
-
-        Media media = new Media(tempFile.toURI().toString());
-
-        this.mediaPlayer = new MediaPlayer(media);
-        mediaPlayer.play();
-    }
+//    private void startPlaying(Song song){
+//        // Get selected file
+//        System.out.println("Current Selected Song: " + song.getTitle());
+//
+//        // Have to create a temporary file to convert the path to a URI.
+//        File tempFile = new File(song.getPath());
+//
+//        Media media = new Media(tempFile.toURI().toString());
+//
+//        this.mediaPlayer = new MediaPlayer(media);
+//        mediaPlayer.play();
+//    }
 
     private void addDemoData(){
         //DEMO DATA
