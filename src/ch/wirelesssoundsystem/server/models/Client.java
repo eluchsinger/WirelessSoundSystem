@@ -3,7 +3,7 @@ package ch.wirelesssoundsystem.server.models;
 import javafx.beans.property.SimpleStringProperty;
 
 /**
- * Created by eluch on 30.11.2015.
+ * Created by Esteban Luchsinger on 30.11.2015.
  */
 public class Client {
     private SimpleStringProperty name;

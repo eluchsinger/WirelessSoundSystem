@@ -13,3 +13,4 @@ The server is written in Java using the JavaFX Framework.
 - Optional: Create a "Right Now" Info-View on the right side of the MainWindow.
 - Develop "Discovery" Protocol.
 - Implement Streaming protocol with NETTY.
+- Use L4J for logging.
