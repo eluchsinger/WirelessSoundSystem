@@ -2,11 +2,39 @@ package ch.wirelesssoundsystem.server.controllers.networking;
 
 import java.net.*;
 import java.util.Enumeration;
+import java.util.logging.Logger;
 
 /**
  * Created by Esteban Luchsinger on 03.12.2015.
  */
 public class Utility {
+    private static InetAddress broadcastAddress;
+
+    static {
+        System.setProperty("java.net.preferIPv4Stack" , "true");
+
+        try {
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+
+            while(interfaces != null && interfaces.hasMoreElements()){
+                NetworkInterface currentInterface = interfaces.nextElement();
+
+                if(!currentInterface.isLoopback()){
+                    for(InterfaceAddress address : currentInterface.getInterfaceAddresses()){
+                        InetAddress broadcast = address.getBroadcast();
+                        if(broadcast != null){
+                            broadcastAddress = broadcast;
+                            break;
+                        }
+                    }
+                }
+            }
+        } catch (SocketException e) {
+            // log the damn exception!
+            e.printStackTrace();
+        }
+    }
+
 
     public static InetAddress getLocalAddress4(){
         InetAddress localAddress = null;
@@ -35,40 +63,14 @@ public class Utility {
 
     /**
      * Gets the BroadcastAddress for IPv4.
+     * This address is cached and only calculated on static class
+     * initialization.
+     *
+     * Threadsafe.
      * @return
      * @throws SocketException
      */
     public static InetAddress getBroadcastAddress4() {
-
-        // Todo: Check other possibility
-        // <a href=http://enigma2eureka.blogspot.ch/2009/08/finding-your-ip-v4-broadcast-address.html>
-        System.setProperty("java.net.preferIPv4Stack" , "true");
-
-        // Init
-        InetAddress broadcastAddress = null;
-
-
-        try {
-            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-
-            while(interfaces != null && interfaces.hasMoreElements()){
-                NetworkInterface currentInterface = interfaces.nextElement();
-
-                if(!currentInterface.isLoopback()){
-                    for(InterfaceAddress address : currentInterface.getInterfaceAddresses()){
-                        InetAddress broadcast = address.getBroadcast();
-                        if(broadcast != null){
-                            broadcastAddress = broadcast;
-                            break;
-                        }
-                    }
-                }
-            }
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
-
         return broadcastAddress;
-
     }
 }

@@ -1,5 +1,9 @@
 package ch.wirelesssoundsystem.server.controllers.networking.discovery;
 
+import ch.wirelesssoundsystem.server.controllers.networking.Utility;
+
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -10,6 +14,10 @@ import java.util.concurrent.TimeUnit;
  * Singleton handler for the DiscoveryService.
  */
 public class DiscoveryService {
+    private static final int DISCOVERY_PORT = 6583;
+    private static final String DISCOVERY_MESSAGE = "WSSServer";
+    private static DatagramSocket discoverySocket;
+
     private static DiscoveryService ourInstance = new DiscoveryService();
     private InetAddress localAddress;
 
@@ -29,9 +37,8 @@ public class DiscoveryService {
     private DiscoveryService() {
     }
 
-    public void start()
-    {
-        if(this.discoveryScheduledService == null || this.discoveryScheduledService.isShutdown() || this.discoveryScheduledService.isTerminated()) {
+    public void start() {
+        if (this.discoveryScheduledService == null || this.discoveryScheduledService.isShutdown() || this.discoveryScheduledService.isTerminated()) {
             this.discoveryScheduledService = Executors.newScheduledThreadPool(1);
 
             this.discoveryScheduledService.scheduleAtFixedRate(() -> {
@@ -40,7 +47,7 @@ public class DiscoveryService {
         }
     }
 
-    public void stop(){
+    public void stop() {
         this.discoveryScheduledService.shutdown();
 
         this.discoveryScheduledService = null;
@@ -50,24 +57,45 @@ public class DiscoveryService {
      * This is the discover method.
      * This method contains the logic of the discovery protocol.
      */
-    private void discover(){
-        System.out.println("BEEP");
+    private void discover() {
+        try {
+
+            // Initialize the Socket.
+            if (DiscoveryService.discoverySocket == null) {
+                DiscoveryService.discoverySocket = new DatagramSocket(DiscoveryService.DISCOVERY_PORT);
+            }
+
+            // Get the bytes of the data to send.
+            byte[] sendData = DiscoveryService.DISCOVERY_MESSAGE.getBytes();
+
+            // Create datagram packet for UDP.
+            DatagramPacket datagram = new DatagramPacket(
+                    sendData,
+                    sendData.length,
+                    InetAddress.getByName(Utility.getBroadcastAddress4().getHostAddress()),
+                    DiscoveryService.DISCOVERY_PORT
+            );
+
+            DiscoveryService.discoverySocket.send(datagram);
+            System.out.println("BEEP (Broadcast: " + Utility.getBroadcastAddress4().getHostAddress() + ")");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void found(InetAddress inetAddress) {
 
     }
 
-    private void found(InetAddress inetAddress){
-
-    }
-
-    public String getDiscoveryText(){
+    public String getDiscoveryText() {
         return "WSSServer:" + this.localAddress.getHostAddress();
     }
 
-    public InetAddress getLocalAddress(){
+    public InetAddress getLocalAddress() {
         return this.localAddress;
     }
 
-    public void setLocalAddress(InetAddress localAddress){
+    public void setLocalAddress(InetAddress localAddress) {
         this.localAddress = localAddress;
     }
 }
