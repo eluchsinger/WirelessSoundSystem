@@ -2,8 +2,6 @@ package ch.wirelesssoundsystem.server.models.playlists;
 
 import javafx.collections.ObservableList;
 
-import java.util.Collection;
-
 /**
  * Created by Esteban Luchsinger on 03.12.2015.
  */

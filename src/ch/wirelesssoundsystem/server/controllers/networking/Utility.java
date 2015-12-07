@@ -1,8 +1,10 @@
 package ch.wirelesssoundsystem.server.controllers.networking;
 
-import java.net.*;
+import java.net.InetAddress;
+import java.net.InterfaceAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.util.Enumeration;
-import java.util.logging.Logger;
 
 /**
  * Created by Esteban Luchsinger on 03.12.2015.

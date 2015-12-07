@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 /**
  * Created by Esteban Luchsinger on 04.12.2015.
  * Singleton handler for the DiscoveryService.
+ * This singleton handles the whole DiscoveryProcess of the Clients of the WSS.
  */
 public class DiscoveryService {
     /**
@@ -32,9 +33,10 @@ public class DiscoveryService {
     private static final int READING_TIMEOUT = 2000;
 
     /**
-     * This is the reading buffer. In best case it would be the size of the receiving message.
+     * Waiting delay for the task to run again in seconds.
      */
-    private static final int READING_BUFFER = 15;
+    private static final long DISCOVERY_TICK = 5;
+
 
     /**
      * This is the message sent in the discovery protocol.
@@ -46,24 +48,49 @@ public class DiscoveryService {
      */
     private static final String SERVER_FOUND_MESSAGE = "WSSClient";
 
+    /**
+     * This is the reading buffer. In best case it would be the size of the receiving message.
+     */
+    private static final int READING_BUFFER_SIZE = SERVER_FOUND_MESSAGE.length() + 1;
+
+
+    /**
+     * The socket from which the discovery datagrams are sent.
+     */
     private static DatagramSocket discoverySocket;
+
+    /**
+     * The socket that is reading the incoming datagrams.
+     */
     private static DatagramSocket readingSocket;
 
+    /**
+     * Instance of the singleton.
+     */
     private static DiscoveryService ourInstance = new DiscoveryService();
-    private InetAddress localAddress;
 
+    /**
+     * This boolean controls the finishing of the
+     * responseThread. If the thread is started, it is set to true.
+     * If the isListening is set to false, the thread will stop (probable delay: DiscoveryService.READING_TIMEOUT)
+     */
     private volatile boolean isListening = false;
 
     /**
-     * Deprecated, Use ScheduledExecutorService instead.
-     * http://stackoverflow.com/questions/22378422/how-to-use-timertask-with-lambdas
+     * This is the ScheduledService of the Discovery Logic.
+     * It works like a Timer and is multithreaded.
      */
     private ScheduledExecutorService discoveryScheduledService;
+
+    /**
+     * This thread listens for responses on the READING_PORT.
+     */
     private Thread responseThread;
 
-    // Waiting delay for the task to run again in seconds.
-    private final long delay = 5;
 
+    /**
+     * Gets the instance of the DiscoveryService Singleton.
+     */
     public static DiscoveryService getInstance() {
         return ourInstance;
     }
@@ -71,6 +98,9 @@ public class DiscoveryService {
     private DiscoveryService() {
     }
 
+    /**
+     * Starts the DiscoveryService and all its threads.
+     */
     public void start() {
 
         // Start discovery Service
@@ -78,7 +108,9 @@ public class DiscoveryService {
             this.discoveryScheduledService = Executors.newScheduledThreadPool(1);
 
             this.discoveryScheduledService.scheduleAtFixedRate(this::discover
-                    , 0, this.delay, TimeUnit.SECONDS);
+                    , 0
+                    , DiscoveryService.DISCOVERY_TICK
+                    , TimeUnit.SECONDS);
         }
 
         // Start response service.
@@ -89,18 +121,22 @@ public class DiscoveryService {
         }
     }
 
+    /**
+     * Stops the DiscoveryService and all its threads.
+     */
     public void stop() {
+
+        // Discovery Schedule (Timer)
         if (this.discoveryScheduledService != null) {
             this.discoveryScheduledService.shutdown();
             this.discoveryScheduledService = null;
             System.out.println("Stopped sending...");
         }
 
-        // Todo: Implement Response thread.
+        // Response thread.
         if (this.responseThread != null) {
 
             if (this.responseThread.isAlive()) {
-                // Todo: Implement boolean variable that stops the thread.
                 this.isListening = false;
                 System.out.println("Stopping listening...");
             }
@@ -119,7 +155,7 @@ public class DiscoveryService {
             if (DiscoveryService.discoverySocket == null) {
                 DiscoveryService.discoverySocket = new DatagramSocket();
                 DiscoveryService.discoverySocket.setBroadcast(true);
-                // Set the Traffic Class to LOW_COST
+                // Set the Traffic Class to LOW_COST (0x02)
                 DiscoveryService.discoverySocket.setTrafficClass(0x02);
             }
 
@@ -157,17 +193,18 @@ public class DiscoveryService {
 
             // Listening Loop
             while (this.isListening) {
-                byte[] receivingBuffer = new byte[DiscoveryService.READING_BUFFER];
+                byte[] receivingBuffer = new byte[DiscoveryService.READING_BUFFER_SIZE];
                 DatagramPacket receivedPacket = new DatagramPacket(receivingBuffer, receivingBuffer.length);
 
                 try {
+                    // If the message is bigger than the READING_BUFFER_SIZE, it gets truncated (the last part is lost!)
                     DiscoveryService.readingSocket.receive(receivedPacket);
                     String message = new String(receivedPacket.getData());
                     message = message.trim(); // Trim stuff, because the buffer was too big.
 
                     // Only check this address if it does not equal the DISCOVERY_MESSAGE.
                     // If it is the DISCOVERY_MESSAGE, it is probably the broadcast echo.
-                    if(!message.equals(DiscoveryService.DISCOVERY_MESSAGE)) {
+                    if (!message.equals(DiscoveryService.DISCOVERY_MESSAGE)) {
                         // Handle the message, if it is a SERVER_FOUND_MESSAGE.
                         if (message.equals(DiscoveryService.SERVER_FOUND_MESSAGE)) {
                             this.found(receivedPacket.getAddress());
@@ -175,7 +212,7 @@ public class DiscoveryService {
                         // Handle unknown messages
                         else {
                             // Log Unknown message.
-                            String log = "Received Datagram (IP=" + receivedPacket.getAddress().getHostAddress()
+                            String log = "Received Datagram (IP = " + receivedPacket.getAddress().getHostAddress()
                                     + ").\nContent: " + message;
 
                             Logger.getLogger(DiscoveryService.class.getName()).log(Level.INFO, log);
@@ -183,14 +220,11 @@ public class DiscoveryService {
                     }
                 }
                 // This catch is called if the socket was timed out. It's normal.
-                catch(SocketTimeoutException e){
+                catch (SocketTimeoutException e) {
                     // Uncomment this if you want to log the timeout exception.
 //                    Logger.getLogger(DiscoveryService.class.getName()).log(Level.INFO, "[WARNING]: Reading Socket timed out. Reinitializing reading...");
                 }
             }
-        } catch (SocketException e) {
-            Logger.getLogger(DiscoveryService.class.getName()).log(Level.SEVERE, null, e);
-            e.printStackTrace();
         } catch (IOException e) {
             Logger.getLogger(DiscoveryService.class.getName()).log(Level.SEVERE, null, e);
             e.printStackTrace();
@@ -199,19 +233,11 @@ public class DiscoveryService {
         System.out.println("Listening stopped!");
     }
 
+    /**
+     * Called, when a client was found.
+     * @param inetAddress The InetAddress of the client found.
+     */
     private synchronized void found(InetAddress inetAddress) {
         System.out.println("Found new Client. IP = " + inetAddress.getHostAddress());
-    }
-
-    public String getDiscoveryText() {
-        return "WSSServer:" + this.localAddress.getHostAddress();
-    }
-
-    public InetAddress getLocalAddress() {
-        return this.localAddress;
-    }
-
-    public void setLocalAddress(InetAddress localAddress) {
-        this.localAddress = localAddress;
     }
 }

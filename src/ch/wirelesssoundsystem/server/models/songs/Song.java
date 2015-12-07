@@ -1,10 +1,5 @@
 package ch.wirelesssoundsystem.server.models.songs;
 
-import com.mpatric.mp3agic.InvalidDataException;
-import com.mpatric.mp3agic.UnsupportedTagException;
-
-import java.io.IOException;
-
 /**
  * Created by eluch on 30.11.2015.
  */

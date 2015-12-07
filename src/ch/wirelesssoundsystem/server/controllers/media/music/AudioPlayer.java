@@ -1,18 +1,14 @@
 package ch.wirelesssoundsystem.server.controllers.media.music;
 
+import ch.wirelesssoundsystem.server.models.songs.Song;
 import javafx.beans.property.*;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import ch.wirelesssoundsystem.server.models.songs.Song;
 import javafx.util.Duration;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 /**

@@ -3,9 +3,7 @@ package ch.wirelesssoundsystem.server.models.songs;
 
 import com.mpatric.mp3agic.*;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 
 /**
  * Created by eluch on 30.11.2015.

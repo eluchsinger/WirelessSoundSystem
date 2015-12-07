@@ -7,14 +7,11 @@ import ch.wirelesssoundsystem.server.models.Client;
 import ch.wirelesssoundsystem.server.models.songs.Song;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.media.Media;
 import javafx.stage.DirectoryChooser;
 
 import java.io.File;
