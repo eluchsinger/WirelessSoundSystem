@@ -8,6 +8,8 @@ import java.net.InetAddress;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Esteban Luchsinger on 04.12.2015.
@@ -21,11 +23,14 @@ public class DiscoveryService {
     private static DiscoveryService ourInstance = new DiscoveryService();
     private InetAddress localAddress;
 
+    private volatile boolean isListening = false;
+
     /**
      * Deprecated, Use ScheduledExecutorService instead.
      * http://stackoverflow.com/questions/22378422/how-to-use-timertask-with-lambdas
      */
     private ScheduledExecutorService discoveryScheduledService;
+    private Thread responseThread;
 
     // Waiting delay for the task to run again in seconds.
     private final long delay = 5;
@@ -38,19 +43,37 @@ public class DiscoveryService {
     }
 
     public void start() {
+
+        // Start discovery Service
         if (this.discoveryScheduledService == null || this.discoveryScheduledService.isShutdown() || this.discoveryScheduledService.isTerminated()) {
             this.discoveryScheduledService = Executors.newScheduledThreadPool(1);
 
-            this.discoveryScheduledService.scheduleAtFixedRate(() -> {
-                this.discover();
-            }, 0, this.delay, TimeUnit.SECONDS);
+            this.discoveryScheduledService.scheduleAtFixedRate(this::discover
+            , 0, this.delay, TimeUnit.SECONDS);
+        }
+
+        // Start response service.
+        if(this.responseThread == null || !this.responseThread.isAlive()) {
+            this.responseThread = new Thread(this::listenToResponse);
+            this.responseThread.start();
         }
     }
 
     public void stop() {
-        this.discoveryScheduledService.shutdown();
+        if(this.discoveryScheduledService != null){
+            this.discoveryScheduledService.shutdown();
+            this.discoveryScheduledService = null;
+        }
 
-        this.discoveryScheduledService = null;
+        // Todo: Implement Response thread.
+        if(this.responseThread != null){
+
+            if(this.responseThread.isAlive()){
+                // Todo: Implement boolean variable that stops the thread.
+            }
+
+            this.responseThread = null;
+        }
     }
 
     /**
@@ -59,7 +82,6 @@ public class DiscoveryService {
      */
     private void discover() {
         try {
-
             // Initialize the Socket.
             if (DiscoveryService.discoverySocket == null) {
                 DiscoveryService.discoverySocket = new DatagramSocket(DiscoveryService.DISCOVERY_PORT);
@@ -77,10 +99,26 @@ public class DiscoveryService {
             );
 
             DiscoveryService.discoverySocket.send(datagram);
-            System.out.println("BEEP (Broadcast: " + Utility.getBroadcastAddress4().getHostAddress() + ")");
+            System.out.println("BEEP (Broadcast an: " + Utility.getBroadcastAddress4().getHostAddress() + ")");
         } catch (Exception e) {
+            Logger.getLogger(DiscoveryService.class.getName()).log(Level.SEVERE, null, e);
             e.printStackTrace();
         }
+    }
+
+    /**
+     * This method runs an infinite loop and listens to a response
+     * on the specified port.
+     */
+    private void listenToResponse(){
+        System.out.println("Listening... (psst!)");
+
+        while(this.isListening){
+
+        }
+
+        System.out.println("Stopping listening!");
+
     }
 
     private void found(InetAddress inetAddress) {
