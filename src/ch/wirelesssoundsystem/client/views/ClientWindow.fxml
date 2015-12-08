@@ -5,5 +5,5 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane minHeight="400.0" minWidth="600.0" xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ch.wirelesssoundsystem.server.viewmodels.MainWindowViewModel">
+<BorderPane minHeight="400.0" minWidth="600.0" xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ch.wirelesssoundsystem.client.viewmodels.ClientWindowViewModel">
 </BorderPane>

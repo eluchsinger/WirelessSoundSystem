@@ -24,7 +24,7 @@ public class DiscoveryService {
     /**
      * This s the port used for the listening. Clients answer to this port.
      */
-    private static final int READING_PORT = DiscoveryService.DISCOVERY_PORT;
+    private static final int READING_PORT = 6584;
 
     /**
      * This is the reading timeout. After this amount of time (in milliseconds)
@@ -33,10 +33,9 @@ public class DiscoveryService {
     private static final int READING_TIMEOUT = 2000;
 
     /**
-     * Waiting delay for the task to run again in seconds.
+     * Waiting delay for the discovery task to run again in seconds.
      */
     private static final long DISCOVERY_TICK = 5;
-
 
     /**
      * This is the message sent in the discovery protocol.
@@ -148,6 +147,7 @@ public class DiscoveryService {
     /**
      * This is the discover method.
      * This method contains the logic of the discovery protocol.
+     * Sending packets
      */
     private void discover() {
         try {
@@ -162,19 +162,26 @@ public class DiscoveryService {
             // Get the bytes of the data to send.
             byte[] sendData = DiscoveryService.DISCOVERY_MESSAGE.getBytes();
 
-            // Create datagram packet for UDP.
-            DatagramPacket datagram = new DatagramPacket(
-                    sendData,
-                    sendData.length,
-                    InetAddress.getByName(Utility.getBroadcastAddress4().getHostAddress()),
-                    DiscoveryService.DISCOVERY_PORT
-            );
+            try {
+                // Create datagram packet for UDP.
+                DatagramPacket datagram = new DatagramPacket(
+                        sendData,
+                        sendData.length,
+                        InetAddress.getByName(Utility.getBroadcastAddress4().getHostAddress()),
+                        DiscoveryService.DISCOVERY_PORT
+                );
 
-            DiscoveryService.discoverySocket.send(datagram);
-            System.out.println("BEEP (Broadcast an: " + Utility.getBroadcastAddress4().getHostAddress() + ")");
+                DiscoveryService.discoverySocket.send(datagram);
+                System.out.println("BEEP (Broadcast an: " + Utility.getBroadcastAddress4().getHostAddress() + ":"
+                        + datagram.getPort() + ")");
+
+            }
+            catch(NullPointerException nullPointerException){
+                Logger.getLogger(DiscoveryService.class.getName()).log(Level.INFO,
+                        "The Server is not connected to a network.");
+            }
         } catch (Exception e) {
             Logger.getLogger(DiscoveryService.class.getName()).log(Level.SEVERE, null, e);
-            e.printStackTrace();
         }
     }
 
@@ -227,10 +234,11 @@ public class DiscoveryService {
             }
         } catch (IOException e) {
             Logger.getLogger(DiscoveryService.class.getName()).log(Level.SEVERE, null, e);
-            e.printStackTrace();
         }
-
-        System.out.println("Listening stopped!");
+        finally {
+            this.isListening = false;
+            System.out.println("Listening stopped!");
+        }
     }
 
     /**
