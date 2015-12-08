@@ -5,9 +5,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ch.wirelesssoundsystem.server.viewmodels.MainWindowViewModel">
+<BorderPane minHeight="600.0" minWidth="800.0" xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ch.wirelesssoundsystem.server.viewmodels.MainWindowViewModel">
    <top>
-      <BorderPane prefHeight="111.0" prefWidth="800.0" BorderPane.alignment="CENTER">
+      <BorderPane prefHeight="115.0" prefWidth="800.0" BorderPane.alignment="CENTER">
          <center>
             <TextField fx:id="textFieldFolder" disable="true" promptText="Pfad zum Ordner" BorderPane.alignment="CENTER" />
          </center>
@@ -28,6 +28,9 @@
                </center>
             </BorderPane>
          </top>
+         <BorderPane.margin>
+            <Insets bottom="5.0" />
+         </BorderPane.margin>
       </BorderPane>
    </top>
    <center>
@@ -45,7 +48,7 @@
       </TableView>
    </center>
    <left>
-      <GridPane prefHeight="409.0" prefWidth="181.0" style="-fx-background-color: white;" BorderPane.alignment="CENTER">
+      <GridPane minHeight="0.0" prefWidth="180.0" style="-fx-background-color: white;" BorderPane.alignment="CENTER">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
         </columnConstraints>
@@ -54,7 +57,7 @@
           <RowConstraints vgrow="ALWAYS" />
         </rowConstraints>
          <children>
-            <HBox alignment="CENTER" prefHeight="62.0" prefWidth="181.0" style="-fx-background-color: -fx-box-border, -fx-inner-border, -fx-body-color; -fx-background-insets: 0, 1, 2; -fx-background-radius: 5 5 0 0, 4 4 0 0, 3 3 0 0; -fx-padding: 0.166667em 0.833333em 0.25em 0.833333em;">
+            <HBox alignment="CENTER" prefHeight="62.0" style="-fx-background-color: -fx-box-border, -fx-inner-border, -fx-body-color; -fx-background-insets: 0, 1, 2; -fx-background-radius: 5 5 0 0, 4 4 0 0, 3 3 0 0; -fx-padding: 0.166667em 0.833333em 0.25em 0.833333em;">
                <children>
                   <Label text="LAUTSPRECHER">
                      <font>
@@ -74,48 +77,45 @@
       </GridPane>
    </left>
    <bottom>
-      <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="800.0" BorderPane.alignment="CENTER">
-         <left>
-            <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" BorderPane.alignment="CENTER">
-               <children>
-                  <Button fx:id="buttonBack" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="50.0" styleClass="player-button" stylesheets="@styles/PlayerControlStyles.css" text="&lt;&lt;">
-                     <HBox.margin>
-                        <Insets left="5.0" right="3.0" />
-                     </HBox.margin>
-                  </Button>
-                  <ToggleButton fx:id="buttonPlayPause" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onButtonPlayPauseClicked" styleClass="player-button" stylesheets="@styles/PlayerControlStyles.css" text="&gt;">
-                     <HBox.margin>
-                        <Insets left="3.0" right="3.0" />
-                     </HBox.margin>
-                  </ToggleButton>
-                  <Button fx:id="buttonNext" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="50.0" styleClass="player-button" stylesheets="@styles/PlayerControlStyles.css" text="&gt;&gt;">
-                     <HBox.margin>
-                        <Insets left="3.0" right="3.0" />
-                     </HBox.margin>
-                  </Button>
-               </children>
-            </HBox>
-         </left>
-         <center>
-            <Slider prefWidth="400.0" BorderPane.alignment="CENTER">
-               <BorderPane.margin>
-                  <Insets left="10.0" right="10.0" />
-               </BorderPane.margin>
-            </Slider>
-         </center>
-         <right>
-            <Label text="00:00" BorderPane.alignment="CENTER">
-               <font>
-                  <Font size="19.0" />
-               </font>
-               <BorderPane.margin>
-                  <Insets right="5.0" />
-               </BorderPane.margin>
-            </Label>
-         </right>
-         <BorderPane.margin>
-            <Insets />
-         </BorderPane.margin>
-      </BorderPane>
+         <BorderPane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="800.0" prefHeight="50.0" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1">
+            <left>
+               <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" BorderPane.alignment="CENTER">
+                  <children>
+                     <Button fx:id="buttonBack" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="50.0" styleClass="player-button" stylesheets="@styles/PlayerControlStyles.css" text="&lt;&lt;">
+                        <HBox.margin>
+                           <Insets left="5.0" right="3.0" />
+                        </HBox.margin>
+                     </Button>
+                     <ToggleButton fx:id="buttonPlayPause" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onButtonPlayPauseClicked" styleClass="player-button" stylesheets="@styles/PlayerControlStyles.css" text="&gt;">
+                        <HBox.margin>
+                           <Insets left="3.0" right="3.0" />
+                        </HBox.margin>
+                     </ToggleButton>
+                     <Button fx:id="buttonNext" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="50.0" styleClass="player-button" stylesheets="@styles/PlayerControlStyles.css" text="&gt;&gt;">
+                        <HBox.margin>
+                           <Insets left="3.0" right="3.0" />
+                        </HBox.margin>
+                     </Button>
+                  </children>
+               </HBox>
+            </left>
+            <center>
+               <Slider BorderPane.alignment="CENTER">
+                  <BorderPane.margin>
+                     <Insets left="10.0" right="10.0" />
+                  </BorderPane.margin>
+               </Slider>
+            </center>
+            <right>
+               <Label text="00:00" BorderPane.alignment="CENTER">
+                  <font>
+                     <Font size="19.0" />
+                  </font>
+                  <BorderPane.margin>
+                     <Insets right="5.0" />
+                  </BorderPane.margin>
+               </Label>
+            </right>
+         </BorderPane>
    </bottom>
 </BorderPane>
