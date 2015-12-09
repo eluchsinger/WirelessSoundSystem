@@ -1,6 +1,7 @@
 package ch.wirelesssoundsystem.server.controllers.networking.discovery;
 
 import ch.wirelesssoundsystem.server.controllers.networking.Utility;
+import ch.wirelesssoundsystem.shared.models.clients.Client;
 
 import java.io.IOException;
 import java.net.*;
@@ -15,7 +16,7 @@ import java.util.logging.Logger;
  * Singleton handler for the DiscoveryService.
  * This singleton handles the whole DiscoveryProcess of the Clients of the WSS.
  */
-public class DiscoveryService {
+public class DiscoveryService implements ClientFoundListener {
     /**
      * This is the port used for discovery.
      */
@@ -43,7 +44,7 @@ public class DiscoveryService {
     private static final String DISCOVERY_MESSAGE = "WSSServer";
 
     /**
-     * This is the message that should be received if a client found the server.
+     * This is the message that should be received if a client foundClient the server.
      */
     private static final String SERVER_FOUND_MESSAGE = "WSSClient";
 
@@ -214,7 +215,7 @@ public class DiscoveryService {
                     if (!message.equals(DiscoveryService.DISCOVERY_MESSAGE)) {
                         // Handle the message, if it is a SERVER_FOUND_MESSAGE.
                         if (message.equals(DiscoveryService.SERVER_FOUND_MESSAGE)) {
-                            this.found(receivedPacket.getAddress());
+                            this.foundClient(receivedPacket.getAddress());
                         }
                         // Handle unknown messages
                         else {
@@ -243,9 +244,16 @@ public class DiscoveryService {
 
     /**
      * Called, when a client was found.
-     * @param inetAddress The InetAddress of the client found.
+     * @param inetAddress The InetAddress of the client foundClient.
      */
-    private synchronized void found(InetAddress inetAddress) {
+    private synchronized void foundClient(InetAddress inetAddress) {
         System.out.println("Found new Client. IP = " + inetAddress.getHostAddress());
+
+        this.found(new Client(inetAddress, "FoundClient"));
+    }
+
+    @Override
+    public void found(Client client) {
+
     }
 }

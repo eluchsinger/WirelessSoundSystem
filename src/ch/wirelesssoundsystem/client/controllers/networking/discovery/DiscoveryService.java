@@ -1,6 +1,6 @@
 package ch.wirelesssoundsystem.client.controllers.networking.discovery;
 
-import ch.wirelesssoundsystem.client.models.Server;
+import ch.wirelesssoundsystem.shared.models.clients.Server;
 
 import java.io.IOException;
 import java.net.*;

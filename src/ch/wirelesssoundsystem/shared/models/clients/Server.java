@@ -1,4 +1,4 @@
-package ch.wirelesssoundsystem.client.models;
+package ch.wirelesssoundsystem.shared.models.clients;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
