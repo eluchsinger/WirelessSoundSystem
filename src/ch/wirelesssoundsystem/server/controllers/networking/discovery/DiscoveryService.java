@@ -207,12 +207,16 @@ public class DiscoveryService {
                 keepAliveTask.run();
                 List<Client> expiredClients = keepAliveTask.get();
 
+                /*
                 for(Client c : expiredClients){
                     System.out.println("Expired: " + c.getName());
                 }
+                */
 
-                if(expiredClients.size() > 0)
+                if(expiredClients.size() > 0) {
+                    System.out.println(expiredClients.size() + " expired clients...");
                     this.expiredClient(expiredClients);
+                }
 
             }
             catch(NullPointerException nullPointerException){

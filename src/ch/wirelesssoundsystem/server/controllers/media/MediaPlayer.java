@@ -38,8 +38,8 @@ public interface MediaPlayer<T> {
     T getCurrentTrack();
     SimpleObjectProperty<T> currentTrackProperty();
 
-    StringProperty currentMediaTimeString();
     ObjectProperty<Duration> currentMediaTime();
+    ObjectProperty<Duration> totalMediaDuration();
 
     double getVolume();
     void setVolume(double value);

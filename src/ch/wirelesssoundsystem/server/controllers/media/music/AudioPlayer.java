@@ -29,7 +29,7 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
     private BooleanProperty isPlaying;
     private ObjectProperty<Duration> currentMediaTime;
     private StringProperty currentMediaTimeString;
-    private ReadOnlyObjectProperty<Duration> totalMediaDuration;
+    private ObjectProperty<Duration> totalMediaDuration;
     private DoubleProperty volume;
 
     private ObservableList<Song> playlist;
@@ -231,7 +231,7 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
         return this.totalMediaDuration.get();
     }
 
-    public ReadOnlyObjectProperty<Duration> totalMediaDurationProperty() {
+    public ObjectProperty<Duration> totalMediaDuration() {
         return this.totalMediaDuration;
     }
 
@@ -256,9 +256,7 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
 
         if(this.getMediaPlayer() != null) {
             this.currentMediaTime.bind(this.getMediaPlayer().currentTimeProperty());
-            DurationStringConverter converter = new DurationStringConverter();
-//            Bindings.bindBidirectional(this.currentMediaTimeString, this.currentMediaTime, converter);
-            this.totalMediaDuration = this.getMediaPlayer().totalDurationProperty();
+            this.totalMediaDuration.bind(this.getMediaPlayer().totalDurationProperty());
 
             // Volume property.
             this.getMediaPlayer().setVolume(this.getVolume());

@@ -8,6 +8,9 @@ import ch.wirelesssoundsystem.shared.models.clients.Client;
 import ch.wirelesssoundsystem.shared.models.clients.Clients;
 import ch.wirelesssoundsystem.shared.utils.DurationStringConverter;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.DoubleBinding;
+import javafx.beans.binding.ObjectBinding;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -57,6 +60,9 @@ public class MainWindowViewModel {
     private Slider sliderVolume;
 
     @FXML
+    private Slider songTrackerSlider;
+
+    @FXML
     private Label labelCurrentDuration;
 
     /* Constructor */
@@ -89,12 +95,12 @@ public class MainWindowViewModel {
         );
 
         // Implement DoubleClick for rows.
-        this.tableViewSongs.setRowFactory( tv -> {
+        this.tableViewSongs.setRowFactory(tv -> {
             TableRow<Song> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
-                if(event.getClickCount() >= 2 && (!row.isEmpty())){
+                if (event.getClickCount() >= 2 && (!row.isEmpty())) {
                     // Check if its a song.
-                    if(Song.class.isInstance(row.getItem()))
+                    if (Song.class.isInstance(row.getItem()))
                         this.mediaPlayer.play(row.getItem());
                 }
             });
@@ -110,6 +116,9 @@ public class MainWindowViewModel {
 
         // Bind CurrentDuration Label to CurrentDuration Property
         Bindings.bindBidirectional(this.labelCurrentDuration.textProperty(), this.mediaPlayer.currentMediaTime(), new DurationStringConverter());
+
+        this.bindSongTrackerSlider();
+
         this.addDemoData();
     }
 
@@ -143,7 +152,7 @@ public class MainWindowViewModel {
         directoryChooser.setTitle("Ordner auswählen");
         File file = directoryChooser.showDialog(this.buttonSearch.getScene().getWindow());
 
-        if(file != null) {
+        if (file != null) {
 
             // Sets the property for the textBox.
             this.setPathToFolder(file.getPath());
@@ -158,25 +167,48 @@ public class MainWindowViewModel {
     @FXML
     public void onButtonPlayPauseClicked() {
 
-        if(this.mediaPlayer.isPlaying()){
+        if (this.mediaPlayer.isPlaying()) {
             this.mediaPlayer.pause();
-        }
-        else if(this.getSelectedSong() != null) {
+        } else if (this.getSelectedSong() != null) {
             System.out.println("Trying to play: " + this.getSelectedSong().getTitle());
             this.mediaPlayer.play(this.getSelectedSong(), true);
         }
     }
 
-    public void onIsPlayingChanged(){
-        if(this.mediaPlayer.isPlaying()){
-            this.buttonPlayPause.setText("||");
-        }
-        else{
-            this.buttonPlayPause.setText(">");
+    /**
+     * This method gets called, when the isPlaying property of the mediaPlayer changes.
+     * It handles the play/pause button behavior.
+     */
+    public void onIsPlayingChanged() {
+        if (this.mediaPlayer.isPlaying()) {
+            this.buttonPlayPause.setId("pause-button");
+            this.buttonPlayPause.setSelected(true);
+        } else {
+            this.buttonPlayPause.setId("play-button");
+            this.buttonPlayPause.setSelected(false);
         }
     }
 
-    private void addDemoData(){
+    private void bindSongTrackerSlider() {
+        // Create a DoubleBinding which calculates the value of the duration-slider.
+        DoubleBinding durationPercentageBinding = Bindings.createDoubleBinding(() -> {
+            if (this.mediaPlayer.totalMediaDuration().get() != null && this.mediaPlayer.totalMediaDuration().get().toSeconds() > 0) {
+                return this.mediaPlayer.currentMediaTime().get().toSeconds() * 100 / this.mediaPlayer.totalMediaDuration().get().toSeconds();
+            } else {
+                return (double) 0;
+            }
+        },
+        this.mediaPlayer.currentMediaTime()
+        );
+
+        this.songTrackerSlider.valueProperty().bind(durationPercentageBinding);
+    }
+
+    private void unbindSongTrackerSlider() {
+
+    }
+
+    private void addDemoData() {
         //DEMO DATA
         this.clientObservableList.add(new Client("Wohnzimmer"));
         this.clientObservableList.add(new Client("Küche"));

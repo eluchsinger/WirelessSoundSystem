@@ -5,3 +5,19 @@
     -fx-max-width: 45px;
     -fx-max-height: 45px;
 }
+
+#play-button {
+    -fx-background-image: url("../icons/png/play.png");
+}
+
+#pause-button {
+    -fx-background-image: url("../icons/png/pause.png");
+}
+
+#skip-previous {
+    -fx-background-image: url("../icons/png/skip-previous.png");
+}
+
+#skip-next {
+    -fx-background-image: url("../icons/png/skip-next.png");
+}
