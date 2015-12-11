@@ -121,6 +121,8 @@ public class DiscoveryService {
 
                     // Handle the message, if it is a SERVER_FOUND_MESSAGE.
                     if (message.equals(DiscoveryService.DISCOVERY_MESSAGE)) {
+                        if(!this.isWorking)
+                            break;
                         this.foundServer(receivedPacket.getAddress(), DiscoveryService.SERVER_PORT);
                     }
                     // Handle unknown messages
