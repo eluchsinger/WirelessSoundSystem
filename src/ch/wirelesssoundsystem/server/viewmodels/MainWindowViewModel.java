@@ -3,9 +3,8 @@ package ch.wirelesssoundsystem.server.viewmodels;
 import ch.wirelesssoundsystem.server.controllers.io.SongsHandler;
 import ch.wirelesssoundsystem.server.controllers.media.MediaPlayer;
 import ch.wirelesssoundsystem.server.controllers.media.music.AudioPlayer;
-import ch.wirelesssoundsystem.server.controllers.networking.music.Mp3NetworkStream;
-import ch.wirelesssoundsystem.shared.models.clients.Client;
 import ch.wirelesssoundsystem.server.models.songs.Song;
+import ch.wirelesssoundsystem.shared.models.clients.Client;
 import ch.wirelesssoundsystem.shared.models.clients.Clients;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -64,6 +63,12 @@ public class MainWindowViewModel {
         this.textFieldFolder.textProperty().bindBidirectional(this.getPathToFolderProperty());
 
         this.songObservableList = FXCollections.observableArrayList();
+
+        // Init Media Player
+        this.mediaPlayer = new AudioPlayer(this.songObservableList);
+        this.mediaPlayer.isPlayingProperty().addListener((observable, oldValue, newValue) -> this.onIsPlayingChanged());
+
+        // Init Table
         this.tableViewSongs.setItems(this.songObservableList);
         this.tableViewSongs.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
@@ -75,17 +80,22 @@ public class MainWindowViewModel {
                 new PropertyValueFactory<Song, String>("artist")
         );
 
+        // Implement DoubleClick for rows.
+        this.tableViewSongs.setRowFactory( tv -> {
+            TableRow<Song> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if(event.getClickCount() >= 2 && (!row.isEmpty())){
+                    this.mediaPlayer.play(row.getItem());
+                }
+            });
+            return row;
+        });
+
         this.clientObservableList = Clients.getInstance().getClients();
         this.listViewClients.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         this.listViewClients.setItems(this.clientObservableList);
 
         this.addDemoData();
-        this.mediaPlayer = new AudioPlayer(this.songObservableList);
-
-//        this.mediaPlayer.isPlayingProperty().addListener((observable, oldValue, newValue) -> {
-//                System.out.println("New isPlayingPropertyValue (" + newValue + ")");
-//        });
-
     }
 
     /* Properties */
@@ -135,47 +145,21 @@ public class MainWindowViewModel {
 
         if(this.mediaPlayer.isPlaying()){
             this.mediaPlayer.pause();
-            this.buttonPlayPause.setText(">");
         }
         else if(this.getSelectedSong() != null) {
             System.out.println("Trying to play: " + this.getSelectedSong().getTitle());
-            this.mediaPlayer.play(this.getSelectedSong());
-            this.buttonPlayPause.setText("||");
+            this.mediaPlayer.play(this.getSelectedSong(), true);
         }
-//        if (this.mediaPlayer != null){
-//            switch(this.mediaPlayer.getStatus()){
-//                case PLAYING:
-//                    this.mediaPlayer.pause();
-//                    this.buttonPlayPause.setText(">");
-//                    break;
-//                case PAUSED:
-//                    mediaPlayer.play();
-//                    this.buttonPlayPause.setText("||");
-//                    break;
-//                default:
-//                    startPlaying(this.getSelectedSong());
-//                    this.buttonPlayPause.setText("||");
-//                    break;
-//            }
-//        }
-//        else{
-//            startPlaying(this.getSelectedSong());
-//            this.buttonPlayPause.setText("||");
-//        }
     }
 
-//    private void startPlaying(Song song){
-//        // Get selected file
-//        System.out.println("Current Selected Song: " + song.getTitle());
-//
-//        // Have to create a temporary file to convert the path to a URI.
-//        File tempFile = new File(song.getPath());
-//
-//        Media media = new Media(tempFile.toURI().toString());
-//
-//        this.mediaPlayer = new MediaPlayer(media);
-//        mediaPlayer.play();
-//    }
+    public void onIsPlayingChanged(){
+        if(this.mediaPlayer.isPlaying()){
+            this.buttonPlayPause.setText("||");
+        }
+        else{
+            this.buttonPlayPause.setText(">");
+        }
+    }
 
     private void addDemoData(){
         //DEMO DATA

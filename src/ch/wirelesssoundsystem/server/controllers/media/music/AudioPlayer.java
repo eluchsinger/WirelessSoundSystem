@@ -1,6 +1,7 @@
 package ch.wirelesssoundsystem.server.controllers.media.music;
 
 import ch.wirelesssoundsystem.server.models.songs.Song;
+import com.mpatric.mp3agic.NotSupportedException;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,7 +22,7 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
      */
     private MediaPlayer mediaPlayer;
 
-    private ReadOnlyBooleanProperty isPlaying;
+    private BooleanProperty isPlaying;
     private ReadOnlyObjectProperty<Duration> currentMediaTime;
     private ReadOnlyObjectProperty<Duration> totalMediaDuration;
 
@@ -42,22 +43,24 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
     }
 
     @Override
+    @Deprecated
     public void play() {
-        if(this.getMediaPlayer() != null
-                && this.getMediaPlayer().getStatus() != MediaPlayer.Status.DISPOSED
-                && this.getMediaPlayer().getStatus() != MediaPlayer.Status.PLAYING){
+//        if(this.getMediaPlayer() != null
+//                && this.getMediaPlayer().getStatus() != MediaPlayer.Status.DISPOSED
+//                && this.getMediaPlayer().getStatus() != MediaPlayer.Status.PLAYING){
+//
+//            this.getMediaPlayer().play();
+//
+//        } else if(this.playlist.size() > 0) {
+//
+//            Song nextSong = this.findNextSong();
+//            if(nextSong != null){
+//                Media media = this.createMediaFromSong(nextSong);
+//                this.setMediaPlayer(new MediaPlayer(media));
+//                this.getMediaPlayer().play();
+//            }
+//        }
 
-            this.getMediaPlayer().play();
-
-        } else if(this.playlist.size() > 0) {
-
-            Song nextSong = this.findNextSong();
-            if(nextSong != null){
-                Media media = this.createMediaFromSong(nextSong);
-                this.setMediaPlayer(new MediaPlayer(media));
-                this.getMediaPlayer().play();
-            }
-        }
     }
 
     /**
@@ -71,8 +74,7 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
         if(this.playlist.size() > 0) {
             boolean needNewMediaPlayer = true;
             if (this.getMediaPlayer() != null
-                    && this.getMediaPlayer().getStatus() != MediaPlayer.Status.DISPOSED
-                    && this.getMediaPlayer().getStatus() != MediaPlayer.Status.PLAYING) {
+                    && this.getMediaPlayer().getStatus() != MediaPlayer.Status.DISPOSED) {
 
                 // Check if the currentTrack is the same track and paused (and tryResume == true).
                 if (tryResume && this.getCurrentTrack() != null && this.getCurrentTrack().equals(track)) {
@@ -85,6 +87,9 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
 
             // There has to be a new MediaPlayer.
             if (needNewMediaPlayer) {
+
+                // Stop the player, regardless of state.
+                this.stop();
                 Song song = this.findSongFromPlaylist(track);
 
                 if(song != null){
@@ -110,7 +115,11 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
 
     @Override
     public void stop() {
-
+        // Check, if the MediaPlayer needs to get disposed first.
+        if(this.getMediaPlayer() != null) {
+            this.getMediaPlayer().dispose();
+            this.setMediaPlayer(null);
+        }
     }
 
     @Override
@@ -128,7 +137,7 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
     }
 
     @Override
-    public ReadOnlyBooleanProperty isPlayingProperty() {
+    public BooleanProperty isPlayingProperty() {
         return this.isPlaying;
     }
 
@@ -254,6 +263,16 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
         if(this.getMediaPlayer() != null){
             this.currentMediaTime = this.getMediaPlayer().currentTimeProperty();
             this.totalMediaDuration = this.getMediaPlayer().totalDurationProperty();
+
+            // Add Listener for the isPlaying property.
+            this.getMediaPlayer().statusProperty().addListener((observable, oldValue, newValue) -> {
+                if(oldValue == MediaPlayer.Status.PLAYING || newValue == MediaPlayer.Status.PLAYING) {
+                    if(newValue == MediaPlayer.Status.PLAYING)
+                        this.isPlayingProperty().set(true);
+                    else
+                        this.isPlayingProperty().set(false);
+                }
+            });
         }
     }
 

@@ -1,31 +1,74 @@
-package ch.wirelesssoundsystem.server.controllers.networking.streaming.music;
+package ch.wirelesssoundsystem.server.controllers.networking.music;
 
 import ch.wirelesssoundsystem.server.controllers.networking.NetworkStream;
 import ch.wirelesssoundsystem.server.models.songs.Song;
-import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.handler.codec.rtsp.RtspEncoder;
-import io.netty.handler.codec.rtsp.RtspMethods;
+import ch.wirelesssoundsystem.shared.models.clients.Client;
 
+import java.io.File;
 import java.io.IOException;
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.MulticastSocket;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * Created by Esteban Luchsinger on 03.12.2015.
  */
 public class Mp3NetworkStream implements NetworkStream<Song> {
-    private final static int CLIENT_SOCKET_PORT = 23546;
-    private ServerSocket streamSocket;
+
+    DatagramSocket multicastSocket = new MulticastSocket();
+    private final static int CLIENT_PORT = 6049;
+    private final static int MAX_PACKET_SIZE = 700;
 
     public Mp3NetworkStream() throws IOException {
-        this.streamSocket = new ServerSocket(Mp3NetworkStream.CLIENT_SOCKET_PORT);
+    }
+
+    /**
+     * Streams a song to the client.
+     * @param song
+     * @param client
+     */
+    public static void streamSong(Song song, Client client){
+        File file = new File(song.getPath());
+        try {
+            DatagramSocket socket = new DatagramSocket();
+            byte[] data = Files.readAllBytes(Paths.get(file.toURI()));
+
+            // Calculate the amount of packets (as double).
+            double calculatedAmountOfPackets = data.length / Mp3NetworkStream.MAX_PACKET_SIZE;
+            int realAmountOfPackets = (int)calculatedAmountOfPackets;
+
+            // Check if the amount of packets is an round integer.
+            if(calculatedAmountOfPackets % 2 > 0){
+                // if the amount of packets is not a round number, add one.
+                calculatedAmountOfPackets++;
+                realAmountOfPackets = (int)calculatedAmountOfPackets;
+            }
+
+            int offset = 0;
+
+            // Send all packets.
+            for(int i = 0; i < realAmountOfPackets; i++){
+
+                // Get the smaller length. Either the rest of the data, if it is the last datagram,
+                // or the MAX_PACKET_SIZE.
+                int sendingLength = Math.min(data.length - offset, Mp3NetworkStream.MAX_PACKET_SIZE);
+                DatagramPacket packet = new DatagramPacket(data, offset, sendingLength, client.getInetAddress(), Mp3NetworkStream.CLIENT_PORT);
+                offset += sendingLength;
+                socket.send(packet);
+            }
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //DatagramPacket datagramPacket = new DatagramPacket()
     }
 
     @Override
-    public void startStream(Song song) {
+    public void startStream(Song data) {
     }
 
     @Override
