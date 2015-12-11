@@ -35,12 +35,12 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
     private ObservableList<Song> playlist;
     private Song lastPlayed;
 
-    public AudioPlayer(){
+    public AudioPlayer() {
         // Call parameterized constructor with a new list.
         this(FXCollections.observableArrayList());
     }
 
-    public AudioPlayer(ObservableList<Song> songs){
+    public AudioPlayer(ObservableList<Song> songs) {
         this.playlist = songs;
 
         this.isPlaying = new SimpleBooleanProperty();
@@ -52,13 +52,14 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
 
     /**
      * Plays the selected trackc, if found.
-     * @param track The track that should be played. (Must not be the same reference as in the playlist).
+     *
+     * @param track     The track that should be played. (Must not be the same reference as in the playlist).
      * @param tryResume Tries to resume the song, if it is paused.
      */
-    public void play(Song track, boolean tryResume){
+    public void play(Song track, boolean tryResume) {
 
         // Only do something if the playlist is not empty.
-        if(this.playlist.size() > 0) {
+        if (this.playlist.size() > 0) {
             boolean needNewMediaPlayer = true;
             if (this.getMediaPlayer() != null
                     && this.getMediaPlayer().getStatus() != MediaPlayer.Status.DISPOSED) {
@@ -79,23 +80,24 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
                 this.stop();
                 Song song = this.findSongFromPlaylist(track);
 
-                if(song != null){
+                if (song != null) {
                     Media media = this.createMediaFromSong(song);
                     this.setMediaPlayer(new MediaPlayer(media));
                     this.getMediaPlayer().play();
+                    this.lastPlayed = song;
                 }
             }
         }
     }
 
     @Override
-    public void play(Song track){
+    public void play(Song track) {
         this.play(track, false);
     }
 
     @Override
     public void pause() {
-        if(this.getMediaPlayer() != null){
+        if (this.getMediaPlayer() != null) {
             this.getMediaPlayer().pause();
         }
     }
@@ -103,7 +105,7 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
     @Override
     public void stop() {
         // Check, if the MediaPlayer needs to get disposed first.
-        if(this.getMediaPlayer() != null) {
+        if (this.getMediaPlayer() != null) {
             this.getMediaPlayer().dispose();
             this.setMediaPlayer(null);
         }
@@ -111,11 +113,11 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
 
     @Override
     public boolean isPlaying() {
-        if(this.getMediaPlayer() == null || this.getMediaPlayer().getStatus() == null){
+        if (this.getMediaPlayer() == null || this.getMediaPlayer().getStatus() == null) {
             return false;
         }
 
-        switch(this.getMediaPlayer().getStatus()){
+        switch (this.getMediaPlayer().getStatus()) {
             case PLAYING:
                 return true;
             default:
@@ -130,20 +132,46 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
 
     @Override
     public Song getNextTrack() {
+        if (this.lastPlayed != null) {
+            Song song = null;
+
+            try{
+                int index = this.playlist.lastIndexOf(this.lastPlayed);
+
+                if(index < this.playlist.size() - 1){
+                    song = this.playlist.get(index + 1);
+                }
+            } catch(Exception ignored){ }
+
+            return song;
+        }
         return null;
     }
 
     @Override
     public Song getPreviousTrack() {
-        return null;
+        if (this.lastPlayed != null) {
+            Song song = null;
+            try {
+                int index = this.playlist.lastIndexOf(this.lastPlayed);
+
+                if (index > 0) {
+                    song = this.playlist.get(index - 1);
+                }
+            } catch (Exception ignored) { }
+
+            return song;
+        }
+        else {
+            return null;
+        }
     }
 
     @Override
     public Song getCurrentTrack() {
-        if(this.getMediaPlayer() == null){
+        if (this.getMediaPlayer() == null) {
             return null;
-        }
-        else {
+        } else {
             String uri = this.getMediaPlayer().getMedia().getSource();
 
             // Todo: Evaluate parallelStream().
@@ -177,7 +205,7 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
         return volume;
     }
 
-    private Media createMediaFromSong(Song song){
+    private Media createMediaFromSong(Song song) {
 
         // Have to create a temporary file to convert the path to a URI.
         File tempFile = new File(song.getPath());
@@ -191,13 +219,12 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
      *
      * @return Returns the next song in the playlist, returns the first song if a next song could not be found.
      */
-    private Song findNextSong(){
+    private Song findNextSong() {
         Optional<Song> optSong = this.playlist.stream().filter(s -> s.equals(this.lastPlayed)).findFirst();
 
-        if(optSong.isPresent()){
+        if (optSong.isPresent()) {
             return optSong.get();
-        }
-        else{
+        } else {
             System.out.println("Next Song was not found! Using First song!");
             return this.playlist.get(0);
         }
@@ -205,10 +232,11 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
 
     /**
      * Finds the reference to a song in the playlist.
+     *
      * @param song Song with external reference (not in the playlist).
      * @return Returns a reference to the equivalent song in the playlist. If no equal song was found in the playlist, return NULL.
      */
-    private Song findSongFromPlaylist(Song song){
+    private Song findSongFromPlaylist(Song song) {
 
         // Todo: Evaluate parallelStream().
         return this.playlist.stream()
@@ -221,7 +249,9 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
         return this.currentMediaTime.get();
     }
 
-    public StringProperty currentMediaTimeString(){ return this.currentMediaTimeString; }
+    public StringProperty currentMediaTimeString() {
+        return this.currentMediaTimeString;
+    }
 
     public ObjectProperty<Duration> currentMediaTime() {
         return this.currentMediaTime;
@@ -235,26 +265,27 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
         return this.totalMediaDuration;
     }
 
-    private void setMediaPlayer(MediaPlayer mediaPlayer){
+    private void setMediaPlayer(MediaPlayer mediaPlayer) {
         this.mediaPlayer = mediaPlayer;
 
-        if(this.getMediaPlayer() != null){
+        if (this.getMediaPlayer() != null) {
             this.bindProperties(this.getMediaPlayer());
         }
     }
 
-    private MediaPlayer getMediaPlayer(){
+    private MediaPlayer getMediaPlayer() {
         return this.mediaPlayer;
     }
 
     /**
      * This method handles the binding properties of the MediaPlayer.
      * Use only ONCE per MediaPlayer!
+     *
      * @param player
      */
-    private void bindProperties(MediaPlayer player){
+    private void bindProperties(MediaPlayer player) {
 
-        if(this.getMediaPlayer() != null) {
+        if (this.getMediaPlayer() != null) {
             this.currentMediaTime.bind(this.getMediaPlayer().currentTimeProperty());
             this.totalMediaDuration.bind(this.getMediaPlayer().totalDurationProperty());
 
@@ -276,7 +307,7 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
         }
     }
 
-    private String formatDuration(Duration duration){
-        return (int)duration.toMinutes() + ":" + (int)(duration.toSeconds() % 60);
+    private String formatDuration(Duration duration) {
+        return (int) duration.toMinutes() + ":" + (int) (duration.toSeconds() % 60);
     }
 }

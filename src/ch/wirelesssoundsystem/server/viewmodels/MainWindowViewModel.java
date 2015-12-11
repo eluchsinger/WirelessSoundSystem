@@ -42,6 +42,12 @@ public class MainWindowViewModel {
     private ToggleButton buttonPlayPause;
 
     @FXML
+    private Button buttonSkipNext;
+
+    @FXML
+    private Button buttonSkipPrevious;
+
+    @FXML
     private TextField textFieldFolder;
 
     @FXML
@@ -172,6 +178,28 @@ public class MainWindowViewModel {
         } else if (this.getSelectedSong() != null) {
             System.out.println("Trying to play: " + this.getSelectedSong().getTitle());
             this.mediaPlayer.play(this.getSelectedSong(), true);
+        }
+    }
+
+    @FXML
+    public void onButtonSkipPreviousClicked(){
+
+        // First check, if there are items on the list.
+        if(this.songObservableList.size() > 1){
+            Song previous = this.mediaPlayer.getPreviousTrack();
+            if(previous != null){
+                this.mediaPlayer.play(previous);
+            }
+        }
+    }
+
+    @FXML
+    public void onButtonSkipNextClicked(){
+        if(this.songObservableList.size() > 1){
+            Song next = this.mediaPlayer.getNextTrack();
+            if(next != null){
+                this.mediaPlayer.play(next);
+            }
         }
     }
 

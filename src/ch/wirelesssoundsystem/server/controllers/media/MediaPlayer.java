@@ -32,7 +32,16 @@ public interface MediaPlayer<T> {
             this.play(this.getCurrentTrack(), true);
     }
 
+    /**
+     * Tries to find the next track.
+     * @return Returns the next track on the playlist, or null if it wasn't found.
+     */
     T getNextTrack();
+
+    /**
+     * Tries to find the previous track.
+     * @return Returns the previous track on the playlist, or null if it wasn't found.
+     */
     T getPreviousTrack();
 
     T getCurrentTrack();

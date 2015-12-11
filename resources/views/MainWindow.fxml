@@ -82,7 +82,7 @@
             <left>
                <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" BorderPane.alignment="CENTER">
                   <children>
-                     <Button id="skip-previous" fx:id="buttonBack" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="50.0" styleClass="player-button" stylesheets="@styles/PlayerControlStyles.css">
+                     <Button id="skip-previous" fx:id="buttonSkipPrevious" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onButtonSkipPreviousClicked" prefHeight="50.0" styleClass="player-button" stylesheets="@styles/PlayerControlStyles.css">
                         <HBox.margin>
                            <Insets left="5.0" right="3.0" />
                         </HBox.margin>
@@ -92,7 +92,7 @@
                            <Insets left="3.0" right="3.0" />
                         </HBox.margin>
                      </ToggleButton>
-                     <Button id="skip-next" fx:id="buttonNext" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="50.0" styleClass="player-button" stylesheets="@styles/PlayerControlStyles.css">
+                     <Button id="skip-next" fx:id="buttonSkipNext" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onButtonSkipNextClicked" prefHeight="50.0" styleClass="player-button" stylesheets="@styles/PlayerControlStyles.css">
                         <HBox.margin>
                            <Insets left="3.0" right="3.0" />
                         </HBox.margin>
