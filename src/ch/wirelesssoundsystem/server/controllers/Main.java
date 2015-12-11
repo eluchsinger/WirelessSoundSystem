@@ -38,7 +38,8 @@ public class Main extends Application {
         });
 
         primaryStage.show();
-
+        primaryStage.setMinHeight(primaryStage.getHeight());
+        primaryStage.setMinWidth(primaryStage.getWidth());
     }
 
     public static void main(String[] args) {
