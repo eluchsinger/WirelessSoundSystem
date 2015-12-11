@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
@@ -106,16 +107,20 @@
                   </BorderPane.margin>
                </Slider>
             </center>
-            <right>
-               <Label text="00:00" BorderPane.alignment="CENTER">
-                  <font>
-                     <Font size="19.0" />
-                  </font>
-                  <BorderPane.margin>
-                     <Insets right="5.0" />
-                  </BorderPane.margin>
-               </Label>
-            </right>
+         <right>
+            <BorderPane prefHeight="50.0" BorderPane.alignment="CENTER_RIGHT">
+               <left>
+                     <Label text="00:00" BorderPane.alignment="CENTER">
+                        <BorderPane.margin>
+                           <Insets right="5.0" />
+                        </BorderPane.margin>
+                     </Label>
+               </left>
+               <right>
+                  <Slider fx:id="sliderVolume" majorTickUnit="0.25" max="1.0" minorTickCount="0" BorderPane.alignment="CENTER" />
+               </right>
+            </BorderPane>
+         </right>
          </BorderPane>
    </bottom>
 </BorderPane>

@@ -25,6 +25,7 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
     private BooleanProperty isPlaying;
     private ReadOnlyObjectProperty<Duration> currentMediaTime;
     private ReadOnlyObjectProperty<Duration> totalMediaDuration;
+    private DoubleProperty volume;
 
     private ObservableList<Song> playlist;
     private Song lastPlayed;
@@ -40,27 +41,7 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
         this.isPlaying = new SimpleBooleanProperty();
         this.currentMediaTime = new SimpleObjectProperty<>();
         this.totalMediaDuration = new SimpleObjectProperty<>();
-    }
-
-    @Override
-    @Deprecated
-    public void play() {
-//        if(this.getMediaPlayer() != null
-//                && this.getMediaPlayer().getStatus() != MediaPlayer.Status.DISPOSED
-//                && this.getMediaPlayer().getStatus() != MediaPlayer.Status.PLAYING){
-//
-//            this.getMediaPlayer().play();
-//
-//        } else if(this.playlist.size() > 0) {
-//
-//            Song nextSong = this.findNextSong();
-//            if(nextSong != null){
-//                Media media = this.createMediaFromSong(nextSong);
-//                this.setMediaPlayer(new MediaPlayer(media));
-//                this.getMediaPlayer().play();
-//            }
-//        }
-
+        this.volume = new SimpleDoubleProperty(1);
     }
 
     /**
@@ -141,17 +122,6 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
         return this.isPlaying;
     }
 
-    /**
-     * Toggles playing.
-     * If it is playing, it pauses.
-     * If it is paused, it plays.
-     * Already possesses default implementation
-     */
-//    @Override
-//    public void togglePlay() {
-//
-//    }
-
     @Override
     public Song getNextTrack() {
         return null;
@@ -187,18 +157,18 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
     }
 
     @Override
-    public void getVolume() {
-
+    public double getVolume() {
+        return this.volumeProperty().get();
     }
 
     @Override
-    public void setVolume() {
-
+    public void setVolume(double value) {
+        this.volumeProperty().set(value);
     }
 
     @Override
-    public SimpleDoubleProperty volumeProperty() {
-        return null;
+    public DoubleProperty volumeProperty() {
+        return volume;
     }
 
     private Media createMediaFromSong(Song song){
@@ -261,22 +231,39 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
         this.mediaPlayer = mediaPlayer;
 
         if(this.getMediaPlayer() != null){
+            this.bindProperties(this.getMediaPlayer());
+        }
+    }
+
+    private MediaPlayer getMediaPlayer(){
+        return this.mediaPlayer;
+    }
+
+    /**
+     * This method handles the binding properties of the MediaPlayer.
+     * Use only ONCE per MediaPlayer!
+     * @param player
+     */
+    private void bindProperties(MediaPlayer player){
+
+        if(this.getMediaPlayer() != null) {
             this.currentMediaTime = this.getMediaPlayer().currentTimeProperty();
             this.totalMediaDuration = this.getMediaPlayer().totalDurationProperty();
 
+            // Volume property.
+            this.getMediaPlayer().setVolume(this.getVolume());
+            this.volume.bindBidirectional(this.getMediaPlayer().volumeProperty());
+
             // Add Listener for the isPlaying property.
-            this.getMediaPlayer().statusProperty().addListener((observable, oldValue, newValue) -> {
-                if(oldValue == MediaPlayer.Status.PLAYING || newValue == MediaPlayer.Status.PLAYING) {
-                    if(newValue == MediaPlayer.Status.PLAYING)
+            // Maps the different MediaPlayer.Status to the boolean value isPlaying.
+            player.statusProperty().addListener((observable, oldValue, newValue) -> {
+                if (oldValue == MediaPlayer.Status.PLAYING || newValue == MediaPlayer.Status.PLAYING) {
+                    if (newValue == MediaPlayer.Status.PLAYING)
                         this.isPlayingProperty().set(true);
                     else
                         this.isPlayingProperty().set(false);
                 }
             });
         }
-    }
-
-    private MediaPlayer getMediaPlayer(){
-        return this.mediaPlayer;
     }
 }

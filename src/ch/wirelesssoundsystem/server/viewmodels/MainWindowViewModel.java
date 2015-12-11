@@ -51,6 +51,9 @@ public class MainWindowViewModel {
     @FXML
     private TableColumn tableColumnArtist;
 
+    @FXML
+    private Slider sliderVolume;
+
     /* Constructor */
 
     /**
@@ -85,7 +88,9 @@ public class MainWindowViewModel {
             TableRow<Song> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
                 if(event.getClickCount() >= 2 && (!row.isEmpty())){
-                    this.mediaPlayer.play(row.getItem());
+                    // Check if its a song.
+                    if(Song.class.isInstance(row.getItem()))
+                        this.mediaPlayer.play(row.getItem());
                 }
             });
             return row;
@@ -94,6 +99,9 @@ public class MainWindowViewModel {
         this.clientObservableList = Clients.getInstance().getClients();
         this.listViewClients.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         this.listViewClients.setItems(this.clientObservableList);
+
+        // Bind Slider to Volume property
+        this.sliderVolume.valueProperty().bindBidirectional(this.mediaPlayer.volumeProperty());
 
         this.addDemoData();
     }
