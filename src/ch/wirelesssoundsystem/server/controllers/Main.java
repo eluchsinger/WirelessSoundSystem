@@ -7,10 +7,21 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
+        // Setting logger
+        Logger log = LogManager.getLogManager().getLogger("");
+        for(Handler h : log.getHandlers()){
+            h.setLevel(Level.INFO);
+        }
+
         System.out.println("Starting discovery Service...");
         DiscoveryService.getInstance().start();
 
