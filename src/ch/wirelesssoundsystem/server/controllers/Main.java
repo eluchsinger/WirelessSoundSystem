@@ -5,6 +5,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.util.logging.Handler;
@@ -28,6 +29,7 @@ public class Main extends Application {
 
         Parent root = FXMLLoader.load(getClass().getResource("/views/MainWindow.fxml"));
         primaryStage.setTitle("Wireless Sound System");
+        primaryStage.getIcons().add(new Image(String.valueOf(getClass().getResource("/views/icons/png/Logo.png"))));
         primaryStage.setScene(new Scene(root, 800, 600));
 
         primaryStage.setOnCloseRequest((event) -> {
