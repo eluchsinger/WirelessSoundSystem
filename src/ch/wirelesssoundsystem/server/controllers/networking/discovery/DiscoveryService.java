@@ -8,6 +8,7 @@ import javafx.concurrent.Task;
 
 import java.io.IOException;
 import java.net.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -43,6 +44,13 @@ public class DiscoveryService {
      * Waiting delay for the discovery task to run again in seconds.
      */
     private static final long DISCOVERY_TICK = 5;
+
+    /**
+     * Client timeout time in milliseconds.
+     * The clients will be removed from the Clients list, after they expire.
+     * The timeout time for the clients are renewed, every time they are seen on the network.
+     */
+    private static final long CLIENT_TIMEOUT = 5000;
 
     /**
      * This is the message sent in the discovery protocol.
@@ -93,6 +101,10 @@ public class DiscoveryService {
      */
     private Thread responseThread;
 
+    /**
+     * This task checks the clients for
+     */
+    private Task<List<Client>> keepAliveTask;
 
     /**
      * Gets the instance of the DiscoveryService Singleton.
@@ -182,6 +194,18 @@ public class DiscoveryService {
                 System.out.println("BEEP (Broadcast an: " + Utility.getBroadcastAddress4().getHostAddress() + ":"
                         + datagram.getPort() + ")");
 
+                System.out.println("Checking timeouts");
+                KeepAliveTask keepAliveTask = new KeepAliveTask(Clients.getInstance().getClients(), CLIENT_TIMEOUT, LocalDateTime.now());
+                keepAliveTask.run();
+                List<Client> expiredClients = keepAliveTask.get();
+
+                for(Client c : expiredClients){
+                    System.out.println("Expired: " + c.getName());
+                }
+
+                if(expiredClients.size() > 0)
+                    this.expiredClient(expiredClients);
+
             }
             catch(NullPointerException nullPointerException){
                 Logger.getLogger(DiscoveryService.class.getName()).log(Level.INFO,
@@ -259,15 +283,14 @@ public class DiscoveryService {
 
         // This method runs the lambda on the JavaFX thread.
         Platform.runLater(() -> {
-
-            if(!Clients.getInstance().getClients().contains(tmp)){
-                Clients.getInstance().getClients().add(tmp);
-                System.out.println("Client added: "  + tmp.getInetAddress().getHostName());
-            }
-            else{
-                System.out.println("Client already exists in the list...");
-            }
+            Clients.getInstance().seenClient(tmp);
         });
+    }
 
+    private synchronized void expiredClient(List<Client> clients){
+        // Dont call runLater, if the list is empty.
+        if(clients.size() > 0) {
+            Platform.runLater(() -> Clients.getInstance().getClients().removeAll(clients));
+        }
     }
 }

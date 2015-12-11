@@ -5,6 +5,9 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 import java.net.InetAddress;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * Created by Esteban Luchsinger on 30.11.2015.
@@ -14,12 +17,14 @@ public class Client implements Comparable {
     //region Members
     private SimpleStringProperty name;
     private SimpleObjectProperty<InetAddress> inetAddress;
+    private LocalDateTime lastSeen;
     //endregion
 
     //region Constructors
     public Client(InetAddress inetAddress, String name){
         this.name = new SimpleStringProperty(name);
         this.inetAddress = new SimpleObjectProperty<>(inetAddress);
+        this.lastSeen = LocalDateTime.now();
     }
 
     public Client(InetAddress inetAddress){
@@ -27,10 +32,7 @@ public class Client implements Comparable {
     }
 
     @Deprecated
-    public Client(String name){
-        this.name = new SimpleStringProperty(name);
-        this.inetAddress = new SimpleObjectProperty<>();
-    }
+    public Client(String name){ this(null, name); }
     //endregion
 
     //region Accessors
@@ -90,19 +92,32 @@ public class Client implements Comparable {
 
     @Override
     public boolean equals(Object obj) {
-        if(this.getInetAddress() != null && obj.getClass() == this.getClass()){
+        if(obj.getClass() == this.getClass()){
             Client c = (Client)obj;
 
+            // Try to compare the InetAddress.
             if(c.getInetAddress() != null && c.getInetAddress().equals(this.getInetAddress())){
                 return true;
             }
-            else{
+            // If there is no IP-Address, try to compare the name.
+            else if(c.getName() != null && c.getName() != "" && c.getName().equals(this.getName())){
+                return true;
+            }
+            else {
                 return false;
             }
         }
         else{
             return false;
         }
+    }
+
+    public LocalDateTime getLastSeen() {
+        return lastSeen;
+    }
+
+    public void setLastSeen(LocalDateTime lastSeen) {
+        this.lastSeen = lastSeen;
     }
 
     //endregion
