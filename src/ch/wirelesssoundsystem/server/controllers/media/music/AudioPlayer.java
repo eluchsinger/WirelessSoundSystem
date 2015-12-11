@@ -60,9 +60,45 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
         }
     }
 
+    /**
+     * Plays the selected trackc, if found.
+     * @param track The track that should be played. (Must not be the same reference as in the playlist).
+     * @param tryResume Tries to resume the song, if it is paused.
+     */
+    public void play(Song track, boolean tryResume){
+
+        // Only do something if the playlist is not empty.
+        if(this.playlist.size() > 0) {
+            boolean needNewMediaPlayer = true;
+            if (this.getMediaPlayer() != null
+                    && this.getMediaPlayer().getStatus() != MediaPlayer.Status.DISPOSED
+                    && this.getMediaPlayer().getStatus() != MediaPlayer.Status.PLAYING) {
+
+                // Check if the currentTrack is the same track and paused (and tryResume == true).
+                if (tryResume && this.getCurrentTrack() != null && this.getCurrentTrack().equals(track)) {
+
+                    // Resume the paused track.
+                    this.getMediaPlayer().play();
+                    needNewMediaPlayer = false;
+                }
+            }
+
+            // There has to be a new MediaPlayer.
+            if (needNewMediaPlayer) {
+                Song song = this.findSongFromPlaylist(track);
+
+                if(song != null){
+                    Media media = this.createMediaFromSong(song);
+                    this.setMediaPlayer(new MediaPlayer(media));
+                    this.getMediaPlayer().play();
+                }
+            }
+        }
+    }
+
     @Override
     public void play(Song track){
-
+        this.play(track, false);
     }
 
     @Override
@@ -89,7 +125,6 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
             default:
                 return false;
         }
-//        return this.isPlaying.getValue();
     }
 
     @Override
@@ -101,11 +136,12 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
      * Toggles playing.
      * If it is playing, it pauses.
      * If it is paused, it plays.
+     * Already possesses default implementation
      */
-    @Override
-    public void togglePlay() {
-
-    }
+//    @Override
+//    public void togglePlay() {
+//
+//    }
 
     @Override
     public Song getNextTrack() {
@@ -119,7 +155,21 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
 
     @Override
     public Song getCurrentTrack() {
-        return null;
+        if(this.getMediaPlayer() == null){
+            return null;
+        }
+        else {
+            String uri = this.getMediaPlayer().getMedia().getSource();
+
+            // Todo: Evaluate parallelStream().
+            Optional<Song> maybeSong = this.playlist.stream()
+                    .filter(song -> new File(song.getPath()).toURI().toString().equals(uri))
+                    .findFirst();
+
+
+            // Return the present song or null.
+            return maybeSong.orElse(null);
+        }
     }
 
     @Override
@@ -166,6 +216,20 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
             System.out.println("Next Song was not found! Using First song!");
             return this.playlist.get(0);
         }
+    }
+
+    /**
+     * Finds the reference to a song in the playlist.
+     * @param song Song with external reference (not in the playlist).
+     * @return Returns a reference to the equivalent song in the playlist. If no equal song was found in the playlist, return NULL.
+     */
+    private Song findSongFromPlaylist(Song song){
+
+        // Todo: Evaluate parallelStream().
+        return this.playlist.stream()
+                .filter(s -> s.equals(song))
+                .findFirst()
+                .orElse(null);
     }
 
     public Duration getCurrentMediaTime() {

@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Esteban on 30.11.2015.
@@ -45,12 +47,8 @@ public class SongsHandler {
                 songList.add(song);
                 System.out.println("Song: " + song.getTitle());
 
-            } catch (InvalidDataException e) {
-                System.out.println("SongsHandler.java: InvalidDataException");
-            } catch (IOException e) {
-                System.out.println("SongsHandler.java: IOException");
-            } catch (UnsupportedTagException e) {
-                System.out.println("SongsHandler.java: UnsupportedTagException");
+            } catch (Exception e) {
+                Logger.getLogger(SongsHandler.class.getName()).log(Level.WARNING, "Fehler beim Laden eines Songs!", e);
             }
         }
 

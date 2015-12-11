@@ -6,11 +6,12 @@ import com.mpatric.mp3agic.*;
 import java.io.IOException;
 
 /**
- * Created by eluch on 30.11.2015.
+ * Created by Esteban Luchsinger on 30.11.2015.
  */
 public class Mp3Song implements Song, Comparable<Song> {
     private final String extension = "mp3";
     private Mp3File file;
+    private String path;
 
     /**
      * Constructor overrides Default constructor
@@ -20,11 +21,22 @@ public class Mp3Song implements Song, Comparable<Song> {
      * @throws UnsupportedTagException
      */
     public Mp3Song(String path) throws InvalidDataException, IOException, UnsupportedTagException {
-        this.file = new Mp3File(path);
+
+        try {
+            this.file = new Mp3File(path);
+        }
+        catch(InvalidDataException ide){
+
+        }
+        this.path = path;
     }
 
     @Override
     public String getTitle() {
+        if(this.file == null){
+            return "unknown title";
+        }
+
         if(this.file.hasId3v1Tag())
             return file.getId3v1Tag().getTitle();
         else if(this.file.hasId3v2Tag())
@@ -35,6 +47,10 @@ public class Mp3Song implements Song, Comparable<Song> {
 
     @Override
     public String getArtist(){
+        if(this.file == null){
+            return "unknown title";
+        }
+
         if(this.file.hasId3v1Tag())
             return file.getId3v1Tag().getArtist();
         else if(this.file.hasId3v2Tag())
@@ -50,7 +66,8 @@ public class Mp3Song implements Song, Comparable<Song> {
 
     @Override
     public String getPath(){
-        return this.file.getFilename();
+        return this.path;
+//        return this.file.getFilename();
     }
 
     @Override

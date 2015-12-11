@@ -135,8 +135,9 @@ public class MainWindowViewModel {
             this.mediaPlayer.pause();
             this.buttonPlayPause.setText(">");
         }
-        else {
-            this.mediaPlayer.play();
+        else if(this.getSelectedSong() != null) {
+            System.out.println("Trying to play: " + this.getSelectedSong().getTitle());
+            this.mediaPlayer.play(this.getSelectedSong());
             this.buttonPlayPause.setText("||");
         }
 //        if (this.mediaPlayer != null){
