@@ -24,7 +24,7 @@ import java.util.List;
  * Created by Esteban Luchsinger on 30.11.2015.
  */
 public class MainWindowViewModel {
-    private MediaPlayer mediaPlayer;
+    private MediaPlayer<Song> mediaPlayer;
 
     // Properties
     private StringProperty pathToFolder;
@@ -109,7 +109,6 @@ public class MainWindowViewModel {
         this.sliderVolume.valueProperty().bindBidirectional(this.mediaPlayer.volumeProperty());
 
         // Bind CurrentDuration Label to CurrentDuration Property
-//        this.labelCurrentDuration.textProperty().bindBidirectional(this.mediaPlayer.currentMediaTimeString());
         Bindings.bindBidirectional(this.labelCurrentDuration.textProperty(), this.mediaPlayer.currentMediaTime(), new DurationStringConverter());
         this.addDemoData();
     }
