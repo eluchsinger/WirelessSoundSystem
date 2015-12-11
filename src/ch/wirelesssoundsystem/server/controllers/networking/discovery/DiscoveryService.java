@@ -2,9 +2,14 @@ package ch.wirelesssoundsystem.server.controllers.networking.discovery;
 
 import ch.wirelesssoundsystem.server.controllers.networking.Utility;
 import ch.wirelesssoundsystem.shared.models.clients.Client;
+import ch.wirelesssoundsystem.shared.models.clients.Clients;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 
 import java.io.IOException;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -16,7 +21,8 @@ import java.util.logging.Logger;
  * Singleton handler for the DiscoveryService.
  * This singleton handles the whole DiscoveryProcess of the Clients of the WSS.
  */
-public class DiscoveryService implements ClientFoundListener {
+public class DiscoveryService {
+
     /**
      * This is the port used for discovery.
      */
@@ -249,11 +255,19 @@ public class DiscoveryService implements ClientFoundListener {
     private synchronized void foundClient(InetAddress inetAddress) {
         System.out.println("Found new Client. IP = " + inetAddress.getHostAddress());
 
-        this.found(new Client(inetAddress, "FoundClient"));
-    }
+        Client tmp = new Client(inetAddress, "FoundClient");
 
-    @Override
-    public void found(Client client) {
+        // This method runs the lambda on the JavaFX thread.
+        Platform.runLater(() -> {
+
+            if(!Clients.getInstance().getClients().contains(tmp)){
+                Clients.getInstance().getClients().add(tmp);
+                System.out.println("Client added: "  + tmp.getInetAddress().getHostName());
+            }
+            else{
+                System.out.println("Client already exists in the list...");
+            }
+        });
 
     }
 }

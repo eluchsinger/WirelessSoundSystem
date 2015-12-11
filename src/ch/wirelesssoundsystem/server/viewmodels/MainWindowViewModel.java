@@ -5,6 +5,7 @@ import ch.wirelesssoundsystem.server.controllers.media.MediaPlayer;
 import ch.wirelesssoundsystem.server.controllers.media.music.AudioPlayer;
 import ch.wirelesssoundsystem.shared.models.clients.Client;
 import ch.wirelesssoundsystem.server.models.songs.Song;
+import ch.wirelesssoundsystem.shared.models.clients.Clients;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -73,7 +74,7 @@ public class MainWindowViewModel {
                 new PropertyValueFactory<Song, String>("artist")
         );
 
-        this.clientObservableList = FXCollections.observableArrayList();
+        this.clientObservableList = Clients.getInstance().getClients();
         this.listViewClients.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         this.listViewClients.setItems(this.clientObservableList);
 
