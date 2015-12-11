@@ -39,10 +39,10 @@ public class Clients {
         if(!this.getClients().contains(client)){
             this.getClients().add(client);
             clientInList = client;
-            System.out.println("Client added: "  + client.getInetAddress().getHostName());
+            System.out.println("Client added: "  + client.getInetAddress().getHostAddress());
         }
         else {
-            System.out.println("Client already exists in the list...");
+            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Client already exists in the Clients list...");
 
             // Search for the client
             Optional<Client> maybeClient = this.getClients().stream()

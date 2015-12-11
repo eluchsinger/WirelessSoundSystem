@@ -92,22 +92,20 @@ public class Client implements Comparable {
 
     @Override
     public boolean equals(Object obj) {
-        if(obj.getClass() == this.getClass()){
-            Client c = (Client)obj;
+        if (obj != null && obj.getClass() == this.getClass()) {
+            Client c = (Client) obj;
 
             // Try to compare the InetAddress.
-            if(c.getInetAddress() != null && c.getInetAddress().equals(this.getInetAddress())){
+            if (c.getInetAddress() != null && c.getInetAddress().equals(this.getInetAddress())) {
                 return true;
             }
             // If there is no IP-Address, try to compare the name.
-            else if(c.getName() != null && c.getName() != "" && c.getName().equals(this.getName())){
+            else if (c.getName() != null && c.getName() != "" && c.getName().equals(this.getName())) {
                 return true;
-            }
-            else {
+            } else {
                 return false;
             }
-        }
-        else{
+        } else {
             return false;
         }
     }

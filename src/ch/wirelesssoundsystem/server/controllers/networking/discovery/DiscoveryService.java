@@ -9,11 +9,11 @@ import javafx.concurrent.Task;
 import java.io.IOException;
 import java.net.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Filter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,6 +24,7 @@ import java.util.logging.Logger;
  */
 public class DiscoveryService {
 
+    //region Members & Constants
     /**
      * This is the port used for discovery.
      */
@@ -43,14 +44,14 @@ public class DiscoveryService {
     /**
      * Waiting delay for the discovery task to run again in seconds.
      */
-    private static final long DISCOVERY_TICK = 5;
+    private static final long DISCOVERY_TICK = 4;
 
     /**
      * Client timeout time in milliseconds.
      * The clients will be removed from the Clients list, after they expire.
      * The timeout time for the clients are renewed, every time they are seen on the network.
      */
-    private static final long CLIENT_TIMEOUT = 5000;
+    private static final long CLIENT_TIMEOUT = 4000;
 
     /**
      * This is the message sent in the discovery protocol.
@@ -112,6 +113,8 @@ public class DiscoveryService {
     public static DiscoveryService getInstance() {
         return ourInstance;
     }
+
+    //endregion
 
     private DiscoveryService() {
     }
@@ -182,19 +185,24 @@ public class DiscoveryService {
             byte[] sendData = DiscoveryService.DISCOVERY_MESSAGE.getBytes();
 
             try {
+                InetAddress broadcastAddress = Utility.getBroadcastAddress4();
                 // Create datagram packet for UDP.
                 DatagramPacket datagram = new DatagramPacket(
                         sendData,
                         sendData.length,
-                        InetAddress.getByName(Utility.getBroadcastAddress4().getHostAddress()),
+                        InetAddress.getByName(broadcastAddress.getHostAddress()),
                         DiscoveryService.DISCOVERY_PORT
                 );
 
                 DiscoveryService.discoverySocket.send(datagram);
-                System.out.println("BEEP (Broadcast an: " + Utility.getBroadcastAddress4().getHostAddress() + ":"
+                //System.out.println("BEEP (Broadcast an: " + broadcastAddress.getHostAddress() + ":"
+                //        + datagram.getPort() + ")");
+
+                Logger.getLogger(DiscoveryService.class.getName()).log(Level.INFO, "BEEP (Broadcast an: " + broadcastAddress.getHostAddress() + ":"
                         + datagram.getPort() + ")");
 
-                System.out.println("Checking timeouts");
+                //System.out.println("Checking timeouts");
+                Logger.getLogger(DiscoveryService.class.getName()).log(Level.INFO, "Checking timeouts...");
                 KeepAliveTask keepAliveTask = new KeepAliveTask(Clients.getInstance().getClients(), CLIENT_TIMEOUT, LocalDateTime.now());
                 keepAliveTask.run();
                 List<Client> expiredClients = keepAliveTask.get();
@@ -260,7 +268,7 @@ public class DiscoveryService {
                 // This catch is called if the socket was timed out. It's normal.
                 catch (SocketTimeoutException e) {
                     // Uncomment this if you want to log the timeout exception.
-//                    Logger.getLogger(DiscoveryService.class.getName()).log(Level.INFO, "[WARNING]: Reading Socket timed out. Reinitializing reading...");
+                    Logger.getLogger(DiscoveryService.class.getName()).log(Level.INFO, "[WARNING]: Reading Socket timed out. Reinitializing reading...");
                 }
             }
         } catch (IOException e) {
@@ -274,10 +282,11 @@ public class DiscoveryService {
 
     /**
      * Called, when a client was found.
+     * THREADSAFE
      * @param inetAddress The InetAddress of the client foundClient.
      */
     private synchronized void foundClient(InetAddress inetAddress) {
-        System.out.println("Found new Client. IP = " + inetAddress.getHostAddress());
+        Logger.getLogger(DiscoveryService.class.getName()).log(Level.INFO,"Found new Client. IP = " + inetAddress.getHostAddress());
 
         Client tmp = new Client(inetAddress, "FoundClient");
 
@@ -287,6 +296,12 @@ public class DiscoveryService {
         });
     }
 
+    /**
+     * Called when a client is expired. Handles what happens next.
+     * (Currently: Removes them from the Clients list).
+     * THREADSAFE.
+     * @param clients expired clients.
+     */
     private synchronized void expiredClient(List<Client> clients){
         // Dont call runLater, if the list is empty.
         if(clients.size() > 0) {

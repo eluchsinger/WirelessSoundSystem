@@ -3,6 +3,7 @@ package ch.wirelesssoundsystem.server.viewmodels;
 import ch.wirelesssoundsystem.server.controllers.io.SongsHandler;
 import ch.wirelesssoundsystem.server.controllers.media.MediaPlayer;
 import ch.wirelesssoundsystem.server.controllers.media.music.AudioPlayer;
+import ch.wirelesssoundsystem.server.controllers.networking.music.Mp3NetworkStream;
 import ch.wirelesssoundsystem.shared.models.clients.Client;
 import ch.wirelesssoundsystem.server.models.songs.Song;
 import ch.wirelesssoundsystem.shared.models.clients.Clients;
