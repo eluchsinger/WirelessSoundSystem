@@ -1,13 +1,17 @@
 package ch.wirelesssoundsystem.server.controllers.media.music;
 
 import ch.wirelesssoundsystem.server.models.songs.Song;
+import ch.wirelesssoundsystem.shared.utils.DurationStringConverter;
 import com.mpatric.mp3agic.NotSupportedException;
+import com.sun.javafx.binding.StringFormatter;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
+import javafx.util.StringConverter;
 
 import java.io.File;
 import java.util.Optional;
@@ -23,7 +27,8 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
     private MediaPlayer mediaPlayer;
 
     private BooleanProperty isPlaying;
-    private ReadOnlyObjectProperty<Duration> currentMediaTime;
+    private ObjectProperty<Duration> currentMediaTime;
+    private StringProperty currentMediaTimeString;
     private ReadOnlyObjectProperty<Duration> totalMediaDuration;
     private DoubleProperty volume;
 
@@ -40,6 +45,7 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
 
         this.isPlaying = new SimpleBooleanProperty();
         this.currentMediaTime = new SimpleObjectProperty<>();
+        this.currentMediaTimeString = new SimpleStringProperty();
         this.totalMediaDuration = new SimpleObjectProperty<>();
         this.volume = new SimpleDoubleProperty(1);
     }
@@ -212,19 +218,21 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
     }
 
     public Duration getCurrentMediaTime() {
-        return currentMediaTime.get();
+        return this.currentMediaTime.get();
     }
 
-    public ReadOnlyObjectProperty<Duration> currentMediaTimeProperty() {
-        return currentMediaTime;
+    public StringProperty currentMediaTimeString(){ return this.currentMediaTimeString; }
+
+    public ObjectProperty<Duration> currentMediaTime() {
+        return this.currentMediaTime;
     }
 
     public Duration getTotalMediaDuration() {
-        return totalMediaDuration.get();
+        return this.totalMediaDuration.get();
     }
 
     public ReadOnlyObjectProperty<Duration> totalMediaDurationProperty() {
-        return totalMediaDuration;
+        return this.totalMediaDuration;
     }
 
     private void setMediaPlayer(MediaPlayer mediaPlayer){
@@ -247,12 +255,15 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
     private void bindProperties(MediaPlayer player){
 
         if(this.getMediaPlayer() != null) {
-            this.currentMediaTime = this.getMediaPlayer().currentTimeProperty();
+            this.currentMediaTime.bind(this.getMediaPlayer().currentTimeProperty());
+            DurationStringConverter converter = new DurationStringConverter();
+//            Bindings.bindBidirectional(this.currentMediaTimeString, this.currentMediaTime, converter);
             this.totalMediaDuration = this.getMediaPlayer().totalDurationProperty();
 
             // Volume property.
             this.getMediaPlayer().setVolume(this.getVolume());
             this.volume.bindBidirectional(this.getMediaPlayer().volumeProperty());
+
 
             // Add Listener for the isPlaying property.
             // Maps the different MediaPlayer.Status to the boolean value isPlaying.
@@ -265,5 +276,9 @@ public class AudioPlayer implements ch.wirelesssoundsystem.server.controllers.me
                 }
             });
         }
+    }
+
+    private String formatDuration(Duration duration){
+        return (int)duration.toMinutes() + ":" + (int)(duration.toSeconds() % 60);
     }
 }

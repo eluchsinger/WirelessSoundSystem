@@ -6,6 +6,8 @@ import ch.wirelesssoundsystem.server.controllers.media.music.AudioPlayer;
 import ch.wirelesssoundsystem.server.models.songs.Song;
 import ch.wirelesssoundsystem.shared.models.clients.Client;
 import ch.wirelesssoundsystem.shared.models.clients.Clients;
+import ch.wirelesssoundsystem.shared.utils.DurationStringConverter;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -53,6 +55,9 @@ public class MainWindowViewModel {
 
     @FXML
     private Slider sliderVolume;
+
+    @FXML
+    private Label labelCurrentDuration;
 
     /* Constructor */
 
@@ -103,6 +108,9 @@ public class MainWindowViewModel {
         // Bind Slider to Volume property
         this.sliderVolume.valueProperty().bindBidirectional(this.mediaPlayer.volumeProperty());
 
+        // Bind CurrentDuration Label to CurrentDuration Property
+//        this.labelCurrentDuration.textProperty().bindBidirectional(this.mediaPlayer.currentMediaTimeString());
+        Bindings.bindBidirectional(this.labelCurrentDuration.textProperty(), this.mediaPlayer.currentMediaTime(), new DurationStringConverter());
         this.addDemoData();
     }
 

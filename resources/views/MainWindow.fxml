@@ -110,7 +110,7 @@
          <right>
             <BorderPane prefHeight="50.0" BorderPane.alignment="CENTER_RIGHT">
                <left>
-                     <Label text="00:00" BorderPane.alignment="CENTER">
+                     <Label fx:id="labelCurrentDuration" text="00:00" BorderPane.alignment="CENTER">
                         <BorderPane.margin>
                            <Insets right="5.0" />
                         </BorderPane.margin>

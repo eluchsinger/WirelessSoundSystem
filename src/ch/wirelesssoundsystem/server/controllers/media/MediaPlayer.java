@@ -2,6 +2,7 @@ package ch.wirelesssoundsystem.server.controllers.media;
 
 import ch.wirelesssoundsystem.server.models.songs.Song;
 import javafx.beans.property.*;
+import javafx.util.Duration;
 
 /**
  * Created by Esteban Luchsinger on 01.12.2015.
@@ -36,6 +37,9 @@ public interface MediaPlayer<T> {
 
     T getCurrentTrack();
     SimpleObjectProperty<T> currentTrackProperty();
+
+    StringProperty currentMediaTimeString();
+    ObjectProperty<Duration> currentMediaTime();
 
     double getVolume();
     void setVolume(double value);
