@@ -1,0 +1,7 @@
+.player-button {
+    -fx-background-radius: 5em;
+    -fx-min-width: 45px;
+    -fx-min-height: 45px;
+    -fx-max-width: 45px;
+    -fx-max-height: 45px;
+}
