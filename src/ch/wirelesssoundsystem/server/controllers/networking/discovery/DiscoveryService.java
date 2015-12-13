@@ -44,14 +44,14 @@ public class DiscoveryService {
     /**
      * Waiting delay for the discovery task to run again in seconds.
      */
-    private static final long DISCOVERY_TICK = 4;
+    private static final long DISCOVERY_TICK = 2;
 
     /**
      * Client timeout time in milliseconds.
      * The clients will be removed from the Clients list, after they expire.
      * The timeout time for the clients are renewed, every time they are seen on the network.
      */
-    private static final long CLIENT_TIMEOUT = 4000;
+    private static final long CLIENT_TIMEOUT = DiscoveryService.DISCOVERY_TICK * 2 * 1000;
 
     /**
      * This is the message sent in the discovery protocol.
