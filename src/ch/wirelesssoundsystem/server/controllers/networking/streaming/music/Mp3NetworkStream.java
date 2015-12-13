@@ -1,6 +1,7 @@
-package ch.wirelesssoundsystem.server.controllers.networking.music;
+package ch.wirelesssoundsystem.server.controllers.networking.streaming.music;
 
 import ch.wirelesssoundsystem.server.controllers.networking.NetworkStream;
+import ch.wirelesssoundsystem.server.controllers.networking.Utility;
 import ch.wirelesssoundsystem.server.models.songs.Song;
 import ch.wirelesssoundsystem.shared.models.clients.Client;
 
@@ -36,11 +37,11 @@ public class Mp3NetworkStream implements NetworkStream<Song> {
             byte[] data = Files.readAllBytes(Paths.get(file.toURI()));
 
             // Calculate the amount of packets (as double).
-            double calculatedAmountOfPackets = data.length / Mp3NetworkStream.MAX_PACKET_SIZE;
+            double calculatedAmountOfPackets = data.length / (double)Mp3NetworkStream.MAX_PACKET_SIZE;
             int realAmountOfPackets = (int)calculatedAmountOfPackets;
 
-            // Check if the amount of packets is an round integer.
-            if(calculatedAmountOfPackets % 2 > 0){
+            // Check if the amount of packets is an integer (no decimals).
+            if(calculatedAmountOfPackets - (int)calculatedAmountOfPackets > 0){
                 // if the amount of packets is not a round number, add one.
                 calculatedAmountOfPackets++;
                 realAmountOfPackets = (int)calculatedAmountOfPackets;
@@ -58,13 +59,9 @@ public class Mp3NetworkStream implements NetworkStream<Song> {
                 offset += sendingLength;
                 socket.send(packet);
             }
-
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        //DatagramPacket datagramPacket = new DatagramPacket()
     }
 
     @Override

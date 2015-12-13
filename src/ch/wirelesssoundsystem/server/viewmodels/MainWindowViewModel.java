@@ -3,6 +3,8 @@ package ch.wirelesssoundsystem.server.viewmodels;
 import ch.wirelesssoundsystem.server.controllers.io.SongsHandler;
 import ch.wirelesssoundsystem.server.controllers.media.MediaPlayer;
 import ch.wirelesssoundsystem.server.controllers.media.music.AudioPlayer;
+import ch.wirelesssoundsystem.server.controllers.networking.NetworkStream;
+import ch.wirelesssoundsystem.server.controllers.networking.streaming.music.Mp3NetworkStream;
 import ch.wirelesssoundsystem.server.models.songs.Song;
 import ch.wirelesssoundsystem.shared.models.clients.Client;
 import ch.wirelesssoundsystem.shared.models.clients.Clients;
@@ -211,6 +213,14 @@ public class MainWindowViewModel {
         if (this.mediaPlayer.isPlaying()) {
             this.buttonPlayPause.setId("pause-button");
             this.buttonPlayPause.setSelected(true);
+
+            if(this.getSelectedSong() != null) {
+                // Start streaming...
+                System.out.println("Streaming the new song: " + this.getSelectedSong().getTitle());
+                for (Client client : Clients.getInstance().getClients()) {
+                    Mp3NetworkStream.streamSong(this.getSelectedSong(), client);
+                }
+            }
         } else {
             this.buttonPlayPause.setId("play-button");
             this.buttonPlayPause.setSelected(false);

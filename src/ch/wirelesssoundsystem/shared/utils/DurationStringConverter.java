@@ -21,10 +21,6 @@ public class DurationStringConverter extends StringConverter<Duration> {
 
             String prepend = "";
 
-//            if (minutes < 10)
-//                prepend = "0";
-
-
             StringBuilder builder = new StringBuilder(prepend + minutes);
             builder.append(":");
 
