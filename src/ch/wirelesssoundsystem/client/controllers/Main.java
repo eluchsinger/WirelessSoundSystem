@@ -14,7 +14,7 @@ public class Main extends Application {
         System.out.println("Starting DiscoveryService...");
         DiscoveryService.getInstance().start();
 
-        Parent root = FXMLLoader.load(getClass().getResource("../views/ClientWindow.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/views/ClientWindow.fxml"));
         primaryStage.setTitle("Wireless Sound System (Client)");
         primaryStage.setScene(new Scene(root, 600, 400));
 
