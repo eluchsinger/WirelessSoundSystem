@@ -12,18 +12,16 @@ import java.util.logging.Logger;
 
 /**
  * Created by Esteban Luchsinger on 15.12.2015.
- * This class handles the File handling.
- * The file can be handled from a different thread. Tough, the SynchronizedTempFileHandler must be
- * in the thread using it!
+ * This class handles the handling of the cache.
  */
-public class SynchronizedTempFileHandler {
+public class CacheHandler {
     private File file;
     private boolean isOpen;
 
     private FileChannel fileChannel;
     private FileLock lock;
 
-    private static SynchronizedTempFileHandler instance = new SynchronizedTempFileHandler();
+    private static CacheHandler instance = new CacheHandler();
 
 
     /**
@@ -31,7 +29,7 @@ public class SynchronizedTempFileHandler {
      * The file will be locked for writing, but allowed to read while this class
      * has a handle on it (isOpen).
      */
-    private SynchronizedTempFileHandler() {
+    private CacheHandler() {
         String tmpDir = System.getProperty("java.io.tmpdir");
 
         try {
@@ -39,14 +37,9 @@ public class SynchronizedTempFileHandler {
 
             System.out.println("Created TempFile: " + this.file.getAbsolutePath());
 
-
-            if(this.file.exists()){
-                this.file.delete();
-            }
-
             this.file.createNewFile();
             this.fileChannel = new RandomAccessFile(file, "rw").getChannel();
-    //        this.file.deleteOnExit();
+            this.file.deleteOnExit();
         } catch (IOException e) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
                     "Fehler beim Erstellen des Temp Files.",
@@ -54,7 +47,7 @@ public class SynchronizedTempFileHandler {
         }
     }
 
-    public static SynchronizedTempFileHandler getInstance() {
+    public static CacheHandler getInstance() {
         return instance;
     }
 

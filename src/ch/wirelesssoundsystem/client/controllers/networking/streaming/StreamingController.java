@@ -1,6 +1,6 @@
 package ch.wirelesssoundsystem.client.controllers.networking.streaming;
 
-import ch.wirelesssoundsystem.client.controllers.io.SynchronizedTempFileHandler;
+import ch.wirelesssoundsystem.client.controllers.io.CacheHandler;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -118,7 +118,7 @@ public class StreamingController {
 
     private void dataReceived(byte[] data) {
         try {
-            SynchronizedTempFileHandler.getInstance().writeData(data);
+            CacheHandler.getInstance().writeData(data);
             System.out.println("Received DataPacket size: " + data.length);
         } catch (IOException e) {
             e.printStackTrace();
