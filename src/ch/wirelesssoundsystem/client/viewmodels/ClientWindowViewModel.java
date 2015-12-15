@@ -1,6 +1,6 @@
 package ch.wirelesssoundsystem.client.viewmodels;
 
-import ch.wirelesssoundsystem.client.controllers.io.SynchronizedTempFileHandler;
+import ch.wirelesssoundsystem.client.controllers.io.CacheHandler;
 import javafx.fxml.FXML;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -13,7 +13,7 @@ public class ClientWindowViewModel {
     @FXML
     public void onButtonPlayClicked(){
         MediaPlayer player = new MediaPlayer(
-                new Media(SynchronizedTempFileHandler.getInstance()
+                new Media(CacheHandler.getInstance()
                         .getTempFile()
                         .toURI()
                         .toString()));
