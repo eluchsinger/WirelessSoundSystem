@@ -1,4 +1,4 @@
-package ch.wirelesssoundsystem.server.models.songs;
+package ch.wirelesssoundsystem.shared.models.songs;
 
 /**
  * Created by eluch on 30.11.2015.

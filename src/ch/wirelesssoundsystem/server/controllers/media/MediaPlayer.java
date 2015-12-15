@@ -1,6 +1,5 @@
 package ch.wirelesssoundsystem.server.controllers.media;
 
-import ch.wirelesssoundsystem.server.models.songs.Song;
 import javafx.beans.property.*;
 import javafx.util.Duration;
 

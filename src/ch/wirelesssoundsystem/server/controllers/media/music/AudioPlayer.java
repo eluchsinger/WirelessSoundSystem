@@ -1,17 +1,12 @@
 package ch.wirelesssoundsystem.server.controllers.media.music;
 
-import ch.wirelesssoundsystem.server.models.songs.Song;
-import ch.wirelesssoundsystem.shared.utils.DurationStringConverter;
-import com.mpatric.mp3agic.NotSupportedException;
-import com.sun.javafx.binding.StringFormatter;
-import javafx.beans.binding.Bindings;
+import ch.wirelesssoundsystem.shared.models.songs.Song;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
-import javafx.util.StringConverter;
 
 import java.io.File;
 import java.util.Optional;

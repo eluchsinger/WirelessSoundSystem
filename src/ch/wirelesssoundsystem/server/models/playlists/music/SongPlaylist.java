@@ -1,7 +1,7 @@
 package ch.wirelesssoundsystem.server.models.playlists.music;
 
 import ch.wirelesssoundsystem.server.models.playlists.Playlist;
-import ch.wirelesssoundsystem.server.models.songs.Song;
+import ch.wirelesssoundsystem.shared.models.songs.Song;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 

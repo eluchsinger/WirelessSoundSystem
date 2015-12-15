@@ -1,8 +1,7 @@
 package ch.wirelesssoundsystem.server.controllers.networking.streaming.music;
 
 import ch.wirelesssoundsystem.server.controllers.networking.NetworkStream;
-import ch.wirelesssoundsystem.server.controllers.networking.Utility;
-import ch.wirelesssoundsystem.server.models.songs.Song;
+import ch.wirelesssoundsystem.shared.models.songs.Song;
 import ch.wirelesssoundsystem.shared.models.clients.Client;
 
 import java.io.File;
