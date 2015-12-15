@@ -26,7 +26,7 @@ public class DiscoveryService {
 
     //region Members & Constants
     /**
-     * This is the port used for discovery.
+     * This is the port used for discovery. Client receiving port.
      */
     private static final int DISCOVERY_PORT = 6583;
 
@@ -159,7 +159,14 @@ public class DiscoveryService {
 
             if (this.responseThread.isAlive()) {
                 this.isListening = false;
-                System.out.println("Stopping listening...");
+
+                try {
+                    this.responseThread.join((int)(DiscoveryService.CLIENT_TIMEOUT * 1.5));
+                }
+                catch(InterruptedException interrupted){
+                    Logger.getLogger(this.getClass().getName()).log(Level.WARNING, "Response thread interruption...", interrupted);
+                }
+                System.out.println("Listening stopped...");
             }
 
             this.responseThread = null;
@@ -270,9 +277,9 @@ public class DiscoveryService {
                     }
                 }
                 // This catch is called if the socket was timed out. It's normal.
-                catch (SocketTimeoutException e) {
+                catch (SocketTimeoutException ignore) {
                     // Uncomment this if you want to log the timeout exception.
-                    Logger.getLogger(DiscoveryService.class.getName()).log(Level.INFO, "[WARNING]: Reading Socket timed out. Reinitializing reading...");
+                    //  Logger.getLogger(DiscoveryService.class.getName()).log(Level.INFO, "[WARNING]: Reading Socket timed out. Reinitializing reading...");
                 }
             }
         } catch (IOException e) {

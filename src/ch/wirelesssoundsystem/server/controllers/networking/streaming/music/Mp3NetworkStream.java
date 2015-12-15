@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -21,6 +22,7 @@ public class Mp3NetworkStream implements NetworkStream<Song> {
     DatagramSocket multicastSocket = new MulticastSocket();
     private final static int CLIENT_PORT = 6049;
     private final static int MAX_PACKET_SIZE = 700;
+    private final static String MULTICAST_GROUP_ADDRESS = "239.255.42.100";
 
     public Mp3NetworkStream() throws IOException {
     }
@@ -55,7 +57,12 @@ public class Mp3NetworkStream implements NetworkStream<Song> {
                 // Get the smaller length. Either the rest of the data, if it is the last datagram,
                 // or the MAX_PACKET_SIZE.
                 int sendingLength = Math.min(data.length - offset, Mp3NetworkStream.MAX_PACKET_SIZE);
-                DatagramPacket packet = new DatagramPacket(data, offset, sendingLength, client.getInetAddress(), Mp3NetworkStream.CLIENT_PORT);
+                //DatagramPacket packet = new DatagramPacket(data, offset, sendingLength, client.getInetAddress(), Mp3NetworkStream.CLIENT_PORT);
+                DatagramPacket packet = new DatagramPacket(data,
+                        offset,
+                        sendingLength,
+                        InetAddress.getByName(Mp3NetworkStream.MULTICAST_GROUP_ADDRESS),
+                        Mp3NetworkStream.CLIENT_PORT);
                 offset += sendingLength;
                 socket.send(packet);
             }

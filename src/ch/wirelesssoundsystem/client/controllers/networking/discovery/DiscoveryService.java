@@ -14,7 +14,6 @@ import java.util.logging.Logger;
 public class DiscoveryService {
     private static DiscoveryService ourInstance = new DiscoveryService();
 
-    private static final int SCANNING_TIMEOUT = 2000;
     private static DatagramSocket scanningSocket;
     private static DatagramSocket responseSocket;
 
@@ -44,6 +43,11 @@ public class DiscoveryService {
      * This is the reading buffer. In best case it would be the size of the receiving message.
      */
     private static final int SCANNING_BUFFER_SIZE = DISCOVERY_MESSAGE.length() + 1;
+
+    /**
+     * TIMEOUT (in milliseconds) for the reading socket.
+     */
+    private static final int SCANNING_TIMEOUT = 2000;
 
     private Thread scanningThread;
     private volatile boolean isWorking = false;
@@ -153,7 +157,7 @@ public class DiscoveryService {
     private void foundServer(InetAddress inetAddress, int serverListeningPort) {
         Server foundServer = new Server(inetAddress, serverListeningPort);
 
-        System.out.println("Server found: " + foundServer + "...");
+        //System.out.println("Server found: " + foundServer + "...");
 
         try {
             byte[] sendingData = SERVER_FOUND_MESSAGE.getBytes();

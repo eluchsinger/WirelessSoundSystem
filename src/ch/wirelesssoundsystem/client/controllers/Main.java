@@ -1,6 +1,7 @@
 package ch.wirelesssoundsystem.client.controllers;
 
 import ch.wirelesssoundsystem.client.controllers.networking.discovery.DiscoveryService;
+import ch.wirelesssoundsystem.client.controllers.networking.streaming.StreamingController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -13,6 +14,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         System.out.println("Starting DiscoveryService...");
         DiscoveryService.getInstance().start();
+        StreamingController.getInstance().start();
 
         Parent root = FXMLLoader.load(getClass().getResource("/views/ClientWindow.fxml"));
         primaryStage.setTitle("Wireless Sound System (Client)");
@@ -21,6 +23,7 @@ public class Main extends Application {
         primaryStage.setOnCloseRequest((event) -> {
             System.out.println("Stopping DiscoveryService...");
             DiscoveryService.getInstance().stop();
+            StreamingController.getInstance().stop();
         });
         primaryStage.show();
 
