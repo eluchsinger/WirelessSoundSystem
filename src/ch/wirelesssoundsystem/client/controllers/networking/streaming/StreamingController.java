@@ -31,7 +31,6 @@ public class StreamingController {
 
     private volatile boolean isListening = false;
     private Thread readingThread;
-    private SynchronizedTempFileHandler tempFileHandler;
 
     /**
      * The socket that is reading the incoming datagrams containing the music..
@@ -52,12 +51,6 @@ public class StreamingController {
                 this.readingSocket = new MulticastSocket(StreamingController.STREAM_READING_PORT);
                 this.readingSocket.setSoTimeout(StreamingController.READING_TIMEOUT);
                 this.readingSocket.joinGroup(InetAddress.getByName(StreamingController.MULTICAST_GROUP_ADDRESS));
-
-
-                if(this.tempFileHandler == null){
-                    this.tempFileHandler = new SynchronizedTempFileHandler();
-                    this.tempFileHandler.open();
-                }
 
                 if(!this.isListening && (this.readingThread == null || !this.readingThread.isAlive())){
                     this.readingThread = new Thread(this::listen);
@@ -82,7 +75,6 @@ public class StreamingController {
                 }
             }
             catch(Exception e){
-
             }
             this.readingSocket = null;
         }
@@ -98,15 +90,6 @@ public class StreamingController {
                         e);
             }
             this.readingThread = null;
-        }
-
-        try {
-            if(this.tempFileHandler != null) {
-                this.tempFileHandler.close();
-                this.tempFileHandler = null;
-            }
-        } catch (IOException e) {
-            Logger.getLogger(this.getClass().getName()).log(Level.WARNING, "TempFileHandler error", e);
         }
 
         System.out.println("Streaming Controller stopped...");
@@ -135,7 +118,7 @@ public class StreamingController {
 
     private void dataReceived(byte[] data) {
         try {
-            this.tempFileHandler.writeData(data);
+            SynchronizedTempFileHandler.getInstance().writeData(data);
             System.out.println("Received DataPacket size: " + data.length);
         } catch (IOException e) {
             e.printStackTrace();

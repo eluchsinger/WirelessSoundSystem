@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+
 <BorderPane minHeight="400.0" minWidth="600.0" xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ch.wirelesssoundsystem.client.viewmodels.ClientWindowViewModel">
+   <center>
+      <Button mnemonicParsing="false" onAction="#onButtonPlayClicked" text="Play" BorderPane.alignment="CENTER" />
+   </center>
 </BorderPane>
