@@ -2,11 +2,10 @@ package ch.wirelesssoundsystem.client.controllers.networking.streaming;
 
 import ch.wirelesssoundsystem.client.controllers.io.CacheHandler;
 
+import javax.management.remote.SubjectDelegationPermission;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
-import java.net.SocketTimeoutException;
+import java.net.*;
+import java.security.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -50,7 +49,17 @@ public class StreamingController {
             try {
                 this.readingSocket = new MulticastSocket(StreamingController.STREAM_READING_PORT);
                 this.readingSocket.setSoTimeout(StreamingController.READING_TIMEOUT);
-                this.readingSocket.joinGroup(InetAddress.getByName(StreamingController.MULTICAST_GROUP_ADDRESS));
+
+                AccessController.doPrivileged((PrivilegedAction<Object>) (() -> {
+                    try {
+                        this.readingSocket.joinGroup(InetAddress.getByName(StreamingController.MULTICAST_GROUP_ADDRESS));
+                    } catch (IOException e) {
+                        Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
+                                "Could not join Multicast group.", e);
+                    }
+
+                    return null;
+                }));
 
                 if(!this.isListening && (this.readingThread == null || !this.readingThread.isAlive())){
                     this.readingThread = new Thread(this::listen);
