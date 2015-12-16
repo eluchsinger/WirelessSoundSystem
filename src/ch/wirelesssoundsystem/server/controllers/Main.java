@@ -17,6 +17,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
+        System.setProperty("java.net.preferIPv4Stack" , "true");
         // Setting logger
         Logger log = LogManager.getLogManager().getLogger("");
         for(Handler h : log.getHandlers()){

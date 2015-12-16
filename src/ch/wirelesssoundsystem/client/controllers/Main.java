@@ -12,6 +12,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
+        System.setProperty("java.net.preferIPv4Stack", "true");
         System.out.println("Starting DiscoveryService...");
         DiscoveryService.getInstance().start();
         StreamingController.getInstance().start();

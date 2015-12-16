@@ -123,8 +123,6 @@ public class MainWindowViewModel {
         Bindings.bindBidirectional(this.labelCurrentDuration.textProperty(), this.mediaPlayer.currentMediaTime(), new DurationStringConverter());
 
         this.bindSongTrackerSlider();
-
-        this.addDemoData();
     }
 
     /* Properties */
@@ -214,9 +212,7 @@ public class MainWindowViewModel {
             if(this.getSelectedSong() != null) {
                 // Start streaming...
                 System.out.println("Streaming the new song: " + this.getSelectedSong().getTitle());
-                for (Client client : Clients.getInstance().getClients()) {
-                    Mp3NetworkStream.streamSong(this.getSelectedSong(), client);
-                }
+                Mp3NetworkStream.streamSong(this.getSelectedSong());
             }
         } else {
             this.buttonPlayPause.setId("play-button");
@@ -241,14 +237,5 @@ public class MainWindowViewModel {
 
     private void unbindSongTrackerSlider() {
 
-    }
-
-    private void addDemoData() {
-        //DEMO DATA
-        this.clientObservableList.add(new Client("Wohnzimmer"));
-        this.clientObservableList.add(new Client("Küche"));
-        this.clientObservableList.add(new Client("Schlafzimmer"));
-        this.clientObservableList.add(new Client("Eingang"));
-        this.clientObservableList.add(new Client("Dusche"));
     }
 }

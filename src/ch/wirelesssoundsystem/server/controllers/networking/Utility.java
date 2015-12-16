@@ -13,8 +13,6 @@ public class Utility {
     private static InetAddress broadcastAddress;
 
     static {
-        System.setProperty("java.net.preferIPv4Stack" , "true");
-
         try {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
 
