@@ -3,6 +3,7 @@ package ch.wirelesssoundsystem.server.controllers.networking.streaming.music;
 import ch.wirelesssoundsystem.shared.models.clients.Client;
 import ch.wirelesssoundsystem.shared.models.clients.Clients;
 import ch.wirelesssoundsystem.shared.models.networking.SongCache;
+import ch.wirelesssoundsystem.shared.models.networking.exceptions.CacheOverflowException;
 import ch.wirelesssoundsystem.shared.models.networking.exceptions.StreamingInitFailedException;
 import ch.wirelesssoundsystem.shared.models.networking.messages.StreamingMessage;
 import ch.wirelesssoundsystem.shared.models.songs.Song;
@@ -85,9 +86,8 @@ public class MusicStreamController {
             DatagramSocket socket = new DatagramSocket();
             socket.setSoTimeout(MusicStreamController.TIMEOUT_FOR_RESPONSES);
             int lengthOfAck = ackMessage.getBytes().length;
-            int retries = 0;
+            int retries;
 
-            List<Client> clientsAcknowledged = new ArrayList<>(Clients.getInstance().getClients());
             for(retries = 0; retries < MusicStreamController.STREAM_INITIALIZATION_RETRIES; retries++) {
                 try {
                     socket.send(datagramPacket);
@@ -147,6 +147,15 @@ public class MusicStreamController {
      * Feedback could be that a packet did not arrive.
      */
     private void feedbackListener(){
+
+    }
+
+    /**
+     * Resend the sequences to the specific client.
+     * @param sequences Sequences to be sent again.
+     * @param client Specific client to send the sequences to.
+     */
+    private void resendPackets(List<Integer> sequences, Client client){
 
     }
 }

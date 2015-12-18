@@ -91,7 +91,7 @@ public class SongCache {
 
         // If the cache is already complete, there is nothing to do.
         if(!this.isComplete()){
-            for(int i = 0; i < this.cache.size(); i++) {
+            for(int i = 1; i < this.cache.size() + 1; i++) {
 
                 // Datagram missing
                 if(this.cache.get(i) == null){
