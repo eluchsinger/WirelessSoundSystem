@@ -12,6 +12,8 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Esteban Luchsinger on 16.12.2015.
@@ -20,6 +22,8 @@ import java.util.List;
  * hundreds or thousands of SongDatagrams.
  */
 public class SongDatagram {
+    public static final int SEQUENCE_NUMBER_NOT_INITIALIZED = -1;
+
     /**
      * Max Size of the data-section of this datagram (in bytes).
      */
@@ -90,6 +94,33 @@ public class SongDatagram {
         byte[] totalData = outputStream.toByteArray();
 
         return new DatagramPacket(totalData, totalData.length, this.inetAddress, this.port);
+    }
+
+    public static SongDatagram convertToSongDatagram(DatagramPacket packet){
+
+        SongDatagram songDatagram = null;
+        try {
+            ByteBuffer completeBuffer = ByteBuffer.wrap(packet.getData());
+            // Allocate bytes for the header data.
+            byte[] headerData = new byte[SongDatagram.HEADER_SIZE];
+            // Get the header data
+            ByteBuffer headerBuffer = completeBuffer.get(headerData, 0, SongDatagram.HEADER_SIZE);
+            // Get the sequence nr
+            int sequenceNr = headerBuffer.getInt();
+            // Get the length
+            int length = headerBuffer.getInt();
+
+            // Get the song data (the data without the header).
+            byte[] songData = new byte[length];
+            ByteBuffer.wrap(packet.getData()).get(songData, SongDatagram.HEADER_SIZE, length);
+
+            songDatagram = new SongDatagram(songData, packet.getAddress(), packet.getPort());
+            songDatagram.setSequenceNr(sequenceNr);
+        }
+        catch(Exception e){
+            Logger.getLogger(SongDatagram.class.getName()).log(Level.SEVERE, "Packet corrupted", e);
+        }
+        return songDatagram;
     }
 
 

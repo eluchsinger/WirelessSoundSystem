@@ -1,11 +1,15 @@
 package ch.wirelesssoundsystem.client.controllers.networking.streaming;
 
 import ch.wirelesssoundsystem.client.controllers.io.CacheHandler;
+import ch.wirelesssoundsystem.shared.models.networking.SongDatagram;
 
 import javax.management.remote.SubjectDelegationPermission;
+import java.applet.Applet;
 import java.io.IOException;
 import java.net.*;
 import java.security.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -105,15 +109,15 @@ public class StreamingController {
     }
 
     private void listen(){
-
+        List<SongDatagram> datagramBuffer = new ArrayList<>();
         try {
             while (this.isListening) {
-                byte[] buffer = new byte[StreamingController.READING_BUFFER_SIZE];
+                byte[] buffer = new byte[SongDatagram.MAX_TOTAL_SIZE];
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 
                 try {
                     readingSocket.receive(packet);
-
+                    datagramBuffer.add(this.createSongDatagram(packet));
                     dataReceived(packet.getData());
                 } catch (SocketTimeoutException ignore) {
 
@@ -132,5 +136,11 @@ public class StreamingController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private SongDatagram createSongDatagram(DatagramPacket originalPacket){
+        SongDatagram songDatagram = null;
+        songDatagram = SongDatagram.convertToSongDatagram(originalPacket);
+        return songDatagram;
     }
 }

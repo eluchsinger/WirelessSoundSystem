@@ -23,7 +23,7 @@ public class Mp3NetworkStream implements NetworkStream<Song> {
 
     DatagramSocket multicastSocket = new MulticastSocket();
     private final static int CLIENT_PORT = 6049;
-    private final static int MAX_PACKET_SIZE = 400;
+    private final static int MAX_PACKET_SIZE = 700;
     private final static String MULTICAST_GROUP_ADDRESS = "239.255.42.100";
 
     public Mp3NetworkStream() throws IOException {
@@ -54,6 +54,8 @@ public class Mp3NetworkStream implements NetworkStream<Song> {
 
             int offset = 0;
             System.out.println("Amount of Packets: " + realAmountOfPackets);
+
+            // Todo: Initiate the streaming: Send amount of packets (and/or size of file).
 
             // Send all packets.
             for (int i = 0; i < realAmountOfPackets; i++) {
