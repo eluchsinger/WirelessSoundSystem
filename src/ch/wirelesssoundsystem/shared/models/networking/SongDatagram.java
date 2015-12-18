@@ -42,8 +42,9 @@ public class SongDatagram {
     public static final int MAX_TOTAL_SIZE = HEADER_SIZE + MAX_DATA_SIZE;
 
     private final byte[] data;
-    private final InetAddress inetAddress;
-    private final int port;
+
+    private InetAddress inetAddress;
+    private int port;
     private SongDatagramHeader songDatagramHeader;
 
     public SongDatagram(byte[] data, InetAddress inetAddress, int port) throws UnknownHostException {
@@ -52,10 +53,15 @@ public class SongDatagram {
         }
         else{
             this.data = data.clone();
-            this.inetAddress = InetAddress.getByAddress(inetAddress.getAddress());
+            if(inetAddress != null)
+                this.inetAddress = InetAddress.getByAddress(inetAddress.getAddress());
             this.port = port;
             this.songDatagramHeader = new SongDatagramHeader(data);
         }
+    }
+
+    public SongDatagram(byte[] data) throws UnknownHostException {
+        this(data, null, -1);
     }
 
     /**
@@ -73,6 +79,23 @@ public class SongDatagram {
      */
     public void setSequenceNr(int sequenceNr){
         this.songDatagramHeader.setSequenceNumber(sequenceNr);
+    }
+
+
+    public InetAddress getInetAddress() {
+        return inetAddress;
+    }
+
+    public void setInetAddress(InetAddress inetAddress) {
+        this.inetAddress = inetAddress;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
     }
 
     /**
@@ -96,6 +119,13 @@ public class SongDatagram {
         return new DatagramPacket(totalData, totalData.length, this.inetAddress, this.port);
     }
 
+    /**
+     * Converts a DatagramPacket into a SongDatagram.
+     * Transforms the first SongDatagram.HEADER_SIZE Bytes into the header and
+     * the rest into the datagram data.
+     * @param packet Original DatagramPacket.
+     * @return Returns a SongDatagram with Header and Data.
+     */
     public static SongDatagram convertToSongDatagram(DatagramPacket packet){
 
         SongDatagram songDatagram = null;
@@ -124,6 +154,27 @@ public class SongDatagram {
     }
 
 
+    /**
+     * Creates a list of SongDatagrams using a byte array.
+     * The array could be for example the file data.
+     * The UDP Header data is initialized using null-values.
+     * @param data Byte array containing the data of the datagrams.
+     * @return Returns a list of SongDatagrams. They are already Ordered by SequenceNr.
+     * @throws UnknownHostException Throws an exception if the Host (Destination address) is unknown.
+     */
+    public static List<SongDatagram> createPackets(byte[] data) throws UnknownHostException {
+        return SongDatagram.createPackets(data, null, -1);
+    }
+
+    /**
+     * Creates a list of SongDatagrams using a byte array.
+     * The array could be for example the file data.
+     * @param data Byte array containing the data of the datagrams.
+     * @param inetAddress Destination Address in the UDP Datagram Header.
+     * @param port Destination Port of the UDP Datagram.
+     * @return Returns a list of SongDatagrams. They are already Ordered by SequenceNr.
+     * @throws UnknownHostException Throws an exception if the Host (Destination address) is unknown.
+     */
     public static List<SongDatagram> createPackets(byte[] data, InetAddress inetAddress, int port) throws UnknownHostException {
         if(data.length < 1){
             return new ArrayList<>();
@@ -153,9 +204,15 @@ public class SongDatagram {
                     0,
                     dataForPacket.length);
 
-            SongDatagram newPacket = new SongDatagram(dataForPacket,
-                    inetAddress,
-                    port);
+            SongDatagram newPacket;
+            if(inetAddress == null){
+                newPacket = new SongDatagram(dataForPacket);
+            }
+            else {
+                newPacket = new SongDatagram(dataForPacket,
+                        inetAddress,
+                        port);
+            }
 
             newPacket.setSequenceNr(i + 1);
             datagrams.add(newPacket);

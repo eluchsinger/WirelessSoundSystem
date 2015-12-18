@@ -4,6 +4,7 @@ import ch.wirelesssoundsystem.server.controllers.io.SongsHandler;
 import ch.wirelesssoundsystem.server.controllers.media.MediaPlayer;
 import ch.wirelesssoundsystem.server.controllers.media.music.AudioPlayer;
 import ch.wirelesssoundsystem.server.controllers.networking.streaming.music.Mp3NetworkStream;
+import ch.wirelesssoundsystem.server.controllers.networking.streaming.music.MusicStreamController;
 import ch.wirelesssoundsystem.shared.models.songs.Song;
 import ch.wirelesssoundsystem.shared.models.clients.Client;
 import ch.wirelesssoundsystem.shared.models.clients.Clients;
@@ -27,6 +28,7 @@ import java.util.List;
  */
 public class MainWindowViewModel {
     private MediaPlayer<Song> mediaPlayer;
+    private MusicStreamController musicStreamController;
 
     // Properties
     private StringProperty pathToFolder;
@@ -86,6 +88,9 @@ public class MainWindowViewModel {
         // Init Media Player
         this.mediaPlayer = new AudioPlayer(this.songObservableList);
         this.mediaPlayer.isPlayingProperty().addListener((observable, oldValue, newValue) -> this.onIsPlayingChanged());
+
+        // Init MusicStreamController
+        this.musicStreamController = new MusicStreamController();
 
         // Init Table
         this.tableViewSongs.setItems(this.songObservableList);
@@ -212,7 +217,8 @@ public class MainWindowViewModel {
             if(this.getSelectedSong() != null) {
                 // Start streaming...
                 System.out.println("Streaming the new song: " + this.getSelectedSong().getTitle());
-                Mp3NetworkStream.streamSong(this.getSelectedSong());
+//                Mp3NetworkStream.streamSong(this.getSelectedSong());
+                this.musicStreamController.play(this.getSelectedSong());
             }
         } else {
             this.buttonPlayPause.setId("play-button");
