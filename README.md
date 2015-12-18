@@ -16,4 +16,4 @@ The server is written in Java using the JavaFX Framework.
 - Use L4J for logging.
 
 #Copyright
-Copyright [2015] [Esteban Luchsinger]
+Copyright © 2015 Esteban Luchsinger
