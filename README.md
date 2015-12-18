@@ -14,3 +14,6 @@ The server is written in Java using the JavaFX Framework.
 - Develop "Discovery" Protocol.
 - Implement Streaming protocol with NETTY.
 - Use L4J for logging.
+
+#Copyright
+Copyright [2015] [Esteban Luchsinger]
