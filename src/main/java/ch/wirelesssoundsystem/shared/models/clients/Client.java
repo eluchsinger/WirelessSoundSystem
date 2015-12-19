@@ -1,13 +1,10 @@
 package ch.wirelesssoundsystem.shared.models.clients;
 
-import com.sun.corba.se.impl.io.TypeMismatchException;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 import java.net.InetAddress;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * Created by Esteban Luchsinger on 30.11.2015.
@@ -86,7 +83,7 @@ public class Client implements Comparable {
             }
         }
         else{
-            throw new TypeMismatchException("The compared types are not compatible");
+            throw new ClassCastException("The compared types are not compatible");
         }
     }
 
