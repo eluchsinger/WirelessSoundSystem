@@ -3,6 +3,7 @@ This is the server software for the Wireless Sound System.
 
 The server is written in Java using the JavaFX Framework.
 
+Gradle is doing the automated build part.
 
 #ToDo's
 - Add Playlist controls (A new Control just for the playlist).
