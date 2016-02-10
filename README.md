@@ -15,5 +15,8 @@ The server is written in Java using the JavaFX Framework.
 - Implement Streaming protocol with NETTY.
 - Use L4J for logging.
 
+#To make it run
+- When the client receives data, there could be an OutOfMemoryError. Run the JVM with the following parameter: -Xmx300m to get the maximum 300 MB Java Heap Memory.
+
 #Copyright
 Copyright © 2015 Esteban Luchsinger

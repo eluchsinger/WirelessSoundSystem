@@ -1,0 +1,3 @@
+rootProject.name = 'WirelessSoundSystem'
+
+include ':server', ':shared', ':client'
