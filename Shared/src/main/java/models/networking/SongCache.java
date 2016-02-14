@@ -2,6 +2,7 @@ package models.networking;
 
 
 import models.songs.Song;
+import utils.networking.SongDatagramBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,19 +32,19 @@ public class SongCache {
     }
 
     public void add(SongDatagram songDatagram){
-        this.cache.put(songDatagram.getSequenceNr(), songDatagram);
+        this.cache.put(songDatagram.getSequenceNumber(), songDatagram);
     }
 
     public void add(List<SongDatagram> songDatagrams){
         Map<Integer, SongDatagram> temporaryTreeMap = new TreeMap<>();
 
         for(SongDatagram songDatagram : songDatagrams){
-            if(songDatagram.getSequenceNr() == SongDatagram.SEQUENCE_NUMBER_NOT_INITIALIZED)
+            if(songDatagram.getSequenceNumber() == SongDatagram.SEQUENCE_NUMBER_NOT_INITIALIZED)
                 throw new IllegalStateException("At least one SongDatagram contains a not-initialized " +
                         "SequenceNr.");
 
-            if(!temporaryTreeMap.containsKey(songDatagram.getSequenceNr()))
-                temporaryTreeMap.put(songDatagram.getSequenceNr(), songDatagram);
+            if(!temporaryTreeMap.containsKey(songDatagram.getSequenceNumber()))
+                temporaryTreeMap.put(songDatagram.getSequenceNumber(), songDatagram);
         }
 
         // Put the temporary TreeMap, if no errors were found...
@@ -124,7 +125,7 @@ public class SongCache {
         // Get File Data.
         File songFile = new File(song.getPath());
         byte[] fileData = Files.readAllBytes(songFile.toPath());
-        List<SongDatagram> datagrams = SongDatagram.createPackets(fileData);
+        List<SongDatagram> datagrams = SongDatagramBuilder.createPackets(fileData);
         SongCache cache = new SongCache(datagrams.size());
         cache.add(datagrams);
 
@@ -135,7 +136,7 @@ public class SongCache {
         // Get File Data.
         File songFile = new File(song.getPath());
         byte[] fileData = Files.readAllBytes(songFile.toPath());
-        List<SongDatagram> datagrams = SongDatagram.createPackets(fileData, inetAddress, port);
+        List<SongDatagram> datagrams = SongDatagramBuilder.createPackets(fileData, inetAddress, port);
         SongCache cache = new SongCache(datagrams.size());
         cache.add(datagrams);
 

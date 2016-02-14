@@ -6,10 +6,6 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Esteban Luchsinger on 16.12.2015.
@@ -53,11 +49,10 @@ public class SongDatagram {
      */
     private final byte[] data;
 
-    private int sequenceNr = SEQUENCE_NR_NOT_INITIALIZED;
+    private int sequenceNumber = SEQUENCE_NR_NOT_INITIALIZED;
 
     private InetAddress inetAddress;
     private int port;
-    private SongDatagramHeader songDatagramHeader;
 
     /**
      * Initializes a SongDatagram. (The SequenceNr will be
@@ -73,11 +68,10 @@ public class SongDatagram {
         else{
             this.data = data.clone();
 
-            // Get the local adddress if no special destination address was provided.
+            // Get the InetAddress (copy, not by reference)
             if(inetAddress != null)
                 this.inetAddress = InetAddress.getByAddress(inetAddress.getAddress());
             this.port = port;
-            this.songDatagramHeader = new SongDatagramHeader(this);
         }
     }
 
@@ -90,25 +84,22 @@ public class SongDatagram {
         this(data, null, -1);
     }
 
-    public SongDatagramHeader getSongDatagramHeader(){
-        return this.songDatagramHeader;
-    }
 
     /**
      * Gets the sequence nr. of this packet.
      * The sequence nr is the position of this packet inside of a stream of packets.
      * @return
      */
-    public int getSequenceNr(){
-        return this.songDatagramHeader.getSequenceNumber();
+    public int getSequenceNumber(){
+        return this.sequenceNumber;
     }
 
     /**
      * Sets the sequence nr. of this packet.
      * @param sequenceNr
      */
-    public void setSequenceNr(int sequenceNr){
-        this.songDatagramHeader.setSequenceNumber(sequenceNr);
+    public void setSequenceNumber(int sequenceNr){
+        this.sequenceNumber = sequenceNr;
     }
 
     /**
@@ -146,13 +137,10 @@ public class SongDatagram {
      * @return Returns a new DatagramPacket which can be used for the music streaming.
      */
     public DatagramPacket getDatagramPacket(){
-        byte[] headerData = this.songDatagramHeader.toBytes();
-//        byte[] totalData = new byte[headerData.length + this.data.length];
-
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream( );
         try {
-            outputStream.write(headerData);
+            outputStream.write(this.getHeaderByteData());
             outputStream.write(this.data);
         } catch (IOException e) {
             e.printStackTrace();
@@ -163,14 +151,22 @@ public class SongDatagram {
     }
 
     /**
-     * Return the song data without header. Just. the. song. data.
-     * @return
+     * @return Return the song data without header. Just. the. song. data.
      */
     public byte[] getSongData(){
         return this.data;
     }
 
+    /**
+     * @return Return the header data of the SongDatagram.
+     */
+    public byte[] getHeaderByteData(){
 
+        // Generate Header Byte Buffer.
+        ByteBuffer headerData = ByteBuffer.allocate(SongDatagram.HEADER_SIZE);
+        headerData.putInt(this.sequenceNumber);
+        headerData.putInt(this.data.length);
 
-
+        return headerData.array();
+    }
 }

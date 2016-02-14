@@ -76,7 +76,7 @@ public class SongDatagramBuilder {
                         port);
             }
 
-            newPacket.setSequenceNr(i + 1);
+            newPacket.setSequenceNumber(i + 1);
             datagrams.add(newPacket);
         }
 
@@ -110,7 +110,7 @@ public class SongDatagramBuilder {
             dataBuffer.get(songData);
 
             songDatagram = new SongDatagram(songData, packet.getAddress(), packet.getPort());
-            songDatagram.setSequenceNr(sequenceNr);
+            songDatagram.setSequenceNumber(sequenceNr);
         }
         catch(Exception e){
             Logger.getLogger(SongDatagram.class.getName()).log(Level.SEVERE, "Packet corrupted", e);

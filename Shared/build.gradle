@@ -11,3 +11,7 @@ dependencies {
 dependencies {
     compile group: 'com.mpatric', name: 'mp3agic', version: '0.8.3'
 }
+
+compileJava{
+    sourceCompatibility = 1.8
+}
