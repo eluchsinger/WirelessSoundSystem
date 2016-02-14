@@ -37,12 +37,22 @@ public class SongDatagram {
      */
     public static final int MAX_TOTAL_SIZE = HEADER_SIZE + MAX_DATA_SIZE;
 
+    /**
+     * Song Data of this datagram in bytes.
+     */
     private final byte[] data;
 
     private InetAddress inetAddress;
     private int port;
     private SongDatagramHeader songDatagramHeader;
 
+    /**
+     * Initializes a SongDatagram.
+     * @param data The data (bytes) that corresponds to this SongDatagram.
+     * @param inetAddress The destination Address of this SongDatagram.
+     * @param port The destination port of this SongDatagram.
+     * @throws UnknownHostException is thrown if the destination host is unknown.
+     */
     public SongDatagram(byte[] data, InetAddress inetAddress, int port) throws UnknownHostException {
         if(data.length > SongDatagram.MAX_DATA_SIZE){
             throw new IllegalArgumentException("Maximum Data for datagram exceeded!");
@@ -56,6 +66,11 @@ public class SongDatagram {
         }
     }
 
+    /**
+     * Initializes a SongDatagram. Without destination host and port.
+     * @param data The data (in bytes) that corresponds to this SongDatagram.
+     * @throws UnknownHostException
+     */
     public SongDatagram(byte[] data) throws UnknownHostException {
         this(data, null, -1);
     }
@@ -77,19 +92,32 @@ public class SongDatagram {
         this.songDatagramHeader.setSequenceNumber(sequenceNr);
     }
 
-
+    /**
+     * @return Returns the InternetAddress of the destinationhost.
+     */
     public InetAddress getInetAddress() {
         return inetAddress;
     }
 
+    /**
+     * Sets the destination address for this SongDatagram.
+     * @param inetAddress
+     */
     public void setInetAddress(InetAddress inetAddress) {
         this.inetAddress = inetAddress;
     }
 
+    /**
+     * @return Returns the destination port for this SongDatagram.
+     */
     public int getPort() {
         return port;
     }
 
+    /**
+     * Sets the destination port for this SongDatagram.
+     * @param port
+     */
     public void setPort(int port) {
         this.port = port;
     }
