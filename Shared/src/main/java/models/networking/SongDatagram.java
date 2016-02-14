@@ -28,8 +28,9 @@ public class SongDatagram {
     /**
      * The total header size of this datagram (in bytes).
      * This size is static and always the same.
+     * (Sequence Nr (int) and Length (int)).
      */
-    public static final int HEADER_SIZE = 8;
+    public static final int HEADER_SIZE = Integer.BYTES * 2;
 
     /**
      * The maximum size of this datagram.
@@ -43,17 +44,23 @@ public class SongDatagram {
     public static final int PORT_NOT_INITIALIZED = -1;
 
     /**
+     * The value of the sequence nr when it is not initialized.
+     */
+    public static final int SEQUENCE_NR_NOT_INITIALIZED = -1;
+
+    /**
      * Song Data of this datagram in bytes.
      */
     private final byte[] data;
+
+    private int sequenceNr = SEQUENCE_NR_NOT_INITIALIZED;
 
     private InetAddress inetAddress;
     private int port;
     private SongDatagramHeader songDatagramHeader;
 
-
     /**
-     * Initializes a SongDatagram.
+     * Initializes a SongDatagram. (The SequenceNr will be
      * @param data The data (bytes) that corresponds to this SongDatagram.
      * @param inetAddress The destination Address of this SongDatagram.
      * @param port The destination port of this SongDatagram.
@@ -65,6 +72,8 @@ public class SongDatagram {
         }
         else{
             this.data = data.clone();
+
+            // Get the local adddress if no special destination address was provided.
             if(inetAddress != null)
                 this.inetAddress = InetAddress.getByAddress(inetAddress.getAddress());
             this.port = port;
