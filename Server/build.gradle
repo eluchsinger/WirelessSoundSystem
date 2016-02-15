@@ -1,8 +1,11 @@
 apply plugin: 'java'
+apply plugin: 'application'
 
 repositories {
     mavenCentral()
 }
+
+mainClassName = "controllers.Main"
 
 task executeServer(type: JavaExec){
 
