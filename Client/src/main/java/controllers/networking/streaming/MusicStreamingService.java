@@ -4,6 +4,7 @@ import controllers.io.CacheHandler;
 import models.networking.SongCache;
 import models.networking.SongDatagram;
 import models.networking.messages.StreamingMessage;
+import utils.networking.SongDatagramBuilder;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -138,7 +139,7 @@ public class MusicStreamingService {
                             packet = new DatagramPacket(buffer, buffer.length);
                             readingSocket.receive(packet);
 
-                            SongDatagram songDatagram = SongDatagram.convertToSongDatagram(packet);
+                            SongDatagram songDatagram = SongDatagramBuilder.convertToSongDatagram(packet);
                             this.currentCache.add(songDatagram);
                             this.dataReceived(songDatagram.getSongData());
                             break;
@@ -163,7 +164,7 @@ public class MusicStreamingService {
 
     private SongDatagram createSongDatagram(DatagramPacket originalPacket){
         SongDatagram songDatagram = null;
-        songDatagram = SongDatagram.convertToSongDatagram(originalPacket);
+        songDatagram = SongDatagramBuilder.convertToSongDatagram(originalPacket);
         return songDatagram;
     }
 

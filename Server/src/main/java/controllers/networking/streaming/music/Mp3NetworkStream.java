@@ -3,6 +3,7 @@ package controllers.networking.streaming.music;
 import controllers.networking.NetworkStream;
 import models.networking.SongDatagram;
 import models.songs.Song;
+import utils.networking.SongDatagramBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -78,7 +79,7 @@ public class Mp3NetworkStream implements NetworkStream<Song> {
 
     private static void cacheData(byte[] data, InetAddress inetAddress, int port) {
         try {
-            List<SongDatagram> datagrams = SongDatagram.createPackets(data, inetAddress, port);
+            List<SongDatagram> datagrams = SongDatagramBuilder.createPackets(data, inetAddress, port);
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
