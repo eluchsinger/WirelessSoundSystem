@@ -1,6 +1,7 @@
 ## Customize the test machine
 machine:
-
+  java:
+    version: oraclejdk8
   timezone:
     Europe/Zurich # Set the timezone
 ## Customize dependencies
@@ -9,3 +10,4 @@ dependencies:
     - sudo add-apt-repository ppa:cwchien/gradle -y
     - sudo apt-get update
     - sudo apt-get install gradle
+    - chmod +x gradlew
