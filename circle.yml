@@ -1,0 +1,9 @@
+## Customize the test machine
+machine:
+
+  timezone:
+    Europe/Zurich # Set the timezone
+## Customize dependencies
+dependencies:
+  pre:
+    - sudo apt-get install gradle-2.6
