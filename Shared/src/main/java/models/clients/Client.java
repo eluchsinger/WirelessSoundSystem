@@ -1,6 +1,5 @@
 package models.clients;
 
-import com.sun.corba.se.impl.io.TypeMismatchException;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
@@ -84,7 +83,7 @@ public class Client implements Comparable {
             }
         }
         else{
-            throw new TypeMismatchException("The compared types are not compatible");
+            throw new IllegalArgumentException("The compared types are not compatible");
         }
     }
 

@@ -8,47 +8,33 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Created by Esteban Luchsinger on 18.12.2015.
- * The cache stores the Songs inside a TreeMap.
- * The index of the TreeMap uses the SequenceNr. to sort the packets.
+ * The cache stores the Songs inside a TreeSet.
  */
 public class SongCache {
-    private Map<Integer, SongDatagram> cache;
-    private final int expectedSize;
+    private Set<SongDatagram> cache;
+    private final int expectedCacheSize;
 
     /**
      * Creates a SongCache.
-     * @param expectedSize Expected amount of packets in the cache.
+     * @param expectedCacheSize Expected amount of packets in the cache.
      */
-    public SongCache(int expectedSize){
-        this.cache = new TreeMap<>();
-        this.expectedSize = expectedSize;
+    public SongCache(int expectedCacheSize){
+        this.cache = new TreeSet<>();
+        this.expectedCacheSize = expectedCacheSize;
     }
 
     public void add(SongDatagram songDatagram){
-        this.cache.put(songDatagram.getSequenceNumber(), songDatagram);
+        this.cache.add(songDatagram);
     }
 
     public void add(List<SongDatagram> songDatagrams){
-        Map<Integer, SongDatagram> temporaryTreeMap = new TreeMap<>();
-
-        for(SongDatagram songDatagram : songDatagrams){
-            if(songDatagram.getSequenceNumber() == SongDatagram.SEQUENCE_NUMBER_NOT_INITIALIZED)
-                throw new IllegalStateException("At least one SongDatagram contains a not-initialized " +
-                        "SequenceNr.");
-
-            if(!temporaryTreeMap.containsKey(songDatagram.getSequenceNumber()))
-                temporaryTreeMap.put(songDatagram.getSequenceNumber(), songDatagram);
-        }
-
-        // Put the temporary TreeMap, if no errors were found...
-        this.cache.putAll(temporaryTreeMap);
+        this.cache.addAll(songDatagrams);
     }
 
     /**
@@ -56,64 +42,71 @@ public class SongCache {
      * @param sequenceNr SequenceNr of the datagram searched.
      * @return Returns the datagram containing the specified sequenceNr.
      */
-    public SongDatagram getSongDatagram(int sequenceNr){
-        return this.cache.getOrDefault(sequenceNr, null);
+    public SongDatagram getSongDatagram(int sequenceNr) {
+        Optional<SongDatagram> optional = this.cache.stream().filter(sd -> sd.getSequenceNumber() == sequenceNr).findFirst();
+        return optional.orElse(null);
     }
 
     public boolean contains(int sequenceNr){
-        return this.cache.containsKey(sequenceNr);
+        return this.cache.stream().anyMatch(sd -> sd.getSequenceNumber() == sequenceNr);
     }
 
     /**
      * Checks if the cache is completed.
-     * Compares the size of the cache with the expectedSize.
+     * Compares the size of the cache with the expectedCacheSize.
      * @return True, if the cache is complete.
      */
     public boolean isComplete(){
-        return this.cache.size() == this.expectedSize;
+        return (this.cache.size() == this.expectedCacheSize);
     }
 
     /**
      *
      * @return Returns the expected size of this cache.
      */
-    public int getExpectedSize() {
-        return expectedSize;
+    public int getExpectedCacheSize() {
+        return expectedCacheSize;
     }
 
     /**
      * Gets the missing sequence numbers.
-     * @return List of the missing sequence numbers.
+     * @return List of the missing sequence numbers. If there are no missing numbers,
+     * returns an empty list.
      * If there are no missing datagrams, returns an empty List<Integer>.
      */
-    public List<Integer> getMissingSequenceNumbers() /*throws CacheOverflowException */{
+    public List<Integer> getMissingSequenceNumbers() throws Exception /*throws CacheOverflowException */{
 
-        int amountOfMissingPackets = this.expectedSize - this.cache.size();
+        if(this.expectedCacheSize <= 0)
+            throw new Exception("The expected size is zero or smaller!");
+        if(this.cache.size() > this.expectedCacheSize)
+            throw new Exception("The Cache is bigger than expected!");
 
-//        if(amountOfMissingPackets < 0){
-//            throw new CacheOverflowException("There are more datagrams in the cache than expected.");
-//        }
+        // Return empty list.
+        if(this.cache.size() == this.expectedCacheSize) {
 
-        // Create arrayList with the initialCapacity of the missing packets.
-        List<Integer> missingSequences = new ArrayList<>(amountOfMissingPackets);
-
-        // If the cache is already complete, there is nothing to do.
-        if(!this.isComplete()){
-            for(int i = 1; i < this.cache.size() + 1; i++) {
-
-                // Datagram missing
-                if(this.cache.get(i) == null){
-                    missingSequences.add(i);
-                }
-
-                // Check if there are are more sequences missing (just the amount)
-                if(missingSequences.size() >= amountOfMissingPackets){
-                    break;
-                }
-            }
+            return new ArrayList<Integer>();
         }
+        else {
+            int amountOfMissingPackets = this.expectedCacheSize - this.cache.size();
 
-        return missingSequences;
+            // Creates a list starting from 1 until amountOfMissingPackets.
+            List<Integer> possibilities = IntStream
+                    .iterate(1, i -> i + 1)
+                    .limit(amountOfMissingPackets)
+                    .boxed()
+                    .collect(Collectors.toList());
+
+            // Creates a list of the existing Integers.
+            List<Integer> existing = this.cache.stream()
+                    .mapToInt(sd -> sd.getSequenceNumber())
+                    .boxed()
+                    .collect(Collectors.toList());
+
+            // Remove all existing sequences from the possibilities.
+            possibilities.removeAll(existing);
+
+            return possibilities;
+        }
     }
 
     /**

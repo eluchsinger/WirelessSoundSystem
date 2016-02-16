@@ -15,10 +15,14 @@ import java.util.Objects;
  * It is only some bytes long and a song is usually composed by
  * hundreds or thousands of SongDatagrams.
  */
-public class SongDatagram {
-    public static final int SEQUENCE_NUMBER_NOT_INITIALIZED = -1;
+public class SongDatagram implements Comparable{
 
     //region CONSTANTS
+
+    /**
+     * First possible sequence number used on caches and streams.
+     */
+    public static final int FIRST_SEQUENCE_NUMBER = 1;
 
     /**
      * Max Size of the data-section of this datagram (in bytes).
@@ -98,7 +102,7 @@ public class SongDatagram {
      * @throws UnknownHostException
      */
     public SongDatagram(byte[] data) throws UnknownHostException {
-        this(data, null, -1);
+        this(data, null, PORT_NOT_INITIALIZED);
     }
 
 
@@ -201,8 +205,47 @@ public class SongDatagram {
                 Arrays.equals(data, datagram.data);
     }
 
+    /**
+     * Generates the hashCode for the SongDatagram.
+     * Observes only the song data and sequence number.
+     * @return
+     */
     @Override
     public int hashCode() {
         return Objects.hash(data, sequenceNumber);
+    }
+
+    /**
+     * Compares this object with the specified object for order.  Returns a
+     * negative integer, zero, or a positive integer as this object is less
+     * than, equal to, or greater than the specified object.
+     * The compared value is the sequence Number of the SongDatagram.
+     *
+     * @param o the object to be compared.
+     * @return a negative integer, zero, or a positive integer as this object
+     * is less than, equal to, or greater than the specified object.
+     * @throws NullPointerException if the specified object is null
+     * @throws ClassCastException   if the specified object's type prevents it
+     *                              from being compared to this object.
+     */
+    @Override
+    public int compareTo(Object o) {
+
+        if (o == null)
+            throw new NullPointerException("Compared Object can not be null.");
+
+        if (o.getClass() != getClass())
+            throw new ClassCastException("Compared object is not of the same class.");
+
+        SongDatagram sd = (SongDatagram) o;
+
+        if (sd.getSequenceNumber() == this.getSequenceNumber())
+            return 0;
+            // Return negative, if this object is less than the specified object.
+        else if (this.getSequenceNumber() < sd.getSequenceNumber())
+            return -1;
+        // Else this object is greater than the specified object.
+        else
+            return 1;
     }
 }
