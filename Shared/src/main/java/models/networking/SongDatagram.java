@@ -6,6 +6,8 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Created by Esteban Luchsinger on 16.12.2015.
@@ -15,6 +17,8 @@ import java.nio.ByteBuffer;
  */
 public class SongDatagram {
     public static final int SEQUENCE_NUMBER_NOT_INITIALIZED = -1;
+
+    //region CONSTANTS
 
     /**
      * Max Size of the data-section of this datagram (in bytes).
@@ -43,15 +47,28 @@ public class SongDatagram {
      * The value of the sequence nr when it is not initialized.
      */
     public static final int SEQUENCE_NR_NOT_INITIALIZED = -1;
+    //endregion
 
     /**
-     * Song Data of this datagram in bytes.
+     * Song Data (only song data, not header etc.) of this datagram in bytes.
      */
     private final byte[] data;
 
+    /**
+     * Sequence Number of this SongDatagram.
+     * The sequence number is assigned to every single SongDatagram.
+     * It defines the SongDatagram position in a stream.
+     */
     private int sequenceNumber = SEQUENCE_NR_NOT_INITIALIZED;
 
+    /**
+     * Inet destination address of this datagram.
+     */
     private InetAddress inetAddress;
+
+    /**
+     * Port destination address of this datagram.
+     */
     private int port;
 
     /**
@@ -88,7 +105,7 @@ public class SongDatagram {
     /**
      * Gets the sequence nr. of this packet.
      * The sequence nr is the position of this packet inside of a stream of packets.
-     * @return
+     * @return The Sequence Number of this packet.
      */
     public int getSequenceNumber(){
         return this.sequenceNumber;
@@ -96,14 +113,14 @@ public class SongDatagram {
 
     /**
      * Sets the sequence nr. of this packet.
-     * @param sequenceNr
+     * @param sequenceNr Desired Sequence Number.
      */
     public void setSequenceNumber(int sequenceNr){
         this.sequenceNumber = sequenceNr;
     }
 
     /**
-     * @return Returns the InternetAddress of the destinationhost.
+     * @return Returns the InternetAddress of the destination host.
      */
     public InetAddress getInetAddress() {
         return inetAddress;
@@ -160,7 +177,7 @@ public class SongDatagram {
     /**
      * @return Return the header data of the SongDatagram.
      */
-    public byte[] getHeaderByteData(){
+    public byte[] getHeaderByteData() {
 
         // Generate Header Byte Buffer.
         ByteBuffer headerData = ByteBuffer.allocate(SongDatagram.HEADER_SIZE);
@@ -168,5 +185,24 @@ public class SongDatagram {
         headerData.putInt(this.data.length);
 
         return headerData.array();
+    }
+
+    /**
+     * The equals method observes only the SongDatagram data and sequence number.
+     * @param o the comparing object
+     * @return true if the compared objects are equal.
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SongDatagram datagram = (SongDatagram) o;
+        return sequenceNumber == datagram.sequenceNumber &&
+                Arrays.equals(data, datagram.data);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(data, sequenceNumber);
     }
 }

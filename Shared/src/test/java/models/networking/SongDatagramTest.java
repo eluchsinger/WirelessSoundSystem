@@ -115,4 +115,25 @@ public class SongDatagramTest {
     public void testMaximumDatagramSize() throws Exception {
         new SongDatagram(new byte[SongDatagram.MAX_DATA_SIZE + 1]);
     }
+
+    /**
+     * Test the equals method of the SongDatagrams.
+     * @throws Exception
+     */
+    @Test
+    public void testEquals() throws Exception {
+        byte[] testData = { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5 };
+
+        SongDatagram sd1 = new SongDatagram(testData, InetAddress.getLoopbackAddress(), 6060);
+        SongDatagram sd2 = new SongDatagram(testData, InetAddress.getLoopbackAddress(), 6061);
+
+        sd1.setSequenceNumber(1);
+        sd2.setSequenceNumber(1);
+
+        assertTrue(sd1.equals(sd2));
+
+        sd2.setSequenceNumber(2);
+
+        assertFalse(sd1.equals(sd2));
+    }
 }
