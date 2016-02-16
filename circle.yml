@@ -7,7 +7,4 @@ machine:
 ## Customize dependencies
 dependencies:
   pre:
-    - sudo add-apt-repository ppa:cwchien/gradle -y
-    - sudo apt-get update
-    - sudo apt-get install gradle
-    - chmod +x gradlew
+    - wget "https://services.gradle.org/distributions/gradle-2.10-bin.zip"; unzip gradle-2.10-bin.zip
