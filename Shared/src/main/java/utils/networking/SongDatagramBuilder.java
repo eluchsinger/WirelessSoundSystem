@@ -25,12 +25,12 @@ public class SongDatagramBuilder {
      * @throws UnknownHostException Throws an exception if the Host (Destination address) is unknown.
      */
     public static List<SongDatagram> createPackets(byte[] data) throws UnknownHostException {
-        return SongDatagramBuilder.createPackets(data, null, -1);
+        return SongDatagramBuilder.createPackets(data, null, SongDatagram.PORT_NOT_INITIALIZED);
     }
 
     /**
      * Creates a list of SongDatagrams using a byte array.
-     * The array could be for example the file data.
+     * The array is the data of the song file.
      * @param data Byte array containing the data of the datagrams.
      * @param inetAddress Destination Address in the UDP Datagram Header.
      * @param port Destination Port of the UDP Datagram.
@@ -45,7 +45,7 @@ public class SongDatagramBuilder {
         // Get the total amount of packets needed...
         double exactNumberOfPackets = data.length / (double)SongDatagram.MAX_DATA_SIZE;
 
-        // Check if it is a decimal number. If yes add one packet.
+        // Check if it is a round number. If no: add one packet. (Make it a round number)
         if((exactNumberOfPackets - (int)exactNumberOfPackets) > 0){
             exactNumberOfPackets++;
         }

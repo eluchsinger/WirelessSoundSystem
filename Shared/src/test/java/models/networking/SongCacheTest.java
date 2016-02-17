@@ -60,6 +60,8 @@ public class SongCacheTest {
         }
 
         assertTrue(cache.isComplete());
+
+        assertTrue(cache.getMissingSequenceNumbers().size() == 0);
     }
 
     @Test

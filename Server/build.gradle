@@ -8,15 +8,11 @@ repositories {
 mainClassName = "controllers.Main"
 
 task executeServer(type: JavaExec){
-
     main = "controllers.Main"
     classpath = sourceSets.main.runtimeClasspath
 }
 
 dependencies {
-    compile project (':shared')
-}
-
-dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
+    compile project (':shared')
 }
