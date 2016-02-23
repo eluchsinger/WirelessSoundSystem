@@ -76,8 +76,8 @@ public class MusicStreamController {
      */
     private void reportStartStreaming(SongCache cache) throws IOException, StreamingInitFailedException {
 
-        String initMessage = StreamingMessage.initializationMessage(cache.getExpectedSize());
-        String ackMessage = StreamingMessage.initializationAckMessage(cache.getExpectedSize());
+        String initMessage = StreamingMessage.initializationMessage(cache.getExpectedCacheSize());
+        String ackMessage = StreamingMessage.initializationAckMessage(cache.getExpectedCacheSize());
         byte[] data = (initMessage).getBytes();
         DatagramPacket datagramPacket = new DatagramPacket(data,
                 0,
@@ -145,7 +145,7 @@ public class MusicStreamController {
      */
     private void streamSong() throws IOException {
         DatagramSocket socket = new DatagramSocket();
-        for(int i = 1; i < this.songCache.getExpectedSize() + 1; i++){
+        for(int i = 1; i < this.songCache.getExpectedCacheSize() + 1; i++){
             SongDatagram songDatagram = this.songCache.getSongDatagram(i);
 
             socket.send(songDatagram.getDatagramPacket());
