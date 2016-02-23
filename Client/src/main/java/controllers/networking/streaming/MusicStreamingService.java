@@ -152,15 +152,15 @@ public class MusicStreamingService {
                             catch(OutOfMemoryError outOfMemoryError){
 
                                 String receivedString = new String(packet.getData());
-                                receivedString.trim();
+                                receivedString = receivedString.trim();
 
-                                Logger.getLogger(getClass().getName()).log(Level.INFO, outOfMemoryError.toString());
 
                                 // Check if the string received was a start message. IF yes --> Reinit the listening service!
                                 // Main reason for this could be that the server started streaming a new song.
                                 if(receivedString.startsWith(StreamingMessage.STREAMING_INITIALIZATION_MESSAGE)){
                                     this.currentServiceStatus = SERVICE_STATUS.RUNNING;
                                     this.validateInitializationPacket(packet);
+                                    Logger.getLogger(getClass().getName()).log(Level.INFO, outOfMemoryError.toString());
                                 }
                             }
                             break;
