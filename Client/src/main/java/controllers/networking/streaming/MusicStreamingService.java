@@ -45,8 +45,6 @@ public class MusicStreamingService {
 
     private SongCache currentCache;
 
-
-
     public static MusicStreamingService getInstance() {
         return ourInstance;
     }
@@ -118,6 +116,11 @@ public class MusicStreamingService {
         System.out.println("Streaming Controller stopped...");
     }
 
+    /**
+     * This is the listening class. This class works in a separate thread and
+     * listens (i.e. waits for packets).
+     * When a packet is received, it handles it.
+     */
     private void listen(){
         try {
             while (this.currentServiceStatus != SERVICE_STATUS.STOPPED) {
@@ -139,10 +142,37 @@ public class MusicStreamingService {
                             packet = new DatagramPacket(buffer, buffer.length);
                             readingSocket.receive(packet);
 
-                            SongDatagram songDatagram = SongDatagramBuilder.convertToSongDatagram(packet);
-                            this.currentCache.add(songDatagram);
-                            this.dataReceived(songDatagram.getSongData());
-                            break;
+                        {
+                            boolean cancelReceiving = false;
+
+                            // Check, if the data could be the init message.
+                            // This happens, if the server starts streaming a new song
+                            // Without finishing the other one.
+                            if (packet.getData().length
+                                    == StreamingMessage
+                                    .initializationMessage(Integer.MAX_VALUE)
+                                    .getBytes().length) {
+
+                                // Prepare the string to compare with the StreamingMessage.
+                                String toTest = new String(packet.getData());
+                                toTest.trim();
+
+                                // Compare the data. If it is the streamingMessage, validate the packet.
+                                if(toTest.startsWith(StreamingMessage.STREAMING_INITIALIZATION_MESSAGE)) {
+                                    this.currentServiceStatus = SERVICE_STATUS.RUNNING;
+                                    this.validateInitializationPacket(packet);
+                                    cancelReceiving = true;
+                                }
+                            }
+
+                            // The data received is song data (and not a control frame).
+                            if (!cancelReceiving) {
+                                SongDatagram songDatagram = SongDatagramBuilder.convertToSongDatagram(packet);
+                                this.currentCache.add(songDatagram);
+                                this.dataReceived(songDatagram.getSongData());
+                                break;
+                            }
+                        }
                     }
                 } catch (SocketTimeoutException ignore) { }
             }
@@ -152,22 +182,28 @@ public class MusicStreamingService {
         }
     }
 
+    /**
+     * Data was received. Handle the data (and file).
+     * @param data The data that was received.
+     */
     private void dataReceived(byte[] data) {
         try {
             CacheHandler.getInstance().writeData(data);
             System.out.println("Missing packets: " + this.currentCache.getMissingSequenceNumbers().size());
             //System.out.println("Received DataPacket size: " + data.length);
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, e.getMessage());
+        } catch (Exception e) {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, e.getMessage());
         }
     }
 
-    private SongDatagram createSongDatagram(DatagramPacket originalPacket){
-        SongDatagram songDatagram = null;
-        songDatagram = SongDatagramBuilder.convertToSongDatagram(originalPacket);
-        return songDatagram;
-    }
-
+    /**
+     * Validate init packets.
+     * This method handles an initialization packet and allocates a new cache
+     * with the corresponding cache size (the cache size is in the init packet).
+     * @param packet
+     */
     private void validateInitializationPacket(DatagramPacket packet){
         String message = new String(packet.getData());
         message = message.trim();
@@ -181,6 +217,9 @@ public class MusicStreamingService {
         }
     }
 
+    /**
+     * Enumerates the service status.
+     */
     private enum SERVICE_STATUS {
         /**
          * The Streaming Service is running and waiting for a stream initialization.
