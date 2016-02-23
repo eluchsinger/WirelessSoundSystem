@@ -13,6 +13,7 @@ import java.net.MulticastSocket;
 import java.net.SocketTimeoutException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -143,35 +144,26 @@ public class MusicStreamingService {
                             readingSocket.receive(packet);
 
                         {
-                            boolean cancelReceiving = false;
-
-                            // Check, if the data could be the init message.
-                            // This happens, if the server starts streaming a new song
-                            // Without finishing the other one.
-                            if (packet.getData().length
-                                    == StreamingMessage
-                                    .initializationMessage(Integer.MAX_VALUE)
-                                    .getBytes().length) {
-
-                                // Prepare the string to compare with the StreamingMessage.
-                                String toTest = new String(packet.getData());
-                                toTest.trim();
-
-                                // Compare the data. If it is the streamingMessage, validate the packet.
-                                if(toTest.startsWith(StreamingMessage.STREAMING_INITIALIZATION_MESSAGE)) {
-                                    this.currentServiceStatus = SERVICE_STATUS.RUNNING;
-                                    this.validateInitializationPacket(packet);
-                                    cancelReceiving = true;
-                                }
-                            }
-
-                            // The data received is song data (and not a control frame).
-                            if (!cancelReceiving) {
+                            try {
                                 SongDatagram songDatagram = SongDatagramBuilder.convertToSongDatagram(packet);
                                 this.currentCache.add(songDatagram);
                                 this.dataReceived(songDatagram.getSongData());
-                                break;
                             }
+                            catch(OutOfMemoryError outOfMemoryError){
+
+                                String receivedString = new String(packet.getData());
+                                receivedString.trim();
+
+                                Logger.getLogger(getClass().getName()).log(Level.INFO, outOfMemoryError.toString());
+
+                                // Check if the string received was a start message. IF yes --> Reinit the listening service!
+                                // Main reason for this could be that the server started streaming a new song.
+                                if(receivedString.startsWith(StreamingMessage.STREAMING_INITIALIZATION_MESSAGE)){
+                                    this.currentServiceStatus = SERVICE_STATUS.RUNNING;
+                                    this.validateInitializationPacket(packet);
+                                }
+                            }
+                            break;
                         }
                     }
                 } catch (SocketTimeoutException ignore) { }
