@@ -1,6 +1,9 @@
 package controllers.networking.streaming.music;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
@@ -156,9 +159,21 @@ public class MusicReconstructionService {
             this.listeningThread = new Thread(this::listen);
         }
 
+        /**
+         * Listen to what the client says.
+         */
         private void listen() {
 
-        }
+            while(true) {
+                try {
+                    BufferedReader bufferedReader =
+                            new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
+                    String input = bufferedReader.readLine();
+
+                    // Todo: implement event if a request is received.
+                } catch (IOException ignore) { }
+            }
+        }
     }
 }
