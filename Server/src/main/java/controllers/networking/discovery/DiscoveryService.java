@@ -105,11 +105,6 @@ public class DiscoveryService {
     private Thread responseThread;
 
     /**
-     * This task checks the clients for
-     */
-    private Task<List<Client>> keepAliveTask;
-
-    /**
      * Gets the instance of the DiscoveryService Singleton.
      */
     public static DiscoveryService getInstance() {

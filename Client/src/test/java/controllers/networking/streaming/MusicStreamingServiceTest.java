@@ -36,7 +36,6 @@ public class MusicStreamingServiceTest {
         service.start();
 
         assertEquals(service.getCurrentServiceStatus(), MusicStreamingService.ServiceStatus.RUNNING);
-
     }
 
     @Test
