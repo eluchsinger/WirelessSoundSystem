@@ -154,7 +154,7 @@ public class SongDatagram implements Comparable{
     }
 
     /**
-     * Creates a NEW DatagramPacket. This packet includes the SongDatagramHeader and the data.
+     * Creates a NEW DatagramPacket. This packet includes ALL data needed to be sent to the client.
      * @return Returns a new DatagramPacket which can be used for the music streaming.
      */
     public DatagramPacket getDatagramPacket(){

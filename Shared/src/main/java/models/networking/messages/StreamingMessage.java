@@ -1,5 +1,8 @@
 package models.networking.messages;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -43,7 +46,14 @@ public final class StreamingMessage {
     //endregion
 
     //region Quality
-    public static String missingPacketsMessage(List<Integer> missingPackets){
+
+    /**
+     * The missing packets message gets constructed here.
+     * Example: missing:10,12,33,55
+     * @param missingPackets List with the missing integers.
+     * @return Returns a string with the missing packets.
+     */
+    public static String makeMissingPacketsMessage(List<Integer> missingPackets){
         StringBuilder builder = new StringBuilder();
 
         // Append the numbers in the string.
@@ -56,6 +66,31 @@ public final class StreamingMessage {
         }
 
         return StreamingMessage.MISSING_PACKETS_MESSAGE + builder.toString();
+    }
+
+    /**
+     * Parses the message: Gets a list with the missing packet-sequences.
+     * @param message The missing packets message received.
+     * @return Returns a list with the missing packet-sequences.
+     */
+    public static List<Integer> parseMissingPacketsMessage(String message){
+
+        List<Integer> list = new ArrayList<>();
+        if(message.startsWith(StreamingMessage.MISSING_PACKETS_MESSAGE)){
+
+            // Get the data part of the message.
+            String dataPart = message.substring(StreamingMessage.MISSING_PACKETS_MESSAGE.length());
+
+            // Split the data-part of the message in the different integers.
+            String[] splitParts = dataPart.split(",");
+
+            // Fill the list.
+            for(String s : splitParts){
+                list.add(Integer.parseInt(s));
+            }
+        }
+
+        return list;
     }
     //endregion
 

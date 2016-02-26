@@ -1,12 +1,15 @@
 package controllers.networking.streaming.music;
 
+import models.networking.SongCache;
+import models.networking.SongDatagram;
+import models.networking.messages.StreamingMessage;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
 import java.util.List;
 
 /**
@@ -44,12 +47,6 @@ public class MusicReconstructionService {
     private Thread accepterThread;
 
     /**
-     * This thread listens (and answers) to connected clients.
-     * The thread is designated for Q and A from clients!
-     */
-    private Thread listeningThread;
-
-    /**
      * List with connected clients.
      */
     private List<ConnectedClient> connectedClients;
@@ -58,6 +55,12 @@ public class MusicReconstructionService {
      * The current state of the service.
      */
     private boolean running;
+
+    /**
+     * The current cache. The recovery will be made
+     * with this cache.
+     */
+    private SongCache cache;
 
     //endregion
 
@@ -129,9 +132,34 @@ public class MusicReconstructionService {
 
                 // Add the new client to the list.
                 Socket newClientSocket = this.listeningSocket.accept();
-                this.connectedClients.add(new ConnectedClient(newClientSocket));
+                ConnectedClient client = new ConnectedClient(newClientSocket);
+
+                // Implementation of the request handler (What happens when there are missing packets?).
+                client.setReceivedClientRequestHandler(this::sendMissingPackets);
+
+                this.connectedClients.add(client);
             } catch(IOException ignore) { }
         }
+    }
+
+    /**
+     * Sends the missing packets.
+     * This method is blocking and could take some time, do this multithreaded.
+     * @param missingPackets A list with the sequence-nr of the missing packets.
+     */
+    private void sendMissingPackets(ConnectedClient c, List<Integer> missingPackets){
+        try {
+            DataOutputStream outputStream = new DataOutputStream(c.getSocket().getOutputStream());
+
+            for(Integer i : missingPackets) {
+                SongDatagram sd = this.cache.getSongDatagram(i);
+
+                outputStream.write(sd.getDatagramPacket().getData());
+            }
+        } catch (IOException e) {
+
+        }
+
     }
 
     //endregion
@@ -143,6 +171,18 @@ public class MusicReconstructionService {
      */
     public boolean isRunning() { return this.running; }
 
+    /**
+     * Sets the cache used in the recovery process.
+     * @param cache new cache.
+     */
+    public void setCache(SongCache cache){ this.cache = cache; }
+
+    /**
+     * Gets the cache used in the recovery process.
+     * @return Returns the currently used cache.
+     */
+    public SongCache getCache() { return this.cache; }
+
     //endregion
 
     /**
@@ -150,13 +190,30 @@ public class MusicReconstructionService {
      */
     private class ConnectedClient {
 
-        private Socket clientSocket;
-        private Thread listeningThread;
+        /**
+         * The socket corresponding to this client.
+         */
+        private final Socket clientSocket;
 
+        /**
+         * This thread handles the listening of the socket.
+         */
+        private final Thread listeningThread;
+
+        /**
+         * Callback for when a client requests something.
+         */
+        private ReceivedClientRequest receivedClientRequest;
+
+        /**
+         * Constructor
+         * @param clientSocket Connected client socket corresponding to this client.
+         */
         public ConnectedClient(Socket clientSocket){
             this.clientSocket = clientSocket;
 
             this.listeningThread = new Thread(this::listen);
+            this.listeningThread.start();
         }
 
         /**
@@ -171,9 +228,34 @@ public class MusicReconstructionService {
 
                     String input = bufferedReader.readLine();
 
-                    // Todo: implement event if a request is received.
+                    List<Integer> listOfMissingPackets = StreamingMessage.parseMissingPacketsMessage(input);
+
+                    if(listOfMissingPackets.size() > 0){
+                        // Call delegate method.
+                        if(this.receivedClientRequest != null)
+                            this.receivedClientRequest.receivedClientRequest(this, listOfMissingPackets);
+                    }
                 } catch (IOException ignore) { }
             }
         }
+
+        /**
+         * Sets the handler for a client request.
+         * @param handler
+         */
+        public void setReceivedClientRequestHandler(ReceivedClientRequest handler){
+            this.receivedClientRequest = handler;
+        }
+
+        /**
+         * @return Returns the client socket.
+         */
+        public Socket getSocket(){
+            return this.clientSocket;
+        }
+    }
+
+    private interface ReceivedClientRequest {
+        void receivedClientRequest(ConnectedClient client, List<Integer> missingPackets);
     }
 }
