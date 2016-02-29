@@ -2,10 +2,12 @@ package viewmodels;
 
 import controllers.io.CacheHandler;
 import controllers.networking.streaming.music.MusicStreamingService;
-import controllers.networking.streaming.music.OnMusicStreamingStatusChanged;
-import controllers.networking.streaming.music.ServiceStatus;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.chart.StackedAreaChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -15,8 +17,13 @@ import javafx.scene.media.MediaPlayer;
  */
 public class ClientWindowViewModel {
 
+    ObservableList<XYChart.Series<Integer, Integer>> statisticsList;
+
     @FXML
     private Label labelStatus;
+
+    @FXML
+    private StackedAreaChart<Integer, Integer> statisticsChart;
 
     @FXML
     public void onButtonPlayClicked(){
@@ -39,6 +46,19 @@ public class ClientWindowViewModel {
                 labelStatus.setText(newStatus.name());
             });
         });
+        this.statisticsList = FXCollections.observableArrayList();
+
+        this.statisticsChart.setData(this.statisticsList);
+
+        XYChart.Series<Integer, Integer> multicastSeries = new XYChart.Series<>("Correct", FXCollections.observableArrayList());
+        XYChart.Series<Integer, Integer> recoveredSeries = new XYChart.Series<>("Recovered", FXCollections.observableArrayList());
+
+        this.statisticsList.add(multicastSeries);
+        this.statisticsList.add(recoveredSeries);
+
+        multicastSeries.getData().add(new XYChart.Data<>(0, 1));
+        multicastSeries.getData().add(new XYChart.Data<>(1,2));
+
     }
 
 

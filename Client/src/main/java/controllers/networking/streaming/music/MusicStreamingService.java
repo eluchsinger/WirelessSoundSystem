@@ -7,10 +7,7 @@ import models.networking.messages.StreamingMessage;
 import utils.networking.SongDatagramBuilder;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
-import java.net.SocketTimeoutException;
+import java.net.*;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.Provider;
@@ -74,6 +71,12 @@ public class MusicStreamingService {
                     } catch (IOException e) {
                         Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
                                 "Could not join Multicast group.", e);
+
+                        // If it's a socket-exception class --> Not connected to wifi!
+                        if(e.getClass() == SocketException.class){
+                            // Todo: Handle not connected to wifi.
+                            System.out.println("CHECK INTERNET CONNECTION!!");
+                        }
                     }
 
                     return null;

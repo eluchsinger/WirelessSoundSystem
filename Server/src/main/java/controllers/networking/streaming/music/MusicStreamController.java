@@ -1,6 +1,5 @@
 package controllers.networking.streaming.music;
 
-import models.clients.Client;
 import models.clients.Clients;
 import models.networking.SongCache;
 import models.networking.SongDatagram;
@@ -13,7 +12,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -44,6 +42,9 @@ public class MusicStreamController {
      */
     private final static int STREAM_INITIALIZATION_RETRIES = 1;
 
+    /**
+     * The song cache containing the different song segments.
+     */
     private SongCache songCache;
     
     /**
@@ -54,7 +55,6 @@ public class MusicStreamController {
         try {
             this.songCache = this.cacheSong(song);
             this.reportStartStreaming(this.songCache);
-            // Todo: Start Feedback Listener.
             this.streamSong();
             this.reportFinishedStreaming();
 
@@ -64,6 +64,12 @@ public class MusicStreamController {
         }
     }
 
+    /**
+     * Caches the song.
+     * @param song Song to cache
+     * @return Returns a SongCache containing the desired song.
+     * @throws IOException If there was an error.
+     */
     private SongCache cacheSong(Song song) throws IOException {
         return SongCache.cacheSong(song,
                 InetAddress.getByName(MusicStreamController.MULTICAST_GROUP_ADDRESS),
@@ -124,8 +130,13 @@ public class MusicStreamController {
         }
     }
 
+    /**
+     * Send the finishedStreaming datagram.
+     * This datagram indicates the client that the streaming of this part has ended.
+     * @throws IOException
+     */
     private void reportFinishedStreaming() throws IOException {
-        byte[] data = ("finished").getBytes();
+        byte[] data = StreamingMessage.STREAMING_FINALIZATION_MESSAGE.getBytes();
 
         DatagramPacket datagramPacket = new DatagramPacket(data,
                 0,
@@ -141,31 +152,13 @@ public class MusicStreamController {
     }
 
     /**
-     * Starts the streaming of the song.
+     * Starts the (multicast-)streaming of the song.
      */
     private void streamSong() throws IOException {
         DatagramSocket socket = new DatagramSocket();
         for(int i = 1; i < this.songCache.getExpectedCacheSize() + 1; i++){
             SongDatagram songDatagram = this.songCache.getSongDatagram(i);
-
             socket.send(songDatagram.getDatagramPacket());
         }
-    }
-
-    /**
-     * Listens for feedback from the clients.
-     * Feedback could be that a packet did not arrive.
-     */
-    private void feedbackListener(){
-
-    }
-
-    /**
-     * Resend the sequences to the specific client.
-     * @param sequences Sequences to be sent again.
-     * @param client Specific client to send the sequences to.
-     */
-    private void resendPackets(List<Integer> sequences, Client client){
-
     }
 }
