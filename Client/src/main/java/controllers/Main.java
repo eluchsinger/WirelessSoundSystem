@@ -1,7 +1,7 @@
 package controllers;
 
 import controllers.networking.discovery.DiscoveryService;
-import controllers.networking.streaming.MusicStreamingService;
+import controllers.networking.streaming.music.MusicStreamingService;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

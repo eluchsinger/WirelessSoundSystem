@@ -1,5 +1,7 @@
 package controllers.networking.streaming;
 
+import controllers.networking.streaming.music.MusicStreamingService;
+import controllers.networking.streaming.music.ServiceStatus;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -26,16 +28,16 @@ public class MusicStreamingServiceTest {
     public void testStartAfterInit() throws Exception {
         MusicStreamingService service = MusicStreamingService.getInstance();
 
-        if(service.getCurrentServiceStatus() != MusicStreamingService.ServiceStatus.STOPPED)
+        if(service.getCurrentServiceStatus() != ServiceStatus.STOPPED)
         {
             service.stop();
         }
 
-        assertEquals(service.getCurrentServiceStatus(), MusicStreamingService.ServiceStatus.STOPPED);
+        assertEquals(service.getCurrentServiceStatus(), ServiceStatus.STOPPED);
 
         service.start();
 
-        assertEquals(service.getCurrentServiceStatus(), MusicStreamingService.ServiceStatus.RUNNING);
+        assertEquals(service.getCurrentServiceStatus(), ServiceStatus.RUNNING);
     }
 
     @Test

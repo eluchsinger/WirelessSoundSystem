@@ -1,4 +1,4 @@
-package controllers.networking.streaming;
+package controllers.networking.streaming.music;
 
 import controllers.io.CacheHandler;
 import models.networking.SongCache;
@@ -13,6 +13,9 @@ import java.net.MulticastSocket;
 import java.net.SocketTimeoutException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.security.Provider;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,6 +39,7 @@ public class MusicStreamingService {
     private static MusicStreamingService ourInstance = new MusicStreamingService();
 
     private ServiceStatus currentServiceStatus;
+    private List<OnMusicStreamingStatusChanged> statusChangedListeners;
     private Thread readingThread;
 
     /**
@@ -50,7 +54,8 @@ public class MusicStreamingService {
     }
 
     private MusicStreamingService() {
-        this.currentServiceStatus = ServiceStatus.STOPPED;
+        this.statusChangedListeners = new ArrayList<>();
+        this.setCurrentServiceStatus(ServiceStatus.STOPPED);
     }
 
     /**
@@ -77,7 +82,7 @@ public class MusicStreamingService {
                 // Start thread
                 if(this.currentServiceStatus == ServiceStatus.STOPPED && (this.readingThread == null || !this.readingThread.isAlive())){
                     this.readingThread = new Thread(this::listen);
-                    this.currentServiceStatus = ServiceStatus.RUNNING;
+                    this.setCurrentServiceStatus(ServiceStatus.RUNNING);
                     this.readingThread.start();
                 }
 
@@ -107,7 +112,7 @@ public class MusicStreamingService {
         }
 
         // Stop reading thread...
-        this.currentServiceStatus = ServiceStatus.STOPPED;
+        this.setCurrentServiceStatus(ServiceStatus.STOPPED);
         if(this.readingThread != null){
             try {
                 this.readingThread.join((int)(MusicStreamingService.READING_TIMEOUT * 1.5));
@@ -119,7 +124,7 @@ public class MusicStreamingService {
             this.readingThread = null;
         }
 
-        this.currentServiceStatus = ServiceStatus.STOPPED;
+        this.setCurrentServiceStatus(ServiceStatus.STOPPED);
 
         System.out.println("Streaming Controller stopped...");
     }
@@ -165,7 +170,7 @@ public class MusicStreamingService {
                                 // Check if the string received was a start message. IF yes --> Reinit the listening service!
                                 // Main reason for this could be that the server started streaming a new song.
                                 if(receivedString.startsWith(StreamingMessage.STREAMING_INITIALIZATION_MESSAGE)){
-                                    this.currentServiceStatus = ServiceStatus.RUNNING;
+                                    this.setCurrentServiceStatus(ServiceStatus.RUNNING);
                                     this.validateInitializationPacket(packet);
                                     Logger.getLogger(getClass().getName()).log(Level.INFO, outOfMemoryError.toString());
                                 }
@@ -212,29 +217,56 @@ public class MusicStreamingService {
             int amountOfPackets = Integer.valueOf(secondString);
 
             this.currentCache = new SongCache(amountOfPackets);
-            this.currentServiceStatus = ServiceStatus.RECEIVING;
+            this.setCurrentServiceStatus(ServiceStatus.RECEIVING);
         }
     }
 
+    /**
+     * Get the current service status.
+     * @return Returns the current service status.
+     */
     public ServiceStatus getCurrentServiceStatus(){
         return this.currentServiceStatus;
     }
 
     /**
-     * Enumerates the service status.
+     * Sets the current service status.
+     * @param status new status
      */
-    public enum ServiceStatus {
-        /**
-         * The Streaming Service is running and waiting for a stream initialization.
-         */
-        RUNNING,
-        /**
-         * The Streaming Service is receiving an initialized stream.
-         */
-        RECEIVING,
-        /**
-         * The Streaming Service is not running.
-         */
-        STOPPED
+    public void setCurrentServiceStatus(ServiceStatus status) {
+
+        boolean fireEvent = false;
+        // Check if the currentService status really changed.
+        if(this.currentServiceStatus != status)
+            fireEvent = true;
+
+        this.currentServiceStatus = status;
+
+        // Fire even if needed.
+        if(fireEvent){
+            for(OnMusicStreamingStatusChanged listener : this.statusChangedListeners)
+                listener.statusChanged(this.getCurrentServiceStatus());
+        }
+
     }
+
+    /**
+     * Adds a listener for when the Service Status changes.
+     * Multiple addings of the same listener possible.
+     * @param listener new listener.
+     */
+    public void addServiceStatusChangedListener(OnMusicStreamingStatusChanged listener){
+        this.statusChangedListeners.add(listener);
+    }
+
+    /**
+     * Removes a listener for when the Service Status changes.
+     * If the listener was added twice, you need to remove it twice.
+     * Removing the listener, when it was not added has no effect.
+     * @param listener Listener to remove.
+     */
+    public void removeServiceStatusChangedListener(OnMusicStreamingStatusChanged listener){
+        this.statusChangedListeners.remove(listener);
+    }
+
 }
