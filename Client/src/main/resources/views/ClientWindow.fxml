@@ -34,10 +34,10 @@
          <center>
             <StackedAreaChart fx:id="statisticsChart" title="Packets received" BorderPane.alignment="CENTER">
               <xAxis>
-                <NumberAxis side="BOTTOM" />
+                <NumberAxis side="BOTTOM" label="Zeit (s)" />
               </xAxis>
               <yAxis>
-                <NumberAxis side="LEFT" />
+                <NumberAxis side="LEFT" label="Anteil (%)" lowerBound="0" upperBound="100" autoRanging="false" tickUnit="20"/>
               </yAxis>
             </StackedAreaChart>
          </center>

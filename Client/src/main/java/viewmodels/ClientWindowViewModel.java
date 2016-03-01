@@ -48,20 +48,33 @@ public class ClientWindowViewModel {
         });
         this.statisticsList = FXCollections.observableArrayList();
 
-        this.statisticsChart.setData(this.statisticsList);
-
         XYChart.Series<Integer, Integer> multicastSeries = new XYChart.Series<>("Correct", FXCollections.observableArrayList());
         XYChart.Series<Integer, Integer> recoveredSeries = new XYChart.Series<>("Recovered", FXCollections.observableArrayList());
 
         this.statisticsList.add(multicastSeries);
         this.statisticsList.add(recoveredSeries);
 
-        multicastSeries.getData().add(new XYChart.Data<>(0, 1));
-        multicastSeries.getData().add(new XYChart.Data<>(1,2));
+        multicastSeries.getData().add(new XYChart.Data<>(0, 0));
+        multicastSeries.getData().add(new XYChart.Data<>(1, 20));
+        multicastSeries.getData().add(new XYChart.Data<>(2, 40));
+        multicastSeries.getData().add(new XYChart.Data<>(3, 50));
+        multicastSeries.getData().add(new XYChart.Data<>(4, 80));
+        multicastSeries.getData().add(new XYChart.Data<>(5, 80));
+        multicastSeries.getData().add(new XYChart.Data<>(6, 80));
 
+        recoveredSeries.getData().add(new XYChart.Data<>(0, 0));
+        recoveredSeries.getData().add(new XYChart.Data<>(1, 0));
+        recoveredSeries.getData().add(new XYChart.Data<>(2, 0));
+        recoveredSeries.getData().add(new XYChart.Data<>(3, 0));
+        recoveredSeries.getData().add(new XYChart.Data<>(4, 0));
+        recoveredSeries.getData().add(new XYChart.Data<>(5, 10));
+        recoveredSeries.getData().add(new XYChart.Data<>(6, 20));
+
+        this.statisticsChart.setData(this.statisticsList);
     }
 
 
     public ClientWindowViewModel(){
+
     }
 }
