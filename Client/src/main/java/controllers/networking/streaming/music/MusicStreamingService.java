@@ -1,6 +1,7 @@
 package controllers.networking.streaming.music;
 
 import controllers.io.CacheHandler;
+import controllers.statistics.NetworkStatisticsController;
 import models.networking.SongCache;
 import models.networking.SongDatagram;
 import models.networking.messages.StreamingMessage;
@@ -150,7 +151,12 @@ public class MusicStreamingService {
                             packet = new DatagramPacket(buffer, buffer.length);
                             readingSocket.receive(packet);
 
-                            this.validateInitializationPacket(packet);
+                            if(this.validateInitializationPacket(packet)){
+                                NetworkStatisticsController
+                                        .getInstance()
+                                        .setTotalPacketsExpected(this.currentCache.getExpectedCacheSize());
+                                NetworkStatisticsController.getInstance().start();
+                            }
                             break;
                         case RECEIVING:
 
@@ -163,6 +169,10 @@ public class MusicStreamingService {
                                 SongDatagram songDatagram = SongDatagramBuilder.convertToSongDatagram(packet);
                                 this.currentCache.add(songDatagram);
                                 this.dataReceived(songDatagram.getSongData());
+
+                                // *** Statistics ***
+                                NetworkStatisticsController.getInstance().addReceivedPacketMulticast();
+                                // ******************
                             }
                             catch(OutOfMemoryError outOfMemoryError){
 
@@ -211,7 +221,7 @@ public class MusicStreamingService {
      * with the corresponding cache size (the cache size is in the init packet).
      * @param packet
      */
-    private void validateInitializationPacket(DatagramPacket packet){
+    private boolean validateInitializationPacket(DatagramPacket packet){
         String message = new String(packet.getData());
         message = message.trim();
 
@@ -221,6 +231,10 @@ public class MusicStreamingService {
 
             this.currentCache = new SongCache(amountOfPackets);
             this.setCurrentServiceStatus(ServiceStatus.RECEIVING);
+            return true;
+        }
+        else {
+            return false;
         }
     }
 
