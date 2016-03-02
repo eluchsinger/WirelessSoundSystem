@@ -14,6 +14,22 @@ public class Server {
         this.serverListeningPort = serverListeningPort;
     }
 
+    public InetAddress getServerAddress() {
+        return serverAddress;
+    }
+
+    public void setServerAddress(InetAddress serverAddress) {
+        this.serverAddress = serverAddress;
+    }
+
+    public int getServerListeningPort() {
+        return serverListeningPort;
+    }
+
+    public void setServerListeningPort(int serverListeningPort) {
+        this.serverListeningPort = serverListeningPort;
+    }
+
     @Override
     public String toString() {
         return this.serverAddress.getHostAddress() + " (Port: " + this.serverListeningPort + ")";

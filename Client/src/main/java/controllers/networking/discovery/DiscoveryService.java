@@ -1,9 +1,13 @@
 package controllers.networking.discovery;
 
+import controllers.networking.discovery.callback.OnServerConnected;
+import controllers.networking.discovery.callback.OnServerDisconnected;
 import models.clients.Server;
 
 import java.io.IOException;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,6 +20,11 @@ public class DiscoveryService {
 
     private DatagramSocket scanningSocket;
     private DatagramSocket responseSocket;
+
+    private List<OnServerConnected> onServerConnectedList;
+    private List<OnServerDisconnected> onServerDisconnectedList;
+
+    private Server currentServer;
 
     /**
      * This is the port used for discovery.
@@ -56,7 +65,12 @@ public class DiscoveryService {
         return ourInstance;
     }
 
-    private DiscoveryService() { }
+    private DiscoveryService()
+    {
+        this.onServerConnectedList = new ArrayList<>();
+        this.onServerDisconnectedList = new ArrayList<>();
+        this.currentServer = null;
+    }
 
     /**
      * Starts the service.
@@ -162,8 +176,8 @@ public class DiscoveryService {
 
     /**
      * Call this method when a server is found.
-     * @param inetAddress
-     * @param serverListeningPort
+     * @param inetAddress InetAddress of the server.
+     * @param serverListeningPort Listening port of the server.
      */
     private void foundServer(InetAddress inetAddress, int serverListeningPort) {
         try {
@@ -171,8 +185,81 @@ public class DiscoveryService {
             DatagramPacket packet = new DatagramPacket(sendingData, sendingData.length,
                     inetAddress, serverListeningPort);
             this.responseSocket.send(packet);
+
+            Server foundServer = new Server(inetAddress, serverListeningPort);
+
+            // Add to current server, if needed.
+            if(this.currentServer == null){
+                this.currentServer = foundServer;
+                this.onServerConnected(foundServer);
+            }
+            else if(!this.currentServer.equals(foundServer)){
+                // New Server found.
+                this.onServerDisconnected(this.currentServer);
+                this.currentServer = foundServer;
+                this.onServerConnected(foundServer);
+            }
+
         } catch (IOException e) {
             Logger.getLogger(DiscoveryService.class.getName()).log(Level.SEVERE, null, e);
+        }
+    }
+
+    /**
+     * Adds an OnServerConnectedListener.
+     * If added multiple times, it will fire multiple events.
+     * @param listener new listener.
+     */
+    public void addOnServerConnectedListener(OnServerConnected listener) {
+        this.onServerConnectedList.add(listener);
+    }
+
+    /**
+     * Removes the listener for the OnServerConnected listener. If the listener
+     * was added multiple times, it removes only ONCE.
+     * @param listener listener to remove.
+     */
+    public void removeOnServerConnectedListener(OnServerConnected listener) {
+        this.onServerConnectedList.remove(listener);
+    }
+
+    /**
+     * Adds an OnServerDisconnectedListener.
+     * If addeed multiple times, it will fire multiple events.
+     * @param listener
+     */
+    public void addOnServerDisconnectedListener(OnServerDisconnected listener) {
+        this.onServerDisconnectedList.add(listener);
+    }
+
+    /**
+     * Removes the OnServerDisconnectedListener. If the listener
+     * was added multiple times, it removes only ONCE.
+     * @param listener
+     */
+    public void removeOnServerDisconnectedListener(OnServerDisconnected listener) {
+        this.onServerDisconnectedList.remove(listener);
+    }
+
+    /**
+     * Call this to fire an onServerConnected event.
+     * @param server Connected server.
+     */
+    private void onServerConnected(Server server){
+
+        for(OnServerConnected listener : this.onServerConnectedList) {
+            listener.serverConnected(server);
+        }
+    }
+
+    /**
+     * Call this to fire an onServerDisconnected Event.
+     * @param server Disconnected Server.
+     */
+    private void onServerDisconnected(Server server) {
+
+        for(OnServerDisconnected listener : this.onServerDisconnectedList) {
+            listener.serverDisconnected(server);
         }
     }
 }

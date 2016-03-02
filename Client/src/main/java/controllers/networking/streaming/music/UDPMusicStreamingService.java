@@ -1,6 +1,7 @@
 package controllers.networking.streaming.music;
 
 import controllers.io.CacheHandler;
+import controllers.networking.streaming.music.callback.OnMusicStreamingStatusChanged;
 import controllers.statistics.NetworkStatisticsController;
 import models.networking.SongCache;
 import models.networking.SongDatagram;
