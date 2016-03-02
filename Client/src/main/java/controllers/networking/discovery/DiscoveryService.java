@@ -14,8 +14,8 @@ import java.util.logging.Logger;
 public class DiscoveryService {
     private static DiscoveryService ourInstance = new DiscoveryService();
 
-    private static DatagramSocket scanningSocket;
-    private static DatagramSocket responseSocket;
+    private DatagramSocket scanningSocket;
+    private DatagramSocket responseSocket;
 
     /**
      * This is the port used for discovery.
@@ -56,27 +56,29 @@ public class DiscoveryService {
         return ourInstance;
     }
 
-    private DiscoveryService() {
-    }
+    private DiscoveryService() { }
 
+    /**
+     * Starts the service.
+     */
     public void start() {
         // Start response service.
         if (this.scanningThread == null || !this.scanningThread.isAlive()) {
 
             try {
-
                 // Init Scanning Socket
-                if (DiscoveryService.scanningSocket == null) {
-                    DiscoveryService.scanningSocket = new DatagramSocket(DiscoveryService.SCANNING_PORT);
-                    DiscoveryService.scanningSocket.setSoTimeout(DiscoveryService.SCANNING_TIMEOUT);
+                if (this.scanningSocket == null) {
+                    this.scanningSocket = new DatagramSocket(DiscoveryService.SCANNING_PORT);
+                    this.scanningSocket.setSoTimeout(DiscoveryService.SCANNING_TIMEOUT);
                 }
 
                 // Init response socket
-                if (DiscoveryService.responseSocket == null) {
-                    DiscoveryService.responseSocket = new DatagramSocket();
+                if (this.responseSocket == null) {
+                    this.responseSocket = new DatagramSocket();
                 }
 
                 this.scanningThread = new Thread(this::scan);
+                this.scanningThread.setDaemon(true);
                 this.isWorking = true;
 
                 this.scanningThread.start();
@@ -92,6 +94,10 @@ public class DiscoveryService {
         }
     }
 
+    /**
+     * Stops the discovery service.
+     * If stop is called when the service is already stopped, does nothing.
+     */
     public void stop() {
 
         // Response thread.
@@ -119,7 +125,7 @@ public class DiscoveryService {
 
                 try {
                     // If the message is bigger than the READING_BUFFER_SIZE, it gets truncated (the last part is lost!)
-                    DiscoveryService.scanningSocket.receive(receivedPacket);
+                    this.scanningSocket.receive(receivedPacket);
                     String message = new String(receivedPacket.getData());
                     message = message.trim(); // Trim stuff, because the buffer was too big.
 
@@ -148,22 +154,23 @@ public class DiscoveryService {
             Logger.getLogger(DiscoveryService.class.getName()).log(Level.SEVERE, null, e);
         } finally {
             this.isWorking = false;
-            DiscoveryService.scanningSocket = null;
-            DiscoveryService.responseSocket = null;
+            this.scanningSocket = null;
+            this.responseSocket = null;
             System.out.println("Discovery Listening stopped!");
         }
     }
 
+    /**
+     * Call this method when a server is found.
+     * @param inetAddress
+     * @param serverListeningPort
+     */
     private void foundServer(InetAddress inetAddress, int serverListeningPort) {
-        Server foundServer = new Server(inetAddress, serverListeningPort);
-
-        //System.out.println("Server found: " + foundServer + "...");
-
         try {
             byte[] sendingData = SERVER_FOUND_MESSAGE.getBytes();
             DatagramPacket packet = new DatagramPacket(sendingData, sendingData.length,
                     inetAddress, serverListeningPort);
-            DiscoveryService.responseSocket.send(packet);
+            this.responseSocket.send(packet);
         } catch (IOException e) {
             Logger.getLogger(DiscoveryService.class.getName()).log(Level.SEVERE, null, e);
         }

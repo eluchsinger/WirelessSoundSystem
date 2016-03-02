@@ -1,6 +1,6 @@
 package controllers.networking.streaming;
 
-import controllers.networking.streaming.music.MusicStreamingService;
+import controllers.networking.streaming.music.UDPMusicStreamingService;
 import controllers.networking.streaming.music.ServiceStatus;
 import org.junit.Test;
 
@@ -12,12 +12,12 @@ import static org.junit.Assert.*;
 public class MusicStreamingServiceTest {
 
     /**
-     * Tries to get the instance of the MusicStreamingService Singleton.
+     * Tries to get the instance of the UDPMusicStreamingService Singleton.
      * @throws Exception
      */
     @Test
     public void testGetInstance() throws Exception {
-        assertNull(MusicStreamingService.getInstance());
+        assertNull(UDPMusicStreamingService.getInstance());
     }
 
     /**
@@ -26,7 +26,7 @@ public class MusicStreamingServiceTest {
      */
     @Test
     public void testStartAfterInit() throws Exception {
-        MusicStreamingService service = MusicStreamingService.getInstance();
+        UDPMusicStreamingService service = UDPMusicStreamingService.getInstance();
 
         if(service.getCurrentServiceStatus() != ServiceStatus.STOPPED)
         {

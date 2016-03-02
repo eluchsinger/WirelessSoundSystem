@@ -31,26 +31,12 @@ public class NetworkStatisticsController {
     private long totalPacketsExpected;
 
     private NetworkStatisticsController(){
-        this.statisticsList = FXCollections.observableArrayList();
+        // Create an observable List that is synchronized.
+        this.statisticsList = FXCollections
+                .synchronizedObservableList(FXCollections.observableArrayList());
 
         XYChart.Series<Integer, Integer> multicastSeries = new XYChart.Series<>(MULTICAST_SERIES_NAME, FXCollections.observableArrayList());
         XYChart.Series<Integer, Integer> recoveredSeries = new XYChart.Series<>(RECONSTRUCTION_SERIES_NAME, FXCollections.observableArrayList());
-
-//        multicastSeries.getData().add(new XYChart.Data<>(0, 0));
-//        multicastSeries.getData().add(new XYChart.Data<>(1, 20));
-//        multicastSeries.getData().add(new XYChart.Data<>(2, 40));
-//        multicastSeries.getData().add(new XYChart.Data<>(3, 50));
-//        multicastSeries.getData().add(new XYChart.Data<>(4, 80));
-//        multicastSeries.getData().add(new XYChart.Data<>(5, 80));
-//        multicastSeries.getData().add(new XYChart.Data<>(6, 80));
-//
-//        recoveredSeries.getData().add(new XYChart.Data<>(0, 0));
-//        recoveredSeries.getData().add(new XYChart.Data<>(1, 0));
-//        recoveredSeries.getData().add(new XYChart.Data<>(2, 0));
-//        recoveredSeries.getData().add(new XYChart.Data<>(3, 0));
-//        recoveredSeries.getData().add(new XYChart.Data<>(4, 0));
-//        recoveredSeries.getData().add(new XYChart.Data<>(5, 10));
-//        recoveredSeries.getData().add(new XYChart.Data<>(6, 20));
 
         this.multicastSeries = multicastSeries;
         this.recoveredSeries = recoveredSeries;
@@ -125,7 +111,9 @@ public class NetworkStatisticsController {
         });
     }
 
-
+    /**
+     * Start the statistics controller.
+     */
     public void start(){
         this.timePassed = 0;
         this.resetMeasurement();
