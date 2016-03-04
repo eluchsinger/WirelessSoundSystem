@@ -1,19 +1,24 @@
 package models.networking.messages;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import java.util.regex.MatchResult;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 /**
  * Created by Esteban Luchsinger on 18.12.2015.
  * This class contains static messages used for the streaming network protocols
+ *
+ * Change 04.03.2016 (ELU):
+ * Changed the messages to be used in a continuous stream. (TCP is continious, UDP is Datagram-oriented).
  */
 public final class StreamingMessage {
 
     // INITIALIZATION
-    public final static String STREAMING_INITIALIZATION_MESSAGE = "start:";
-    public final static String STREAMING_INITIALIZATION_ACKNOWLEDGED_MESSAGE = "startack:";
+    public final static String STREAMING_INITIALIZATION_MESSAGE = "<start>";
+    public final static String STREAMING_INITIALIZATION_LENGTH_ATTRIBUTE = "length";
+    public final static String STREAMING_INITIALIZATION_ACKNOWLEDGED_MESSAGE = "</start>";
 
     // QUALITY
     public final static String MISSING_PACKETS_MESSAGE = "missing:";
@@ -31,6 +36,66 @@ public final class StreamingMessage {
      */
     public static String initializationMessage(int amountOfPackets){
         return StreamingMessage.STREAMING_INITIALIZATION_MESSAGE + amountOfPackets;
+    }
+
+    /**
+     * Sets an attribute into the tag.
+     * @param tag original tag
+     * @param attribute Attribute (example: length)
+     * @param value Value of the attribute
+     * @return Returns a new tag (String) with the new attribute.
+     */
+    public static String setAttribute(String tag, String attribute, String value) throws Exception {
+
+        // Todo: Implement unit test.
+        if(tag.isEmpty() || attribute.isEmpty() || value.isEmpty()){
+            throw new Exception("One of the parameters is empty.");
+        }
+
+        String returnString;
+        // If the attribute already exists, change it.
+        if(tag.contains(attribute)){
+            List<String> attributes = StreamingMessage.getAttributes(tag);
+            Optional<String> stringOptional = attributes.stream()
+                .filter(s -> s.startsWith(attribute))
+                .findFirst();
+
+            String oldValue = stringOptional.get().split("=")[1];
+            returnString = stringOptional.get().replace("=" + oldValue, value);
+        }
+        // If the attribute doesn't exist, add it.
+        else {
+            StringBuilder builder = new StringBuilder(tag);
+            String insertText = attribute + "=" + value;
+
+            if (tag.startsWith("<") && tag.endsWith(">")) {
+                builder.insert(tag.length() - 1, insertText);
+            }
+
+            returnString = builder.toString();
+        }
+
+        return returnString;
+    }
+
+    /**
+     * Returns a string list with all attributes (with values) in the tag.
+     * Example:
+     *  Input: <start length=100 size=300>
+     *  Output: ["length=100", "size=300"]
+     * @param tag
+     * @return
+     */
+    public static List<String> getAttributes(String tag){
+        Pattern pattern = Pattern.compile("(?<attribute>[a-zA-Z]*=(?<value>[0-9]*))");
+
+        List<String> attributes = new ArrayList<>();
+        Matcher matcher = pattern.matcher(tag);
+
+        while(matcher.find()){
+            attributes.add(matcher.group("attribute"));
+        }
+        return attributes;
     }
 
     /**

@@ -3,6 +3,7 @@ package controllers.networking.streaming.music;
 import controllers.io.CacheHandler;
 import controllers.networking.streaming.music.callback.OnMusicStreamingStatusChanged;
 import controllers.statistics.NetworkStatisticsController;
+import models.clients.Server;
 import models.networking.SongCache;
 import models.networking.SongDatagram;
 import models.networking.messages.StreamingMessage;
@@ -128,6 +129,11 @@ public class UDPMusicStreamingService implements MusicStreamingService{
         this.setCurrentServiceStatus(ServiceStatus.STOPPED);
 
         System.out.println("Streaming Controller stopped...");
+    }
+
+    @Override
+    public void setServer(Server server) {
+
     }
 
     /**

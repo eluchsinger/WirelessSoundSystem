@@ -15,8 +15,6 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
         System.setProperty("java.net.preferIPv4Stack", "true");
-        System.out.println("Starting DiscoveryService...");
-        DiscoveryService.getInstance().start();
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ClientWindow.fxml"));
         Parent root = loader.load();
@@ -35,4 +33,5 @@ public class Main extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
 }

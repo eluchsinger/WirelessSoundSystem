@@ -18,6 +18,7 @@ import javafx.stage.Stage;
  */
 public class ClientWindowViewModel {
 
+    DiscoveryService discoveryService = new DiscoveryService();
     MusicStreamingService musicStreamingService = new UDPMusicStreamingService();
 
     @FXML
@@ -47,6 +48,10 @@ public class ClientWindowViewModel {
             Platform.runLater(() -> labelStatus.setText(newStatus.name()));
         });
 
+        System.out.println("Starting discovery service...");
+
+        this.discoveryService.start();
+
         this.statisticsChart.setData(NetworkStatisticsController.getInstance().getStatisticsList());
 
         // Start Service.
@@ -65,7 +70,7 @@ public class ClientWindowViewModel {
             this.stage.setOnCloseRequest(event -> {
 
                 System.out.println("Stopping DiscoveryService...");
-                DiscoveryService.getInstance().stop();
+                this.discoveryService.stop();
 
                 this.musicStreamingService.stop();
             });

@@ -16,7 +16,6 @@ import java.util.logging.Logger;
  * This is the DiscoveryService of the Client.
  */
 public class DiscoveryService {
-    private static DiscoveryService ourInstance = new DiscoveryService();
 
     private DatagramSocket scanningSocket;
     private DatagramSocket responseSocket;
@@ -61,11 +60,7 @@ public class DiscoveryService {
     private Thread scanningThread;
     private volatile boolean isWorking = false;
 
-    public static DiscoveryService getInstance() {
-        return ourInstance;
-    }
-
-    private DiscoveryService()
+    public DiscoveryService()
     {
         this.onServerConnectedList = new ArrayList<>();
         this.onServerDisconnectedList = new ArrayList<>();

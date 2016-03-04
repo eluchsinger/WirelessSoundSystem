@@ -1,15 +1,18 @@
 package controllers.networking.streaming.music;
 
 import controllers.networking.streaming.music.callback.OnMusicStreamingStatusChanged;
+import models.clients.Server;
+import models.networking.messages.StreamingMessage;
 
 import java.io.IOException;
-import java.net.InetAddress;
+import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * Created by Esteban Luchsinger on 01.03.2016.
+ * The TCP streaming uses Base-64 encoding.
  */
 public class TCPMusicStreamingService implements MusicStreamingService {
 
@@ -24,18 +27,69 @@ public class TCPMusicStreamingService implements MusicStreamingService {
      */
     private static final int SOCKET_TIMEOUT = 1000;
     private final static int STREAM_READING_PORT = 6049;
-    private final InetAddress serverAddress;
+    private Server currentServer;
 
     private Socket socket;
 
     @Override
     public void start() {
 
-        this.listeningThread = new Thread(LISTENING_THREAD_NAME);
-        this.listeningThread.setDaemon(true);
+        try {
+            this.listeningThread = new Thread(this::listen, LISTENING_THREAD_NAME);
+            this.listeningThread.setDaemon(true);
+            this.running = true;
 
-        this.listeningThread.start();
-        this.running = true;
+            this.socket = new Socket(this.currentServer.getServerAddress(), this.currentServer.getServerListeningPort());
+            this.listeningThread.start();
+        }
+        catch(IOException exception) {
+            this.running = false;
+        }
+    }
+
+    /**
+     * Listening method.
+     */
+    private void listen() {
+        StringBuilder stringBuilder = new StringBuilder();
+        InputStreamReader inputStreamReader = null;
+
+        while (running && this.getSocket().isConnected()) {
+            try {
+                // Only reinit, if it's null.
+                if(inputStreamReader == null)
+                    new InputStreamReader(this.getSocket().getInputStream(), "US-ASCII");
+
+
+                assert inputStreamReader != null;
+                int character = inputStreamReader.read();
+
+                // If there was something in the stream --> Do reading.
+                if(character > -1) {
+                    while (character > -1) {
+
+                        stringBuilder.append((char) character);
+                        character = inputStreamReader.read();
+                        if(stringBuilder.toString().endsWith(StreamingMessage.STREAMING_FINALIZATION_MESSAGE)){
+                            this.streamFinished(stringBuilder.toString());
+                        }
+                    }
+                }
+                // If the reading failed --> Sleep.
+                else { Thread.sleep(200); }
+
+            } catch (IOException | InterruptedException ignore) { }
+        }
+    }
+
+    /**
+     * Call this method, when the streaming finished (the StreamMessage FINAL was received).
+     * Example: "start:<DATA>finish:"
+     * Concurrency: Not thread-safe!
+     * @param data Data received.
+     */
+    private void streamFinished(String data){
+
     }
 
     @Override
@@ -50,17 +104,25 @@ public class TCPMusicStreamingService implements MusicStreamingService {
     }
 
     @Override
+    public void setServer(Server server) {
+        this.currentServer = server;
+    }
+
+    /**
+     * Synchronized getSocked method.
+     * @return Current socket.
+     */
+    private synchronized Socket getSocket(){
+        return this.socket;
+    }
+
+    @Override
     public void addServiceStatusChangedListener(OnMusicStreamingStatusChanged listener) {
 
     }
 
     @Override
     public void removeServiceStatusChangedListener(OnMusicStreamingStatusChanged listener) {
-
-    }
-
-    public TCPMusicStreamingService(String serverAddress) throws IOException {
-        this.serverAddress = InetAddress.getByName(serverAddress);
 
     }
 }

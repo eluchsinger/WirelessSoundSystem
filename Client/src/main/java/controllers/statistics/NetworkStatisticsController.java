@@ -87,7 +87,7 @@ public class NetworkStatisticsController {
      * Call, when a packet is received trough UDP multicast group
      */
     public synchronized void addReceivedPacketMulticast(){
-        this.currentReceivedMulticastPackets++;
+        this.currentReceivedMulticastPackets += 5;
     }
 
     /**

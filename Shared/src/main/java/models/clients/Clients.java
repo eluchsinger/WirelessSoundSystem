@@ -20,7 +20,8 @@ public class Clients {
     }
 
     private Clients() {
-        this.clients = FXCollections.observableArrayList();
+        this.clients = FXCollections
+                .synchronizedObservableList(FXCollections.observableArrayList());
     }
 
     public ObservableList<Client> getClients(){
