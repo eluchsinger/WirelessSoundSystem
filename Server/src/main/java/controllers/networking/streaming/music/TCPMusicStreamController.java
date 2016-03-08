@@ -43,7 +43,7 @@ public class TCPMusicStreamController implements MusicStreamController {
      * Caution: Even if it's a synchronized list, you NEED to manually
      * synchronize when iterating over it (look at specifications)
      */
-    private List<Socket> connections;
+    private final List<Socket> connections;
 
     /**
      * Starts the service.

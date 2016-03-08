@@ -146,10 +146,16 @@ public class TCPMusicStreamingService implements MusicStreamingService {
      * @throws IOException
      */
     private Socket initSocket(InetAddress address, int port) throws IOException {
-        Socket socket = new Socket(address, port);
-        socket.setSoTimeout(SOCKET_TIMEOUT);
-
-        return socket;
+        try {
+            Socket socket = new Socket(address, Server.STREAMING_PORT);
+            socket.setSoTimeout(SOCKET_TIMEOUT);
+            return socket;
+        }
+        catch (IOException exception) {
+            throw new IOException("Error initializing socket with address "
+                    + address.getHostAddress()
+                    + " to port " + port, exception);
+        }
     }
 
     @Override

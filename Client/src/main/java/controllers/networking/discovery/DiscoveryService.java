@@ -90,8 +90,7 @@ public class DiscoveryService {
 
                 try {
                     this.stop();
-                } catch (Exception ignored) {
-                }
+                } catch (Exception ignored) { }
             }
 
         }

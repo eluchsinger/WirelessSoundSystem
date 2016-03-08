@@ -79,18 +79,16 @@ public class CacheHandler {
     }
 
     public void writeData(byte[] data) throws IOException {
-        if(data.length > 0) {
+        if(data.length > 0) try {
+            this.open();
+            ByteBuffer buffer = ByteBuffer.wrap(data);
+            this.fileChannel.write(buffer);
+        } catch (Exception ignore) {
+        } finally {
             try {
-                this.open();
-                ByteBuffer buffer = ByteBuffer.wrap(data);
-                this.fileChannel.write(buffer);
-            }
-            catch(Exception ignore) { }
-            finally {
-                try {
-                    this.close();
-                }
-                catch(Exception ignore) { ignore.printStackTrace(); }
+                this.close();
+            } catch (Exception ignore) {
+                ignore.printStackTrace();
             }
         }
     }
