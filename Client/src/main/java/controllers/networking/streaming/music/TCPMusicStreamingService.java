@@ -82,7 +82,7 @@ public class TCPMusicStreamingService implements MusicStreamingService {
 
     /**
      * Call this method, when the streaming finished (the StreamMessage FINAL was received).
-     * Example: "start:<DATA>finish:"
+     * Example: "<stream>DATA</stream>"
      * Concurrency: Not thread-safe!
      * @param data Data received.
      */

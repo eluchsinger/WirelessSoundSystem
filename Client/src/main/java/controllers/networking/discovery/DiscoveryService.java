@@ -32,12 +32,6 @@ public class DiscoveryService {
     private static final int SCANNING_PORT = 6583;
 
     /**
-     * This is the port, on which the server is listening.
-     * Send ACKS to this port!
-     */
-    private static final int SERVER_PORT = 6584;
-
-    /**
      * This is the message sent in the discovery protocol.
      */
     private static final String DISCOVERY_MESSAGE = "WSSServer";
@@ -124,7 +118,7 @@ public class DiscoveryService {
     }
 
     private void scan() {
-        System.out.println("Listening for servers... (Port: " + DiscoveryService.SCANNING_PORT + ")");
+        System.out.println("Discovering servers... (Port: " + DiscoveryService.SCANNING_PORT + ")");
 
         try {
 
@@ -142,7 +136,7 @@ public class DiscoveryService {
                     if (message.equals(DiscoveryService.DISCOVERY_MESSAGE)) {
                         if(!this.isWorking)
                             break;
-                        this.foundServer(receivedPacket.getAddress(), Server.DEFAULT_PORT);
+                        this.foundServer(receivedPacket.getAddress(), Server.DISCOVERY_PORT);
                     }
                     // Handle unknown messages
                     else {

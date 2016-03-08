@@ -12,21 +12,12 @@ import static org.junit.Assert.*;
 public class MusicStreamingServiceTest {
 
     /**
-     * Tries to get the instance of the UDPMusicStreamingService Singleton.
-     * @throws Exception
-     */
-    @Test
-    public void testGetInstance() throws Exception {
-        assertNull(UDPMusicStreamingService.getInstance());
-    }
-
-    /**
      * Tests the start of the service.
      * @throws Exception
      */
     @Test
     public void testStartAfterInit() throws Exception {
-        UDPMusicStreamingService service = UDPMusicStreamingService.getInstance();
+        UDPMusicStreamingService service = new UDPMusicStreamingService();
 
         if(service.getCurrentServiceStatus() != ServiceStatus.STOPPED)
         {

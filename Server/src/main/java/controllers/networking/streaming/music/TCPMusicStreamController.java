@@ -1,11 +1,11 @@
 package controllers.networking.streaming.music;
 
 import models.clients.Server;
-import models.networking.SongCache;
 import models.songs.Song;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Files;
@@ -50,7 +50,7 @@ public class TCPMusicStreamController implements MusicStreamController {
      * @throws IOException
      */
     public TCPMusicStreamController() throws IOException {
-        this.serverSocket = new ServerSocket(Server.DEFAULT_PORT);
+        this.serverSocket = new ServerSocket(Server.STREAMING_PORT);
         this.connections = Collections.synchronizedList(new ArrayList<>());
         this.connectionAcceptingThread = new Thread(this::acceptConnections);
         this.connectionAcceptingThread.setDaemon(true);
@@ -68,9 +68,21 @@ public class TCPMusicStreamController implements MusicStreamController {
 
             // Sync connections list for the iteration.
             synchronized (this.connections){
+
                 for(Socket socket : this.connections) {
-                    socket.getOutputStream().write(data);
+                    OutputStream out = socket.getOutputStream();
+
+//                    // Do Initialization
+//                    String initString = StreamingMessage.initializationMessage(data.length);
+//                    out.write(initString.getBytes(StreamingCharset.DEFAULT_CHARSET));
+
+                    // Send data
+                    out.write(data);
                     socket.close();
+
+//                    // Do finishing
+//                    String finishString = StreamingMessage.streamingEndedMessage();
+//                    out.write(finishString.getBytes(StreamingCharset.DEFAULT_CHARSET));
                 }
 
                 this.connections.clear();

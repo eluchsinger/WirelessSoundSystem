@@ -65,11 +65,11 @@ public class MusicReconstructionService {
 
     /**
      * /**
-     * Constructor using the default port (DEFAULT_PORT).
+     * Constructor using the default port (STREAMING_PORT).
      * @throws IOException If the port is already in use.
      */
     public MusicReconstructionService() throws IOException {
-        this(Server.DEFAULT_PORT);
+        this(Server.STREAMING_PORT);
     }
 
     /**

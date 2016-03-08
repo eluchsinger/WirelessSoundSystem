@@ -16,21 +16,21 @@ import java.util.stream.Stream;
 public final class StreamingMessage {
 
     // INITIALIZATION example: <start length=100>
-    public final static String STREAMING_INITIALIZATION_MESSAGE = "<start>";
+    public final static String STREAMING_INITIALIZATION_MESSAGE = "<stream>";
     public final static String STREAMING_INITIALIZATION_LENGTH_ATTRIBUTE = "length";
-    public final static String STREAMING_INITIALIZATION_ACKNOWLEDGED_MESSAGE = "</start>";
+    public final static String STREAMING_INITIALIZATION_ACKNOWLEDGED_MESSAGE = "<ack>stream</ack>";
 
     // QUALITY
-    public final static String MISSING_PACKETS_MESSAGE = "missing:";
+    public final static String MISSING_PACKETS_MESSAGE = "<missing>";
+    public final static String MISSING_PACKETS_CLOSE = "</missing>";
 
     // FINALIZATION
-    public final static String STREAMING_FINALIZATION_MESSAGE = "finish:";
-    public final static String STREAMING_FINALIZATION_ACKNOWLEDGED_MESSAGE = "finishack:";
+    public final static String STREAMING_FINALIZATION_MESSAGE = "</stream>";
 
     //region Initialization
     /**
      * The Streaming Initialization Message is sent before the server starts streaming a song.
-     * It contains the amount of packets that are going to be sent.
+     * It contains the amount of packets for UDP and bytes for TCP that are going to be sent.
      * Example: <start length=100>
      * @param amountOfPackets Amount of packets that are going to be sent in the stream.
      * @return Returns the correct message corresponding with the parameters.
@@ -39,6 +39,15 @@ public final class StreamingMessage {
         return setAttribute(STREAMING_INITIALIZATION_MESSAGE,
                 STREAMING_INITIALIZATION_LENGTH_ATTRIBUTE,
                 Integer.toString(amountOfPackets));
+    }
+
+    /**
+     * The message sent when the streaming finished.
+     * Example: </stream>
+     * @return
+     */
+    public static String streamingEndedMessage() {
+        return STREAMING_FINALIZATION_MESSAGE;
     }
 
     /**
@@ -119,16 +128,15 @@ public final class StreamingMessage {
     public static String makeMissingPacketsMessage(List<Integer> missingPackets){
         StringBuilder builder = new StringBuilder();
 
+        builder.append(StreamingMessage.MISSING_PACKETS_MESSAGE);
+
         // Append the numbers in the string.
         missingPackets.stream()
-                .forEach(integer -> builder.append(integer).append(","));
+                .forEach(integer -> builder.append(integer).append(" "));
 
-        // Delete the last comma, if needed.
-        if(builder.length() > 0 && builder.charAt(builder.length() - 1) == ','){
-            builder.deleteCharAt(builder.length() - 1);
-        }
+        builder.append(StreamingMessage.MISSING_PACKETS_CLOSE);
 
-        return StreamingMessage.MISSING_PACKETS_MESSAGE + builder.toString();
+        return builder.toString();
     }
 
     /**
@@ -139,31 +147,21 @@ public final class StreamingMessage {
     public static List<Integer> parseMissingPacketsMessage(String message){
 
         List<Integer> list = new ArrayList<>();
-        if(message.startsWith(StreamingMessage.MISSING_PACKETS_MESSAGE)){
 
-            // Get the data part of the message.
-            String dataPart = message.substring(StreamingMessage.MISSING_PACKETS_MESSAGE.length());
+        if(message.startsWith(StreamingMessage.MISSING_PACKETS_MESSAGE)
+                && message.endsWith(StreamingMessage.MISSING_PACKETS_CLOSE)){
+            Matcher matcher =  Pattern.compile("\\d+").matcher(message);
 
-            // Split the data-part of the message in the different integers.
-            String[] splitParts = dataPart.split(",");
-
-            // Fill the list.
-            for(String s : splitParts){
-                list.add(Integer.parseInt(s));
+            while(matcher.find()){
+                String nextMatch = matcher.group();
+                list.add(Integer.parseInt(nextMatch));
             }
         }
-
         return list;
     }
     //endregion
 
     //region Finalization
-    public static String finalizationMessage(int amountOfPackets){
-        return StreamingMessage.STREAMING_FINALIZATION_MESSAGE + amountOfPackets;
-    }
 
-    public static String finalizationAckMessage(int amountOfPackets){
-        return StreamingMessage.STREAMING_FINALIZATION_ACKNOWLEDGED_MESSAGE + amountOfPackets;
-    }
     //endregion
 }

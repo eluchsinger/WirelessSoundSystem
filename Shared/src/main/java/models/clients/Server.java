@@ -9,10 +9,16 @@ import java.util.Objects;
  */
 public class Server {
     /**
-     * Default listening port for the server.
+     * Default listening port for the server (only streaming).
      * If you want to connect to the server to receive music over it's TCP-Service, connect to this port.
      */
-    public final static int DEFAULT_PORT = 6070;
+    public final static int STREAMING_PORT = 6070;
+
+    /**
+     * Default server listening port for the discovery service.
+     * Send ACKS to this port!
+     */
+    public final static int DISCOVERY_PORT = 6584;
 
     // Address of the server.
     private InetAddress serverAddress;
@@ -80,13 +86,8 @@ public class Server {
         if(obj.getClass().equals(getClass())) {
             Server other = (Server)obj;
 
-            if(this.getServerAddress().getHostAddress().equals(other.getServerAddress().getHostAddress())
-                    && this.getServerListeningPort() == other.getServerListeningPort()) {
-                return true;
-            }
-            else {
-                return false;
-            }
+            return this.getServerAddress().getHostAddress().equals(other.getServerAddress().getHostAddress())
+                    && this.getServerListeningPort() == other.getServerListeningPort();
         }
         else {
             return false;

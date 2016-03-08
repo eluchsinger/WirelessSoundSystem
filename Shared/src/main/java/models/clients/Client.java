@@ -97,11 +97,7 @@ public class Client implements Comparable {
                 return true;
             }
             // If there is no IP-Address, try to compare the name.
-            else if (c.getName() != null && c.getName() != "" && c.getName().equals(this.getName())) {
-                return true;
-            } else {
-                return false;
-            }
+            else return c.getName() != null && c.getName() != "" && c.getName().equals(this.getName());
         } else {
             return false;
         }

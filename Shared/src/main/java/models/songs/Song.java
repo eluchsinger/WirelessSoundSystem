@@ -3,7 +3,7 @@ package models.songs;
 /**
  * Created by eluch on 30.11.2015.
  */
-public interface Song extends Comparable<Song>{
+public interface Song extends Comparable<Song> {
     /**
      * Gets the title of the song.
      * @return Returns the title of the song, if possible  (if not, returns "unknown title").
