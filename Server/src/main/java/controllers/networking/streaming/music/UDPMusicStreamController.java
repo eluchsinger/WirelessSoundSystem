@@ -156,6 +156,12 @@ public class UDPMusicStreamController implements MusicStreamController{
      */
     private void streamSong() throws IOException {
         DatagramSocket socket = new DatagramSocket();
+
+        // Set this in order to increase UDP Reliability.
+        // http://stackoverflow.com/questions/8267271/how-to-minimize-udp-packet-loss
+        socket.setSendBufferSize(32 * 1024);
+        socket.setTrafficClass(0x04);
+
         for(int i = 1; i < this.songCache.getExpectedCacheSize() + 1; i++){
             SongDatagram songDatagram = this.songCache.getSongDatagram(i);
             socket.send(songDatagram.getDatagramPacket());

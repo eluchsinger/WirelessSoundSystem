@@ -62,6 +62,12 @@ public class UDPMusicStreamingService implements MusicStreamingService{
                 this.readingSocket = new MulticastSocket(UDPMusicStreamingService.STREAM_READING_PORT);
                 this.readingSocket.setSoTimeout(UDPMusicStreamingService.READING_TIMEOUT);
 
+                // In order to minimize packet loss, set the receiveBufferSize to a higher value.
+                // http://stackoverflow.com/q/8267271/2632991
+                this.readingSocket.setReceiveBufferSize(32*1024);
+                // Try this also.
+                this.readingSocket.setTrafficClass(0x04);
+
                 AccessController.doPrivileged((PrivilegedAction<Object>) (() -> {
                     try {
                         this.readingSocket.joinGroup(InetAddress.getByName(UDPMusicStreamingService.MULTICAST_GROUP_ADDRESS));
