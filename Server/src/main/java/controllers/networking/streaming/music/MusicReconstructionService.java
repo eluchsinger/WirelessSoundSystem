@@ -1,5 +1,6 @@
 package controllers.networking.streaming.music;
 
+import models.clients.Server;
 import models.networking.SongCache;
 import models.networking.SongDatagram;
 import models.networking.messages.StreamingMessage;
@@ -23,10 +24,6 @@ import java.util.List;
 public class MusicReconstructionService {
 
     //region Constants
-    /**
-     * Default port used for the server.
-     */
-    public static final int DEFAULT_PORT = 6070;
 
     /**
      * Socket timeout in milliseconds.
@@ -72,7 +69,7 @@ public class MusicReconstructionService {
      * @throws IOException If the port is already in use.
      */
     public MusicReconstructionService() throws IOException {
-        this(DEFAULT_PORT);
+        this(Server.DEFAULT_PORT);
     }
 
     /**

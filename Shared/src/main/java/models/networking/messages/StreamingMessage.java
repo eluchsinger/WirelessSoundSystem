@@ -15,7 +15,7 @@ import java.util.stream.Stream;
  */
 public final class StreamingMessage {
 
-    // INITIALIZATION
+    // INITIALIZATION example: <start length=100>
     public final static String STREAMING_INITIALIZATION_MESSAGE = "<start>";
     public final static String STREAMING_INITIALIZATION_LENGTH_ATTRIBUTE = "length";
     public final static String STREAMING_INITIALIZATION_ACKNOWLEDGED_MESSAGE = "</start>";
@@ -31,11 +31,14 @@ public final class StreamingMessage {
     /**
      * The Streaming Initialization Message is sent before the server starts streaming a song.
      * It contains the amount of packets that are going to be sent.
+     * Example: <start length=100>
      * @param amountOfPackets Amount of packets that are going to be sent in the stream.
      * @return Returns the correct message corresponding with the parameters.
      */
-    public static String initializationMessage(int amountOfPackets){
-        return StreamingMessage.STREAMING_INITIALIZATION_MESSAGE + amountOfPackets;
+    public static String initializationMessage(int amountOfPackets) {
+        return setAttribute(STREAMING_INITIALIZATION_MESSAGE,
+                STREAMING_INITIALIZATION_LENGTH_ATTRIBUTE,
+                Integer.toString(amountOfPackets));
     }
 
     /**
@@ -45,35 +48,30 @@ public final class StreamingMessage {
      * @param value Value of the attribute
      * @return Returns a new tag (String) with the new attribute.
      */
-    public static String setAttribute(String tag, String attribute, String value) throws Exception {
+    public static String setAttribute(String tag, String attribute, String value) {
 
-        // Todo: Implement unit test.
         if(tag.isEmpty() || attribute.isEmpty() || value.isEmpty()){
-            throw new Exception("One of the parameters is empty.");
+            throw new IllegalArgumentException("One of the parameters is empty.");
         }
 
         String returnString;
         // If the attribute already exists, change it.
         if(tag.contains(attribute)){
-            List<String> attributes = StreamingMessage.getAttributes(tag);
-            Optional<String> stringOptional = attributes.stream()
-                .filter(s -> s.startsWith(attribute))
-                .findFirst();
-
-            String oldValue = stringOptional.get().split("=")[1];
-            returnString = stringOptional.get().replace("=" + oldValue, value);
+            // Just delete the attribute with the old value and make a new one.
+            // Example of Regex (_ = Whitespace): _<attribute>=[0-9]* --> Finds the attribute and removes it.
+            tag = tag.replaceFirst(" " + attribute + "=[0-9]*", "");
         }
-        // If the attribute doesn't exist, add it.
-        else {
-            StringBuilder builder = new StringBuilder(tag);
-            String insertText = attribute + "=" + value;
 
-            if (tag.startsWith("<") && tag.endsWith(">")) {
-                builder.insert(tag.length() - 1, insertText);
-            }
+        // If the attribute doesn't exist, add it. (--> If the attribute existed before, it was deleted!)
+        StringBuilder builder = new StringBuilder(tag);
+        String insertText = " " + attribute + "=" + value;
 
-            returnString = builder.toString();
+        if (tag.startsWith("<") && tag.endsWith(">")) {
+            // Insert at last position possible.
+            builder.insert(tag.length() - 1, insertText);
         }
+
+        returnString = builder.toString();
 
         return returnString;
     }

@@ -86,7 +86,7 @@ public class CacheHandler {
                 this.fileChannel.write(buffer);
             }
             catch(Exception ignore) { }
-            finally{
+            finally {
                 try {
                     this.close();
                 }

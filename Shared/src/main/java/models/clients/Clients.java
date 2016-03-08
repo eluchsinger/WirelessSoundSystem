@@ -10,20 +10,31 @@ import java.util.logging.Logger;
 
 /**
  * Created by Esteban Luchsinger on 11.12.2015.
+ * A list of clients.
+ * (ObservableList)
  */
 public class Clients {
     private ObservableList<Client> clients;
     private static Clients ourInstance = new Clients();
 
+    /**
+     * Gets the instance of the singleton.
+     * @return The instance.
+     */
     public static Clients getInstance() {
         return ourInstance;
     }
+
 
     private Clients() {
         this.clients = FXCollections
                 .synchronizedObservableList(FXCollections.observableArrayList());
     }
 
+    /**
+     * Gets the observable-List of the clients.
+     * @return Observable List.
+     */
     public ObservableList<Client> getClients(){
         return this.clients;
     }

@@ -3,6 +3,7 @@ package viewmodels;
 import controllers.io.CacheHandler;
 import controllers.networking.discovery.DiscoveryService;
 import controllers.networking.streaming.music.MusicStreamingService;
+import controllers.networking.streaming.music.TCPMusicStreamingService;
 import controllers.networking.streaming.music.UDPMusicStreamingService;
 import controllers.statistics.NetworkStatisticsController;
 import javafx.application.Platform;
@@ -19,7 +20,7 @@ import javafx.stage.Stage;
 public class ClientWindowViewModel {
 
     DiscoveryService discoveryService = new DiscoveryService();
-    MusicStreamingService musicStreamingService = new UDPMusicStreamingService();
+    MusicStreamingService musicStreamingService = new TCPMusicStreamingService();
 
     @FXML
     private Label labelStatus;
@@ -54,8 +55,13 @@ public class ClientWindowViewModel {
 
         this.statisticsChart.setData(NetworkStatisticsController.getInstance().getStatisticsList());
 
-        // Start Service.
-        this.musicStreamingService.start();
+        this.discoveryService.addOnServerConnectedListener(server -> {
+
+            this.musicStreamingService.stop();
+            this.musicStreamingService.setServer(server);
+            // Start Service.
+            this.musicStreamingService.start();
+        });
 
     }
 

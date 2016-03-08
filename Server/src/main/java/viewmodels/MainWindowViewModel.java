@@ -4,6 +4,8 @@ import controllers.io.SongsHandler;
 import controllers.media.MediaPlayer;
 import controllers.media.music.AudioPlayer;
 import controllers.networking.streaming.music.MusicStreamController;
+import controllers.networking.streaming.music.TCPMusicStreamController;
+import controllers.networking.streaming.music.UDPMusicStreamController;
 import models.clients.Client;
 import models.clients.Clients;
 import models.songs.Song;
@@ -20,6 +22,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.DirectoryChooser;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -77,7 +80,7 @@ public class MainWindowViewModel {
      * Is called, when the window has been initialized.
      */
     @FXML
-    protected void initialize() {
+    protected void initialize() throws IOException {
         this.pathToFolder = new SimpleStringProperty();
 
         this.textFieldFolder.textProperty().bindBidirectional(this.getPathToFolderProperty());
@@ -87,9 +90,6 @@ public class MainWindowViewModel {
         // Init Media Player
         this.mediaPlayer = new AudioPlayer(this.songObservableList);
         this.mediaPlayer.isPlayingProperty().addListener((observable, oldValue, newValue) -> this.onIsPlayingChanged());
-
-        // Init MusicStreamService
-        this.musicStreamController = new MusicStreamController();
 
         // Init Table
         this.tableViewSongs.setItems(this.songObservableList);
@@ -127,6 +127,9 @@ public class MainWindowViewModel {
         Bindings.bindBidirectional(this.labelCurrentDuration.textProperty(), this.mediaPlayer.currentMediaTime(), new DurationStringConverter());
 
         this.bindSongTrackerSlider();
+
+        // Init MusicStreamService
+        this.musicStreamController = new TCPMusicStreamController();
     }
 
     /* Properties */

@@ -15,6 +15,21 @@ import static org.junit.Assert.*;
 public class StreamingMessageTest {
 
     @Test
+    public void testStartMessageCorrectInsert() throws Exception {
+        String msg = StreamingMessage.initializationMessage(100);
+        assertEquals("<start length=100>", msg);
+    }
+
+    @Test
+    public void testStartMessageCorrectOverwrite() throws Exception {
+        String msg = StreamingMessage.initializationMessage(100);
+        assertEquals("<start length=100>", msg);
+
+        msg = StreamingMessage.setAttribute(msg, StreamingMessage.STREAMING_INITIALIZATION_LENGTH_ATTRIBUTE, Integer.toString(200));
+        assertEquals("<start length=200>", msg);
+    }
+
+    @Test
     public void testMakeMissingPacketsMessage() throws Exception {
 
         Integer[] arr = {3, 4, 5, 6, 7, 8};

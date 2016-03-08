@@ -142,7 +142,7 @@ public class DiscoveryService {
                     if (message.equals(DiscoveryService.DISCOVERY_MESSAGE)) {
                         if(!this.isWorking)
                             break;
-                        this.foundServer(receivedPacket.getAddress(), DiscoveryService.SERVER_PORT);
+                        this.foundServer(receivedPacket.getAddress(), Server.DEFAULT_PORT);
                     }
                     // Handle unknown messages
                     else {
