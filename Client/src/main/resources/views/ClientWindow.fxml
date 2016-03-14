@@ -4,7 +4,6 @@
 <?import javafx.scene.chart.StackedAreaChart?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
@@ -12,9 +11,6 @@
 <BorderPane minHeight="400.0" minWidth="600.0" xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" fx:controller="viewmodels.ClientWindowViewModel">
    <center>
       <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-         <right>
-            <Button mnemonicParsing="false" onAction="#onButtonPlayClicked" text="Play" BorderPane.alignment="CENTER" />
-         </right>
          <top>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                <children>
@@ -23,7 +19,7 @@
                         <Font name="Calibri" size="41.0" />
                      </font>
                   </Label>
-                  <Label fx:id="labelStatus" text="Idle">
+                  <Label fx:id="labelStatus" text="UNKNOWN">
                      <font>
                         <Font name="Calibri" size="41.0" />
                      </font>
@@ -32,18 +28,22 @@
             </HBox>
          </top>
          <center>
-            <StackedAreaChart fx:id="statisticsChart" title="Packets received" BorderPane.alignment="CENTER">
+            <StackedAreaChart fx:id="statisticsChart" title="Streaming Statistik" BorderPane.alignment="CENTER">
               <xAxis>
-                <NumberAxis side="BOTTOM" label="Zeit (s)" />
+                <NumberAxis label="Zeit (Sekunden)" side="BOTTOM" />
               </xAxis>
               <yAxis>
-                <NumberAxis side="LEFT" label="Anteil (%)" lowerBound="0" upperBound="100" autoRanging="false" tickUnit="20"/>
+                <NumberAxis lowerBound="0" side="LEFT" />
               </yAxis>
             </StackedAreaChart>
          </center>
       </BorderPane>
    </center>
    <bottom>
-      <ProgressBar prefHeight="27.0" prefWidth="300.0" progress="0.0" BorderPane.alignment="CENTER" />
+      <BorderPane prefHeight="44.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+         <right>
+            <Button mnemonicParsing="false" onAction="#onButtonPlayClicked" text="Play" BorderPane.alignment="CENTER" />
+         </right>
+      </BorderPane>
    </bottom>
 </BorderPane>

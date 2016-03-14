@@ -3,15 +3,14 @@ package controllers.networking.streaming.music;
 import controllers.io.CacheHandler;
 import controllers.networking.streaming.music.callback.OnMusicStreamingStatusChanged;
 import models.clients.Server;
-import models.networking.messages.StreamingMessage;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,7 +32,16 @@ public class TCPMusicStreamingService implements MusicStreamingService {
     private static final int SOCKET_TIMEOUT = 1000;
     private Server currentServer;
 
+
+    private ServiceStatus currentServiceStatus;
+    private List<OnMusicStreamingStatusChanged> statusChangedListeners;
+
     private Socket socket;
+
+    public TCPMusicStreamingService() {
+        this.statusChangedListeners = new ArrayList<>();
+        this.setCurrentServiceStatus(ServiceStatus.STOPPED);
+    }
 
     @Override
     public void start() {
@@ -42,6 +50,7 @@ public class TCPMusicStreamingService implements MusicStreamingService {
             this.socket = this.initSocket(this.currentServer.getServerAddress(),
                     this.currentServer.getServerListeningPort());
             this.initThread();
+            this.setCurrentServiceStatus(ServiceStatus.READY);
         }
         catch(IOException exception) {
             this.running = false;
@@ -54,7 +63,7 @@ public class TCPMusicStreamingService implements MusicStreamingService {
      */
     private void listen() {
 
-        while (running && this.getSocket().isConnected()) {
+        while (running && !this.getSocket().isClosed() && this.getSocket().isConnected()) {
             try {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
@@ -63,17 +72,31 @@ public class TCPMusicStreamingService implements MusicStreamingService {
                     int n = this.getSocket().getInputStream().read(buf);
                     if (n < 0) break;
                     baos.write(buf, 0, n);
+
+                    // If the status changed --> Reset the cache.
+                    if(this.getCurrentServiceStatus().equals(ServiceStatus.READY)){
+                        CacheHandler.getInstance().reset();
+                    }
+
+                    this.setCurrentServiceStatus(ServiceStatus.RECEIVING);
+                    // Check for fragmentation with 0- bytes between buffer write();
+                    CacheHandler.getInstance().writeData(baos.toByteArray());
+
+                    baos.reset();
                 }
+                // Old
+                // CacheHandler.getInstance().writeData(baos.toByteArray());
 
-                CacheHandler.getInstance().writeData(baos.toByteArray());
-
+                // Finished stream.
                 // Reconnect
-                this.socket = new Socket(this.currentServer.getServerAddress(),
+                this.setCurrentServiceStatus(ServiceStatus.READY);
+                this.getSocket().close();
+                this.initSocket(this.currentServer.getServerAddress(),
                         this.currentServer.getServerListeningPort());
+//                this.socket = new Socket(this.currentServer.getServerAddress(),
+//                        this.currentServer.getServerListeningPort());
             }
-            catch(SocketTimeoutException ignore){
-
-            }
+            catch(SocketTimeoutException ignore){ }
             catch(IOException ignore) {
                 Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "OMG!", ignore);
             }
@@ -99,11 +122,14 @@ public class TCPMusicStreamingService implements MusicStreamingService {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
                     "Error joining TCP Listening Thread", e);
         }
+        finally {
+            if(this.listeningThread == null || !this.listeningThread.isAlive())
+                this.setCurrentServiceStatus(ServiceStatus.READY);
+        }
     }
 
     @Override
-    public void setServer(Server server)
-    {
+    public void setServer(Server server) {
         if(this.currentServer != server) {
             this.currentServer = server;
         }
@@ -121,7 +147,7 @@ public class TCPMusicStreamingService implements MusicStreamingService {
      * Initializes a thread.
      * If the thread is running, it is stopped and initialized again.
      */
-    private void initThread(){
+    private void initThread() {
 
         if(this.listeningThread != null && this.listeningThread.isAlive()){
             try {
@@ -158,13 +184,31 @@ public class TCPMusicStreamingService implements MusicStreamingService {
         }
     }
 
+    public ServiceStatus getCurrentServiceStatus() {
+        return currentServiceStatus;
+    }
+
+    private synchronized void setCurrentServiceStatus(ServiceStatus currentServiceStatus) {
+        if(this.currentServiceStatus == null || !this.currentServiceStatus.equals(currentServiceStatus)) {
+            this.currentServiceStatus = currentServiceStatus;
+
+            this.onServiceStatusChanged();
+        }
+    }
+
     @Override
     public void addServiceStatusChangedListener(OnMusicStreamingStatusChanged listener) {
-
+        this.statusChangedListeners.add(listener);
     }
 
     @Override
     public void removeServiceStatusChangedListener(OnMusicStreamingStatusChanged listener) {
+        this.statusChangedListeners.remove(listener);
+    }
 
+    private void onServiceStatusChanged(){
+        for(OnMusicStreamingStatusChanged listener : this.statusChangedListeners){
+            listener.statusChanged(this.getCurrentServiceStatus());
+        }
     }
 }

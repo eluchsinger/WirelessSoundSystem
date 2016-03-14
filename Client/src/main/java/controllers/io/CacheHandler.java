@@ -21,6 +21,12 @@ public class CacheHandler {
     private FileChannel fileChannel;
     private FileLock lock;
 
+    /**
+     * True, if the cache is already used.
+     * In this case, you should use a new cache for a new song.
+     */
+    private volatile boolean cacheUsed;
+
     private static CacheHandler instance = new CacheHandler();
 
 
@@ -30,6 +36,14 @@ public class CacheHandler {
      * has a handle on it (isOpen).
      */
     private CacheHandler() {
+        this.createFile();
+    }
+
+    public static CacheHandler getInstance() {
+        return instance;
+    }
+
+    public void createFile() {
         String tmpDir = System.getProperty("java.io.tmpdir");
 
         try {
@@ -40,6 +54,7 @@ public class CacheHandler {
             this.file.createNewFile();
             this.fileChannel = new RandomAccessFile(file, "rw").getChannel();
             this.file.deleteOnExit();
+            this.cacheUsed = false;
         } catch (IOException e) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
                     "Fehler beim Erstellen des Temp Files.",
@@ -47,13 +62,15 @@ public class CacheHandler {
         }
     }
 
-    public static CacheHandler getInstance() {
-        return instance;
+    /**
+     * Resets the cache, if the cache is already used.
+     */
+    public void reset() {
+        if(this.cacheUsed)
+            this.createFile();
     }
 
     private void open() throws IOException, OverlappingFileLockException {
-
-
         try {
             this.lock = fileChannel.tryLock();
         }
@@ -90,6 +107,7 @@ public class CacheHandler {
             } catch (Exception ignore) {
                 ignore.printStackTrace();
             }
+            this.cacheUsed = true;
         }
     }
 

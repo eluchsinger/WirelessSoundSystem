@@ -21,9 +21,9 @@ public class NetworkStatisticsController {
     private Timer refreshingTimer;
     private int timePassed;
 
-    private XYChart.Series<Integer, Integer> multicastSeries;
-    private XYChart.Series<Integer, Integer> recoveredSeries;
-    private ObservableList<XYChart.Series<Integer, Integer>> statisticsList;
+    private XYChart.Series<Number, Number> multicastSeries;
+    private XYChart.Series<Number, Number> recoveredSeries;
+    private ObservableList<XYChart.Series<Number, Number>> statisticsList;
 
     private static NetworkStatisticsController instance;
     private int currentReceivedMulticastPackets;
@@ -35,8 +35,8 @@ public class NetworkStatisticsController {
         this.statisticsList = FXCollections
                 .synchronizedObservableList(FXCollections.observableArrayList());
 
-        XYChart.Series<Integer, Integer> multicastSeries = new XYChart.Series<>(MULTICAST_SERIES_NAME, FXCollections.observableArrayList());
-        XYChart.Series<Integer, Integer> recoveredSeries = new XYChart.Series<>(RECONSTRUCTION_SERIES_NAME, FXCollections.observableArrayList());
+        XYChart.Series<Number, Number> multicastSeries = new XYChart.Series<>(MULTICAST_SERIES_NAME, FXCollections.observableArrayList());
+        XYChart.Series<Number, Number> recoveredSeries = new XYChart.Series<>(RECONSTRUCTION_SERIES_NAME, FXCollections.observableArrayList());
 
         this.multicastSeries = multicastSeries;
         this.recoveredSeries = recoveredSeries;
@@ -63,7 +63,7 @@ public class NetworkStatisticsController {
      * (For manipulating operations, use the provided Threadsafe methods)
      * @return Observable List for use on UI Thread.
      */
-    public ObservableList<XYChart.Series<Integer, Integer>> getStatisticsList(){
+    public ObservableList<XYChart.Series<Number, Number>> getStatisticsList(){
         return this.statisticsList;
     }
 

@@ -8,5 +8,6 @@ import controllers.networking.streaming.music.ServiceStatus;
  */
 @FunctionalInterface
 public interface OnMusicStreamingStatusChanged {
+
     void statusChanged(ServiceStatus newStatus);
 }

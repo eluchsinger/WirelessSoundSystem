@@ -3,11 +3,13 @@ package viewmodels;
 import controllers.io.CacheHandler;
 import controllers.networking.discovery.DiscoveryService;
 import controllers.networking.streaming.music.MusicStreamingService;
+import controllers.networking.streaming.music.ServiceStatus;
 import controllers.networking.streaming.music.TCPMusicStreamingService;
 import controllers.networking.streaming.music.UDPMusicStreamingService;
 import controllers.statistics.NetworkStatisticsController;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.StackedAreaChart;
 import javafx.scene.control.Label;
 import javafx.scene.media.Media;
@@ -26,8 +28,13 @@ public class ClientWindowViewModel {
     private Label labelStatus;
 
     @FXML
-    private StackedAreaChart<Integer, Integer> statisticsChart;
+    private StackedAreaChart<Number, Number> statisticsChart;
     private Stage stage;
+
+    private MediaPlayer mediaPlayer;
+
+    private ServiceStatus lastStatus = ServiceStatus.STOPPED;
+
 
     @FXML
     public void onButtonPlayClicked(){
@@ -40,18 +47,44 @@ public class ClientWindowViewModel {
         player.play();
     }
 
-
     @FXML
     protected void initialize(){
 
         this.musicStreamingService.addServiceStatusChangedListener(newStatus -> {
             System.out.println("New Status: " + newStatus.name());
-            Platform.runLater(() -> labelStatus.setText(newStatus.name()));
+            Platform.runLater(() -> {
+                this.labelStatus.setText(newStatus.name());
+                if(lastStatus.equals(ServiceStatus.RECEIVING) && newStatus.equals(ServiceStatus.READY)){
+                    this.startPlaying();
+                }
+
+                this.lastStatus = newStatus;
+            });
         });
 
         System.out.println("Starting discovery service...");
 
         this.discoveryService.start();
+
+        // Check UDP or TCP Streaming.
+
+        // IF UDP: Use packets for statistics (0-100%).
+        if(this.musicStreamingService instanceof UDPMusicStreamingService) {
+            System.out.println("Statistics Mode: UDP");
+            NumberAxis axis = ((NumberAxis)this.statisticsChart.getYAxis());
+            axis.setAutoRanging(false);
+            axis.setUpperBound(100);
+            axis.setTickUnit(20);
+
+            axis.setLabel("Empfangene Packete (%)");
+        }
+
+        // IF TCP: Use bytes for statistics (0-x%) --> Open upper-bound.
+        if(this.musicStreamingService instanceof TCPMusicStreamingService) {
+            System.out.println("Statistics Mode: TCP");
+
+            this.statisticsChart.getYAxis().setLabel("Empfangene Bytes (Total)");
+        }
 
         this.statisticsChart.setData(NetworkStatisticsController.getInstance().getStatisticsList());
 
@@ -59,6 +92,7 @@ public class ClientWindowViewModel {
 
             this.musicStreamingService.stop();
             this.musicStreamingService.setServer(server);
+
             // Start Service.
             this.musicStreamingService.start();
         });
@@ -80,6 +114,25 @@ public class ClientWindowViewModel {
 
                 this.musicStreamingService.stop();
             });
+        }
+    }
+
+    private void startPlaying() {
+        this.stopPlaying();
+
+        this.mediaPlayer = new MediaPlayer(new Media(CacheHandler.getInstance()
+                .getTempFile()
+                .toURI()
+                .toString()));
+
+        this.mediaPlayer.stop();
+    }
+
+    private void stopPlaying() {
+
+        if(this.mediaPlayer != null){
+            this.mediaPlayer.stop();
+            this.mediaPlayer = null;
         }
     }
 }

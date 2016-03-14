@@ -89,7 +89,7 @@ public class UDPMusicStreamingService implements MusicStreamingService{
                 if(this.currentServiceStatus == ServiceStatus.STOPPED && (this.readingThread == null || !this.readingThread.isAlive())){
                     this.readingThread = new Thread(this::listen);
                     this.readingThread.setDaemon(true);
-                    this.setCurrentServiceStatus(ServiceStatus.RUNNING);
+                    this.setCurrentServiceStatus(ServiceStatus.READY);
                     this.readingThread.start();
                 }
 
@@ -154,7 +154,7 @@ public class UDPMusicStreamingService implements MusicStreamingService{
                     DatagramPacket packet = null;
                     byte[] buffer;
                     switch(this.currentServiceStatus){
-                        case RUNNING:
+                        case READY:
                             int bufferSize = StreamingMessage.initializationMessage(Integer.MAX_VALUE).getBytes().length;
                             buffer = new byte[bufferSize];
                             packet = new DatagramPacket(buffer, buffer.length);
@@ -192,7 +192,7 @@ public class UDPMusicStreamingService implements MusicStreamingService{
                                 // Check if the string received was a start message. IF yes --> Reinit the listening service!
                                 // Main reason for this could be that the server started streaming a new song.
                                 if(receivedString.startsWith(StreamingMessage.STREAMING_INITIALIZATION_MESSAGE)){
-                                    this.setCurrentServiceStatus(ServiceStatus.RUNNING);
+                                    this.setCurrentServiceStatus(ServiceStatus.READY);
                                     this.validateInitializationPacket(packet);
                                     Logger.getLogger(getClass().getName()).log(Level.INFO, outOfMemoryError.toString());
                                 }
@@ -261,15 +261,10 @@ public class UDPMusicStreamingService implements MusicStreamingService{
      */
     public void setCurrentServiceStatus(ServiceStatus status) {
 
-        boolean fireEvent = false;
         // Check if the currentService status really changed.
-        if(this.currentServiceStatus != status)
-            fireEvent = true;
+        if(this.currentServiceStatus != status){
+            this.currentServiceStatus = status;
 
-        this.currentServiceStatus = status;
-
-        // Fire even if needed.
-        if(fireEvent){
             for(OnMusicStreamingStatusChanged listener : this.statusChangedListeners)
                 listener.statusChanged(this.getCurrentServiceStatus());
         }
