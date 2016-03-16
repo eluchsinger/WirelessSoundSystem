@@ -1,6 +1,7 @@
 package controllers.networking.streaming.music;
 
 import controllers.io.cache.file.DynamicFileCacheService;
+import controllers.io.cache.file.FileCacheService;
 import controllers.networking.streaming.music.callback.OnMusicStreamingStatusChanged;
 import controllers.statistics.NetworkStatisticsController;
 import models.clients.Server;
@@ -44,10 +45,20 @@ public class UDPMusicStreamingService implements MusicStreamingService{
      */
     private MulticastSocket readingSocket;
 
+    /**
+     * Cache of SongDatagrams.
+     */
     private SongCache currentCache;
 
-    public UDPMusicStreamingService() {
+    /**
+     * File Cache used to persist the song into a file.
+     * (JavaFX requires a file to play mp3)
+     */
+    private FileCacheService fileCache;
+
+    public UDPMusicStreamingService(DynamicFileCacheService fileCacheService) {
         this.statusChangedListeners = new ArrayList<>();
+        this.fileCache = fileCacheService;
         this.setCurrentServiceStatus(ServiceStatus.STOPPED);
     }
 
@@ -214,7 +225,7 @@ public class UDPMusicStreamingService implements MusicStreamingService{
      */
     private void dataReceived(byte[] data) {
         try {
-            DynamicFileCacheService.getInstance().writeData(data);
+            this.fileCache.writeData(data);
             System.out.println("Missing packets: " + this.currentCache.getMissingSequenceNumbers().size());
             //System.out.println("Received DataPacket size: " + data.length);
         } catch (IOException e) {
@@ -288,6 +299,16 @@ public class UDPMusicStreamingService implements MusicStreamingService{
      */
     public void removeServiceStatusChangedListener(OnMusicStreamingStatusChanged listener){
         this.statusChangedListeners.remove(listener);
+    }
+
+    /**
+     * Returns the cache (FileCache) of the MusicStreamingService.
+     *
+     * @return FileCacheService.
+     */
+    @Override
+    public FileCacheService getCache() {
+        return this.fileCache;
     }
 
 }

@@ -19,7 +19,7 @@
                         <Font name="Calibri" size="41.0" />
                      </font>
                   </Label>
-                  <Label fx:id="labelStatus" text="UNKNOWN">
+                  <Label fx:id="labelStatus" text="WAITING">
                      <font>
                         <Font name="Calibri" size="41.0" />
                      </font>

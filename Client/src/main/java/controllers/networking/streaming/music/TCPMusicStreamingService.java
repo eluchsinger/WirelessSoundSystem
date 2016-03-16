@@ -1,8 +1,10 @@
 package controllers.networking.streaming.music;
 
-import controllers.io.cache.file.DynamicFileCacheService;
+import controllers.io.cache.file.FileCacheService;
+import controllers.io.cache.file.StaticFileCacheService;
 import controllers.networking.streaming.music.callback.OnMusicStreamingStatusChanged;
 import models.clients.Server;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -20,29 +22,54 @@ import java.util.logging.Logger;
  */
 public class TCPMusicStreamingService implements MusicStreamingService {
 
-    //region Thread Requirements
-    private static final String LISTENING_THREAD_NAME = "TCPListeningThread";
-    private Thread listeningThread;
-    private volatile boolean running;
-    //endregion
+    //region Constants
 
     /**
      * Socket timeout in milliseconds.
      */
     private static final int SOCKET_TIMEOUT = 1000;
-    private Server currentServer;
 
+    /**
+     * Size of the receiving buffer of the socket, before
+     * the data has to be cached.
+     */
+    private static final int SOCKET_BUFFER_SIZE = 4096;
+    //endregion Constants
+
+    //region Thread Requirements
+    private static final String LISTENING_THREAD_NAME = "TCPListeningThread";
+    private Thread listeningThread;
+    /**
+     * Running state of the thread.
+     * Is false if the thread should be cancelled.
+     */
+    private volatile boolean running;
+    //endregion
+    private Server currentServer;
 
     private ServiceStatus currentServiceStatus;
     private List<OnMusicStreamingStatusChanged> statusChangedListeners;
 
     private Socket socket;
 
-    public TCPMusicStreamingService() {
+    /**
+     * File cache. The songs have to be cached here when they
+     * were received completely.
+     */
+    private FileCacheService cache;
+
+    /**
+     * Default constructor
+     */
+    public TCPMusicStreamingService() throws IOException {
         this.statusChangedListeners = new ArrayList<>();
+        this.cache = new StaticFileCacheService();
         this.setCurrentServiceStatus(ServiceStatus.STOPPED);
     }
 
+    /**
+     * Starts the TCP Music Streaming Service
+     */
     @Override
     public void start() {
 
@@ -51,15 +78,35 @@ public class TCPMusicStreamingService implements MusicStreamingService {
                     this.currentServer.getServerListeningPort());
             this.initThread();
             this.setCurrentServiceStatus(ServiceStatus.READY);
-        }
-        catch(IOException exception) {
+        } catch (IOException exception) {
             this.running = false;
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "Starting Streaming Service", exception);
         }
     }
 
     /**
+     * Stops the music streaming service.
+     * Is a blocking call and waits for the separate threads to finish
+     * (Timeout: SOCKET_TIMEOUT + 1000 ; in milliseconds)
+     */
+    @Override
+    public void stop() {
+        try {
+            this.running = false;
+            if (this.listeningThread != null && !this.listeningThread.isAlive())
+                this.listeningThread.join(SOCKET_TIMEOUT + 1000);
+        } catch (InterruptedException e) {
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
+                    "Error joining TCP Listening Thread", e);
+        } finally {
+            if (this.listeningThread == null || !this.listeningThread.isAlive())
+                this.setCurrentServiceStatus(ServiceStatus.STOPPED);
+        }
+    }
+
+    /**
      * Listening method.
+     * (Multithreaded!)
      */
     private void listen() {
 
@@ -67,25 +114,23 @@ public class TCPMusicStreamingService implements MusicStreamingService {
             try {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-                byte[] buf = new byte[4096];
+                byte[] buf = new byte[SOCKET_BUFFER_SIZE];
                 while (true) {
                     int n = this.getSocket().getInputStream().read(buf);
                     if (n < 0) break;
                     baos.write(buf, 0, n);
 
                     // If the status changed --> Reset the cache.
-                    if(this.getCurrentServiceStatus().equals(ServiceStatus.READY)){
-                        DynamicFileCacheService.getInstance().reset();
+                    if (this.getCurrentServiceStatus().equals(ServiceStatus.READY)) {
+                        this.cache.reset();
                     }
 
                     this.setCurrentServiceStatus(ServiceStatus.RECEIVING);
                     // Check for fragmentation with 0- bytes between buffer write();
-                    DynamicFileCacheService.getInstance().writeData(baos.toByteArray());
+                    this.cache.writeData(baos.toByteArray());
 
                     baos.reset();
                 }
-                // Old
-                // DynamicFileCacheService.getInstance().writeData(baos.toByteArray());
 
                 // Finished stream.
                 // Reconnect
@@ -93,12 +138,10 @@ public class TCPMusicStreamingService implements MusicStreamingService {
                 this.getSocket().close();
                 this.initSocket(this.currentServer.getServerAddress(),
                         this.currentServer.getServerListeningPort());
-//                this.socket = new Socket(this.currentServer.getServerAddress(),
-//                        this.currentServer.getServerListeningPort());
-            }
-            catch(SocketTimeoutException ignore){ }
-            catch(IOException ignore) {
-                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "OMG!", ignore);
+            } catch (SocketTimeoutException ignore) {
+            } catch (IOException e) {
+                Logger.getLogger(this.getClass().getName())
+                        .log(Level.SEVERE, "Error in the TCPStreaming listener!", e);
             }
         }
     }
@@ -107,36 +150,24 @@ public class TCPMusicStreamingService implements MusicStreamingService {
      * Call this method, when the streaming finished (the StreamMessage FINAL was received).
      * Example: "<stream>DATA</stream>"
      * Concurrency: Not thread-safe!
+     *
      * @param data Data received.
      */
-    private void streamFinished(byte[] data){
+    private void streamFinished(byte[] data) {
+        throw new NotImplementedException();
     }
 
-    @Override
-    public void stop() {
-        try {
-            this.running = false;
-            if(this.listeningThread != null && !this.listeningThread.isAlive())
-                this.listeningThread.join(SOCKET_TIMEOUT + 1000);
-        } catch (InterruptedException e) {
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
-                    "Error joining TCP Listening Thread", e);
-        }
-        finally {
-            if(this.listeningThread == null || !this.listeningThread.isAlive())
-                this.setCurrentServiceStatus(ServiceStatus.READY);
-        }
-    }
 
     @Override
     public void setServer(Server server) {
-        if(this.currentServer != server) {
+        if (this.currentServer != server) {
             this.currentServer = server;
         }
     }
 
     /**
      * Synchronized getSocked method.
+     *
      * @return Current socket.
      */
     private synchronized Socket getSocket() {
@@ -149,11 +180,11 @@ public class TCPMusicStreamingService implements MusicStreamingService {
      */
     private void initThread() {
 
-        if(this.listeningThread != null && this.listeningThread.isAlive()){
+        if (this.listeningThread != null && this.listeningThread.isAlive()) {
             try {
                 this.listeningThread.join(SOCKET_TIMEOUT + 1000);
             } catch (InterruptedException e) {
-                if(this.listeningThread.isAlive())
+                if (this.listeningThread.isAlive())
                     this.listeningThread.interrupt();
             }
         }
@@ -166,8 +197,9 @@ public class TCPMusicStreamingService implements MusicStreamingService {
 
     /**
      * Initializes the socket.
+     *
      * @param address Address
-     * @param port Port
+     * @param port    Port
      * @return Returns a new socket.
      * @throws IOException
      */
@@ -176,8 +208,7 @@ public class TCPMusicStreamingService implements MusicStreamingService {
             Socket socket = new Socket(address, Server.STREAMING_PORT);
             socket.setSoTimeout(SOCKET_TIMEOUT);
             return socket;
-        }
-        catch (IOException exception) {
+        } catch (IOException exception) {
             throw new IOException("Error initializing socket with address "
                     + address.getHostAddress()
                     + " to port " + port, exception);
@@ -189,7 +220,7 @@ public class TCPMusicStreamingService implements MusicStreamingService {
     }
 
     private synchronized void setCurrentServiceStatus(ServiceStatus currentServiceStatus) {
-        if(this.currentServiceStatus == null || !this.currentServiceStatus.equals(currentServiceStatus)) {
+        if (this.currentServiceStatus == null || !this.currentServiceStatus.equals(currentServiceStatus)) {
             this.currentServiceStatus = currentServiceStatus;
 
             this.onServiceStatusChanged();
@@ -206,8 +237,18 @@ public class TCPMusicStreamingService implements MusicStreamingService {
         this.statusChangedListeners.remove(listener);
     }
 
-    private void onServiceStatusChanged(){
-        for(OnMusicStreamingStatusChanged listener : this.statusChangedListeners){
+    /**
+     * Returns the cache (FileCache) of the MusicStreamingService.
+     *
+     * @return FileCacheService.
+     */
+    @Override
+    public FileCacheService getCache() {
+        return this.cache;
+    }
+
+    private void onServiceStatusChanged() {
+        for (OnMusicStreamingStatusChanged listener : this.statusChangedListeners) {
             listener.statusChanged(this.getCurrentServiceStatus());
         }
     }

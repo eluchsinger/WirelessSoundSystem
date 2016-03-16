@@ -1,9 +1,5 @@
 package viewmodels;
 
-import controllers.io.cache.CacheService;
-import controllers.io.cache.file.DynamicFileCacheService;
-import controllers.io.cache.file.FileCacheService;
-import controllers.io.cache.file.StaticFileCacheService;
 import controllers.networking.discovery.DiscoveryService;
 import controllers.networking.streaming.music.MusicStreamingService;
 import controllers.networking.streaming.music.ServiceStatus;
@@ -27,7 +23,6 @@ import java.io.IOException;
 public class ClientWindowViewModel {
 
     private DiscoveryService discoveryService;
-    private FileCacheService cacheService;
     private MusicStreamingService musicStreamingService;
 
     @FXML
@@ -46,7 +41,6 @@ public class ClientWindowViewModel {
      * @throws IOException
      */
     public ClientWindowViewModel() throws IOException {
-        this.cacheService = new StaticFileCacheService();
         this.discoveryService = new DiscoveryService();
         this.musicStreamingService = new TCPMusicStreamingService();
     }
@@ -54,22 +48,18 @@ public class ClientWindowViewModel {
     @FXML
     public void onButtonPlayClicked(){
         MediaPlayer player = new MediaPlayer(
-                new Media(DynamicFileCacheService.getInstance()
-                        .getTempFile()
-                        .toURI()
-                        .toString()));
+                new Media(this.musicStreamingService.getCache()
+                .getFileURI()
+                .toString()));
 
         player.play();
     }
 
     @FXML
-    protected void initialize(){
+    protected void initialize() throws IOException {
         this.initializeStreamingService();
         this.initializeDiscoveryService();
-        this.initializeCacheService();
         this.initializeStatistics();
-
-
     }
 
     public void setStage(Stage stage) {
@@ -82,10 +72,9 @@ public class ClientWindowViewModel {
         if(this.stage != null){
             this.stage.setOnCloseRequest(event -> {
 
-                System.out.println("Stopping DiscoveryService...");
+                this.musicStreamingService.stop();
                 this.discoveryService.stop();
 
-                this.musicStreamingService.stop();
             });
         }
     }
@@ -93,9 +82,8 @@ public class ClientWindowViewModel {
     private void startPlaying() {
         this.stopPlaying();
 
-        this.mediaPlayer = new MediaPlayer(new Media(DynamicFileCacheService.getInstance()
-                .getTempFile()
-                .toURI()
+        this.mediaPlayer = new MediaPlayer(new Media(this.musicStreamingService.getCache()
+                .getFileURI()
                 .toString()));
 
         this.mediaPlayer.stop();
@@ -128,8 +116,19 @@ public class ClientWindowViewModel {
         System.out.println("Check!");
     }
 
-    private void initializeCacheService() {
+    private void initializeDiscoveryService() {
+        System.out.print("Starting discovery service... ");
 
+        this.discoveryService.addOnServerConnectedListener(server -> {
+
+            this.musicStreamingService.stop();
+            this.musicStreamingService.setServer(server);
+
+            // Start Service.
+            this.musicStreamingService.start();
+        });
+        this.discoveryService.start();
+        System.out.println("Check!");
     }
 
     private void initializeStatistics() {
@@ -156,19 +155,5 @@ public class ClientWindowViewModel {
 
     }
 
-    private void initializeDiscoveryService() {
-        System.out.print("Starting discovery service... ");
-
-        this.discoveryService.addOnServerConnectedListener(server -> {
-
-            this.musicStreamingService.stop();
-            this.musicStreamingService.setServer(server);
-
-            // Start Service.
-            this.musicStreamingService.start();
-        });
-        this.discoveryService.start();
-        System.out.println("Check!");
-    }
     //endregion
 }

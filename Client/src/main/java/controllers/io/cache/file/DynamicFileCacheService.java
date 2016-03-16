@@ -5,6 +5,7 @@ import controllers.io.cache.CacheService;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
@@ -16,7 +17,7 @@ import java.util.logging.Logger;
  * Created by Esteban Luchsinger on 15.12.2015.
  * This class handles the handling of the cache that can grow and shrink dynamically.
  */
-public class DynamicFileCacheService implements CacheService {
+public class DynamicFileCacheService implements FileCacheService {
     private File file;
     private boolean isOpen;
 
@@ -29,9 +30,6 @@ public class DynamicFileCacheService implements CacheService {
      */
     private volatile boolean cacheUsed;
 
-    private static DynamicFileCacheService instance = new DynamicFileCacheService();
-
-
     /**
      * Opens or creates the file.
      * The file will be locked for writing, but allowed to read while this class
@@ -39,10 +37,6 @@ public class DynamicFileCacheService implements CacheService {
      */
     private DynamicFileCacheService() {
         this.createFile();
-    }
-
-    public static DynamicFileCacheService getInstance() {
-        return instance;
     }
 
     private void createFile() {
@@ -120,5 +114,21 @@ public class DynamicFileCacheService implements CacheService {
 
     public File getTempFile(){
         return this.file;
+    }
+
+    /**
+     * @return Returns the absolute path of cache.
+     */
+    @Override
+    public String getAbsoluteFilePath() throws Exception {
+        return this.file.getAbsolutePath();
+    }
+
+    /**
+     * @return Returns the URL of the cache.
+     */
+    @Override
+    public URI getFileURI() {
+        return this.file.toURI();
     }
 }
