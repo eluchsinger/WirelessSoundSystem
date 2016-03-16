@@ -1,6 +1,6 @@
 package controllers.networking.streaming.music;
 
-import controllers.io.CacheHandler;
+import controllers.io.cache.file.DynamicFileCacheService;
 import controllers.networking.streaming.music.callback.OnMusicStreamingStatusChanged;
 import models.clients.Server;
 
@@ -75,17 +75,17 @@ public class TCPMusicStreamingService implements MusicStreamingService {
 
                     // If the status changed --> Reset the cache.
                     if(this.getCurrentServiceStatus().equals(ServiceStatus.READY)){
-                        CacheHandler.getInstance().reset();
+                        DynamicFileCacheService.getInstance().reset();
                     }
 
                     this.setCurrentServiceStatus(ServiceStatus.RECEIVING);
                     // Check for fragmentation with 0- bytes between buffer write();
-                    CacheHandler.getInstance().writeData(baos.toByteArray());
+                    DynamicFileCacheService.getInstance().writeData(baos.toByteArray());
 
                     baos.reset();
                 }
                 // Old
-                // CacheHandler.getInstance().writeData(baos.toByteArray());
+                // DynamicFileCacheService.getInstance().writeData(baos.toByteArray());
 
                 // Finished stream.
                 // Reconnect

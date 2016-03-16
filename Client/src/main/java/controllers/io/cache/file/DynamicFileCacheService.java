@@ -1,4 +1,6 @@
-package controllers.io;
+package controllers.io.cache.file;
+
+import controllers.io.cache.CacheService;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,9 +14,9 @@ import java.util.logging.Logger;
 
 /**
  * Created by Esteban Luchsinger on 15.12.2015.
- * This class handles the handling of the cache.
+ * This class handles the handling of the cache that can grow and shrink dynamically.
  */
-public class CacheHandler {
+public class DynamicFileCacheService implements CacheService {
     private File file;
     private boolean isOpen;
 
@@ -27,7 +29,7 @@ public class CacheHandler {
      */
     private volatile boolean cacheUsed;
 
-    private static CacheHandler instance = new CacheHandler();
+    private static DynamicFileCacheService instance = new DynamicFileCacheService();
 
 
     /**
@@ -35,15 +37,15 @@ public class CacheHandler {
      * The file will be locked for writing, but allowed to read while this class
      * has a handle on it (isOpen).
      */
-    private CacheHandler() {
+    private DynamicFileCacheService() {
         this.createFile();
     }
 
-    public static CacheHandler getInstance() {
+    public static DynamicFileCacheService getInstance() {
         return instance;
     }
 
-    public void createFile() {
+    private void createFile() {
         String tmpDir = System.getProperty("java.io.tmpdir");
 
         try {

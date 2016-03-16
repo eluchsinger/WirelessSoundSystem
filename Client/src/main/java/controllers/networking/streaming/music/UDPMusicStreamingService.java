@@ -1,6 +1,6 @@
 package controllers.networking.streaming.music;
 
-import controllers.io.CacheHandler;
+import controllers.io.cache.file.DynamicFileCacheService;
 import controllers.networking.streaming.music.callback.OnMusicStreamingStatusChanged;
 import controllers.statistics.NetworkStatisticsController;
 import models.clients.Server;
@@ -214,7 +214,7 @@ public class UDPMusicStreamingService implements MusicStreamingService{
      */
     private void dataReceived(byte[] data) {
         try {
-            CacheHandler.getInstance().writeData(data);
+            DynamicFileCacheService.getInstance().writeData(data);
             System.out.println("Missing packets: " + this.currentCache.getMissingSequenceNumbers().size());
             //System.out.println("Received DataPacket size: " + data.length);
         } catch (IOException e) {

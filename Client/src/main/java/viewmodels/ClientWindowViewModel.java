@@ -1,6 +1,6 @@
 package viewmodels;
 
-import controllers.io.CacheHandler;
+import controllers.io.cache.file.DynamicFileCacheService;
 import controllers.networking.discovery.DiscoveryService;
 import controllers.networking.streaming.music.MusicStreamingService;
 import controllers.networking.streaming.music.ServiceStatus;
@@ -39,7 +39,7 @@ public class ClientWindowViewModel {
     @FXML
     public void onButtonPlayClicked(){
         MediaPlayer player = new MediaPlayer(
-                new Media(CacheHandler.getInstance()
+                new Media(DynamicFileCacheService.getInstance()
                         .getTempFile()
                         .toURI()
                         .toString()));
@@ -120,7 +120,7 @@ public class ClientWindowViewModel {
     private void startPlaying() {
         this.stopPlaying();
 
-        this.mediaPlayer = new MediaPlayer(new Media(CacheHandler.getInstance()
+        this.mediaPlayer = new MediaPlayer(new Media(DynamicFileCacheService.getInstance()
                 .getTempFile()
                 .toURI()
                 .toString()));
