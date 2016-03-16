@@ -44,14 +44,15 @@ public class StaticFileCacheService implements FileCacheService {
     public synchronized void writeData(byte[] data) throws IOException {
 
         File file = null;
-        FileOutputStream fos = null;
+        
         try {
             this.reset();
             // Get a new file.
             file = this.getFile();
 
-            fos = new FileOutputStream(file);
-            fos.write(data);
+            try (FileOutputStream fos = new FileOutputStream(file)) {
+                fos.write(data);
+            }
         }
         catch(Exception e) {
             Logger logger = Logger.getLogger(this.getClass().getName());
@@ -64,16 +65,6 @@ public class StaticFileCacheService implements FileCacheService {
                 logger.log(Level.SEVERE, "Cache file is null when writing data", e);
             }
         }
-        finally{
-            // Close FileOutputStream
-            if(fos != null) {
-                try {
-                    fos.close();
-                } catch (Exception ignore) { }
-            }
-        }
-
-
     }
 
     /**
