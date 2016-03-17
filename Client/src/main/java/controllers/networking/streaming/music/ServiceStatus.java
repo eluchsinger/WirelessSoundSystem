@@ -8,11 +8,16 @@ public enum ServiceStatus {
     /**
      * The Streaming Service is running and waiting for a stream initialization.
      */
-    READY,
+    WAITING,
     /**
      * The Streaming Service is receiving an initialized stream.
      */
     RECEIVING,
+
+    /**
+     * The streaming service received a song.
+     */
+    READY,
     /**
      * The Streaming Service is not running.
      */

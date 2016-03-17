@@ -15,5 +15,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="Shared" />
+    <orderEntry type="library" name="Gradle: junit:junit:4.11" level="project" />
   </component>
 </module>

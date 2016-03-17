@@ -85,8 +85,7 @@ public class ClientWindowViewModel {
         this.mediaPlayer = new MediaPlayer(new Media(this.musicStreamingService.getCache()
                 .getFileURI()
                 .toString()));
-
-        this.mediaPlayer.stop();
+        this.mediaPlayer.play();
     }
 
     private void stopPlaying() {
@@ -106,8 +105,9 @@ public class ClientWindowViewModel {
             System.out.println("New Status: " + newStatus.name());
             Platform.runLater(() -> {
                 this.labelStatus.setText(newStatus.name());
-                if(lastStatus.equals(ServiceStatus.RECEIVING) && newStatus.equals(ServiceStatus.READY)){
+                if(newStatus.equals(ServiceStatus.READY)){
                     this.startPlaying();
+                    this.labelStatus.setText("PLAYING");
                 }
 
                 this.lastStatus = newStatus;

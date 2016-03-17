@@ -77,7 +77,7 @@ public class TCPMusicStreamingService implements MusicStreamingService {
             this.socket = this.initSocket(this.currentServer.getServerAddress(),
                     this.currentServer.getServerListeningPort());
             this.initThread();
-            this.setCurrentServiceStatus(ServiceStatus.READY);
+            this.setCurrentServiceStatus(ServiceStatus.WAITING);
         } catch (IOException exception) {
             this.running = false;
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "Starting Streaming Service", exception);
@@ -120,21 +120,18 @@ public class TCPMusicStreamingService implements MusicStreamingService {
                     if (n < 0) break;
                     baos.write(buf, 0, n);
 
-                    // If the status changed --> Reset the cache.
-                    if (this.getCurrentServiceStatus().equals(ServiceStatus.READY)) {
-                        this.cache.reset();
-                    }
-
-                    this.setCurrentServiceStatus(ServiceStatus.RECEIVING);
-                    // Check for fragmentation with 0- bytes between buffer write();
-                    this.cache.writeData(baos.toByteArray());
-
-                    baos.reset();
+                    if(!this.getCurrentServiceStatus().equals(ServiceStatus.RECEIVING))
+                        this.setCurrentServiceStatus(ServiceStatus.RECEIVING);
                 }
 
+                // Check for fragmentation with 0- bytes between buffer write();
+                this.cache.writeData(baos.toByteArray());
+                baos.reset();
+
+                this.setCurrentServiceStatus(ServiceStatus.READY);
                 // Finished stream.
                 // Reconnect
-                this.setCurrentServiceStatus(ServiceStatus.READY);
+//                this.setCurrentServiceStatus(ServiceStatus.WAITING);
                 this.getSocket().close();
                 this.initSocket(this.currentServer.getServerAddress(),
                         this.currentServer.getServerListeningPort());

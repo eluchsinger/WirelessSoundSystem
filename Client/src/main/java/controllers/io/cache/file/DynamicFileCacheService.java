@@ -35,7 +35,7 @@ public class DynamicFileCacheService implements FileCacheService {
      * The file will be locked for writing, but allowed to read while this class
      * has a handle on it (isOpen).
      */
-    private DynamicFileCacheService() {
+    public DynamicFileCacheService() {
         this.createFile();
     }
 

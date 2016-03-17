@@ -28,7 +28,7 @@ public class MusicStreamingServiceTest {
 
         service.start();
 
-        assertEquals(service.getCurrentServiceStatus(), ServiceStatus.READY);
+        assertEquals(service.getCurrentServiceStatus(), ServiceStatus.WAITING);
     }
 
     @Test
