@@ -106,11 +106,6 @@ public class MusicReconstructionService {
             // Todo: Implement stopping mechanism.
 
             this.running = false;
-//            try {
-//                this.accepterThread.join(500);
-//            } catch (InterruptedException ignore) {
-//            }
-
         }
     }
 
