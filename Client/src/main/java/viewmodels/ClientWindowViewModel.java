@@ -46,16 +46,6 @@ public class ClientWindowViewModel {
     }
 
     @FXML
-    public void onButtonPlayClicked(){
-        MediaPlayer player = new MediaPlayer(
-                new Media(this.musicStreamingService.getCache()
-                .getFileURI()
-                .toString()));
-
-        player.play();
-    }
-
-    @FXML
     protected void initialize() throws IOException {
         this.initializeStreamingService();
         this.initializeDiscoveryService();
@@ -105,14 +95,11 @@ public class ClientWindowViewModel {
             System.out.println("New Status: " + newStatus.name());
             Platform.runLater(() -> {
                 this.labelStatus.setText(newStatus.name());
-                if(newStatus.equals(ServiceStatus.READY)){
-                    this.startPlaying();
-                    this.labelStatus.setText("PLAYING");
-                }
-
                 this.lastStatus = newStatus;
             });
         });
+
+
         System.out.println("Check!");
     }
 

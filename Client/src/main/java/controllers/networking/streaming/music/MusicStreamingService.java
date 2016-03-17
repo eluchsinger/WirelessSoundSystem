@@ -2,6 +2,8 @@ package controllers.networking.streaming.music;
 
 import controllers.io.cache.file.FileCacheService;
 import controllers.networking.streaming.music.callback.OnMusicStreamingStatusChanged;
+import controllers.networking.streaming.music.callback.OnPlay;
+import controllers.networking.streaming.music.callback.OnStop;
 import models.clients.Server;
 
 /**
@@ -17,6 +19,12 @@ public interface MusicStreamingService {
 
     void addServiceStatusChangedListener(OnMusicStreamingStatusChanged listener);
     void removeServiceStatusChangedListener(OnMusicStreamingStatusChanged listener);
+
+    void addOnPlayListener(OnPlay listener);
+    void removeOnPlayListener(OnPlay listener);
+
+    void addOnStopListener(OnStop listener);
+    void removeOnStopListener(OnStop listener);
 
     /**
      * Returns the cache (FileCache) of the MusicStreamingService.

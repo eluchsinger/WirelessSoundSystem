@@ -1,11 +1,12 @@
 package controllers.networking.streaming.music;
 
 import models.clients.Server;
+import models.networking.dtos.PlayCommand;
 import models.songs.Song;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Files;
@@ -70,22 +71,11 @@ public class TCPMusicStreamController implements MusicStreamController {
             synchronized (this.connections){
 
                 for(Socket socket : this.connections) {
-                    OutputStream out = socket.getOutputStream();
-
-//                    // Do Initialization
-//                    String initString = StreamingMessage.initializationMessage(data.length);
-//                    out.write(initString.getBytes(StreamingCharset.DEFAULT_CHARSET));
-
-                    // Send data
-                    out.write(data);
-                    socket.close();
-
-//                    // Do finishing
-//                    String finishString = StreamingMessage.streamingEndedMessage();
-//                    out.write(finishString.getBytes(StreamingCharset.DEFAULT_CHARSET));
+                    try(ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream())) {
+                        oos.writeObject(new PlayCommand(data));
+                        oos.close();
+                    }
                 }
-
-                this.connections.clear();
             }
         }
         catch(IOException iOException){

@@ -3,11 +3,14 @@ package controllers.networking.streaming.music;
 import controllers.io.cache.file.FileCacheService;
 import controllers.io.cache.file.StaticFileCacheService;
 import controllers.networking.streaming.music.callback.OnMusicStreamingStatusChanged;
+import controllers.networking.streaming.music.callback.OnPlay;
+import controllers.networking.streaming.music.callback.OnStop;
 import models.clients.Server;
+import models.networking.dtos.PlayCommand;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
@@ -49,6 +52,8 @@ public class TCPMusicStreamingService implements MusicStreamingService {
 
     private ServiceStatus currentServiceStatus;
     private List<OnMusicStreamingStatusChanged> statusChangedListeners;
+    private List<OnPlay> playCommandListeners;
+    private List<OnStop> stopCommandListeners;
 
     private Socket socket;
 
@@ -62,9 +67,15 @@ public class TCPMusicStreamingService implements MusicStreamingService {
      * Default constructor
      */
     public TCPMusicStreamingService() throws IOException {
-        this.statusChangedListeners = new ArrayList<>();
+        this.initializeListeners();
         this.cache = new StaticFileCacheService();
         this.setCurrentServiceStatus(ServiceStatus.STOPPED);
+    }
+
+    private void initializeListeners(){
+        this.statusChangedListeners = new ArrayList<>();
+        this.playCommandListeners = new ArrayList<>();
+        this.stopCommandListeners = new ArrayList<>();
     }
 
     /**
@@ -112,31 +123,20 @@ public class TCPMusicStreamingService implements MusicStreamingService {
 
         while (running && !this.getSocket().isClosed() && this.getSocket().isConnected()) {
             try {
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                try(ObjectInputStream ois = new ObjectInputStream(this.getSocket().getInputStream())) {
 
-                byte[] buf = new byte[SOCKET_BUFFER_SIZE];
-                while (true) {
-                    int n = this.getSocket().getInputStream().read(buf);
-                    if (n < 0) break;
-                    baos.write(buf, 0, n);
+                    Object received = ois.readObject();
 
-                    if(!this.getCurrentServiceStatus().equals(ServiceStatus.RECEIVING))
-                        this.setCurrentServiceStatus(ServiceStatus.RECEIVING);
+                    // If it's a play command.
+                    if(received instanceof PlayCommand) {
+                        PlayCommand command = (PlayCommand) ois.readObject();
+                        this.cache.writeData(command.data);
+                        this.setCurrentServiceStatus(ServiceStatus.READY);
+                        this.onPlayCommandReceived();
+                    }
                 }
-
-                // Check for fragmentation with 0- bytes between buffer write();
-                this.cache.writeData(baos.toByteArray());
-                baos.reset();
-
-                this.setCurrentServiceStatus(ServiceStatus.READY);
-                // Finished stream.
-                // Reconnect
-//                this.setCurrentServiceStatus(ServiceStatus.WAITING);
-                this.getSocket().close();
-                this.initSocket(this.currentServer.getServerAddress(),
-                        this.currentServer.getServerListeningPort());
             } catch (SocketTimeoutException ignore) {
-            } catch (IOException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 Logger.getLogger(this.getClass().getName())
                         .log(Level.SEVERE, "Error in the TCPStreaming listener!", e);
             }
@@ -234,6 +234,26 @@ public class TCPMusicStreamingService implements MusicStreamingService {
         this.statusChangedListeners.remove(listener);
     }
 
+    @Override
+    public void addOnPlayListener(OnPlay listener) {
+        this.playCommandListeners.add(listener);
+    }
+
+    @Override
+    public void removeOnPlayListener(OnPlay listener) {
+        this.playCommandListeners.remove(listener);
+    }
+
+    @Override
+    public void addOnStopListener(OnStop listener) {
+        this.stopCommandListeners.add(listener);
+    }
+
+    @Override
+    public void removeOnStopListener(OnStop listener) {
+        this.stopCommandListeners.remove(listener);
+    }
+
     /**
      * Returns the cache (FileCache) of the MusicStreamingService.
      *
@@ -244,9 +264,19 @@ public class TCPMusicStreamingService implements MusicStreamingService {
         return this.cache;
     }
 
+    //region Event Launchers
     private void onServiceStatusChanged() {
         for (OnMusicStreamingStatusChanged listener : this.statusChangedListeners) {
             listener.statusChanged(this.getCurrentServiceStatus());
         }
     }
+
+    private void onPlayCommandReceived() {
+        this.playCommandListeners.forEach(OnPlay::play);
+    }
+
+    private void onStopCommandReceived() {
+        this.stopCommandListeners.forEach(OnStop::stop);
+    }
+    //endregion Event Launchers
 }
