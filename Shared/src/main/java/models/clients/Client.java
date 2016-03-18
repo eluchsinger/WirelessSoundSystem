@@ -71,7 +71,7 @@ public class Client implements Comparable {
     //region Methods
     @Override
     public String toString(){
-        return this.getName();
+        return this.getName() + " [" + this.getInetAddress().getHostAddress() + "]";
     }
 
     @Override

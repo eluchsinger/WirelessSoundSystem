@@ -80,22 +80,7 @@ public class MainWindowViewModel {
 
 
     //region Constructor
-    public MainWindowViewModel() {
-        this.discoveryService = new DiscoveryService();
-        this.discoveryService.addClientFoundListener(client -> {
-            // Add only if it contained the item already.
-            if(!this.clientObservableList.contains(client)) {
-                this.clientObservableList.add(client);
-                System.out.println("Added client (" + client.toString() + ")");
-            }
-        });
-
-        this.discoveryService.addClientExpiredListener(client -> {
-            if(this.clientObservableList.remove(client)) {
-                System.out.println("Expired client (" + client.toString() + ")");
-            }
-        });
-    }
+    public MainWindowViewModel() { }
     //endregion Constructor
 
     /**
@@ -113,9 +98,7 @@ public class MainWindowViewModel {
         this.initializeTable();
         this.initializeClientListView();
         this.initializeBindings();
-
-        System.out.println("Starting discovery Service...");
-        this.discoveryService.start();
+        this.initializeDiscoveryService();
 
         // Init MusicStreamService
         this.musicStreamController = new TCPMusicStreamController();
@@ -156,8 +139,10 @@ public class MainWindowViewModel {
 
         if(this.stage != null){
             this.stage.setOnCloseRequest(event -> {
-                this.discoveryService.stop();
-                System.out.println("Stopped Discovery Service!");
+                if(this.discoveryService != null) {
+                    this.discoveryService.stop();
+                    System.out.println("Stopped Discovery Service!");
+                }
             });
         }
     }
@@ -238,6 +223,30 @@ public class MainWindowViewModel {
     //endregion
 
     //region initialization
+
+    private void initializeDiscoveryService() {
+
+        this.discoveryService = new DiscoveryService();
+
+        // Adding clients.
+        this.discoveryService.addClientFoundListener(client -> {
+            // Add only if it contained the item already.
+            if(!this.clientObservableList.contains(client)) {
+                this.clientObservableList.add(client);
+                System.out.println("Added client (" + client.toString() + ")");
+            }
+        });
+
+        // Expired clients
+        this.discoveryService.addClientExpiredListener(client -> {
+            if(this.clientObservableList.remove(client)) {
+                System.out.println("Expired client (" + client.toString() + ")");
+            }
+        });
+
+        System.out.println("Starting discovery Service...");
+        this.discoveryService.start();
+    }
 
     /**
      * Initializes the table containing the songs.
