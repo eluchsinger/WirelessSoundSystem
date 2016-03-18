@@ -28,8 +28,13 @@ public class KeepAliveTask extends Task<List<Client>> {
         this.currentDateTime = currentDateTime;
     }
 
+    /**
+     * This is the method which checks the last seen field of the clients.
+     * @return A list with expired clients.
+     * @throws Exception
+     */
     @Override
-    protected List<Client> call() throws Exception {
+    protected List<Client> call() {
         List<Client> expiredClients = new ArrayList<>();
 
         for(Client client : this.clients){

@@ -53,6 +53,10 @@ public class ClientWindowViewModel {
         this.initializeStatistics();
     }
 
+    /**
+     * Sets the view (stage) this ViewModel is handling.
+     * @param stage View or stage of this ViewModel.
+     */
     public void setStage(Stage stage) {
 
         if(this.stage != null)

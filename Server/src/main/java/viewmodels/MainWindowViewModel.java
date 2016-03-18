@@ -3,9 +3,11 @@ package viewmodels;
 import controllers.io.SongsHandler;
 import controllers.media.MediaPlayer;
 import controllers.media.music.AudioPlayer;
+import controllers.networking.discovery.DiscoveryService;
 import controllers.networking.streaming.music.MusicStreamController;
 import controllers.networking.streaming.music.TCPMusicStreamController;
 import controllers.networking.streaming.music.UDPMusicStreamController;
+import javafx.stage.Stage;
 import models.clients.Client;
 import models.clients.Clients;
 import models.songs.Song;
@@ -31,6 +33,7 @@ import java.util.List;
 public class MainWindowViewModel {
     private MediaPlayer<Song> mediaPlayer;
     private MusicStreamController musicStreamController;
+    private DiscoveryService discoveryService;
 
     // Properties
     private StringProperty pathToFolder;
@@ -73,17 +76,33 @@ public class MainWindowViewModel {
 
     @FXML
     private Label labelCurrentDuration;
+    private Stage stage;
 
-    /* Constructor */
+
+    //region Constructor
+    public MainWindowViewModel() {
+        this.discoveryService = new DiscoveryService();
+        this.discoveryService.addClientFoundListener(client -> {
+            // Add only if it contained the item already.
+            if(!this.clientObservableList.contains(client)) {
+                this.clientObservableList.add(client);
+                System.out.println("Added client (" + client.toString() + ")");
+            }
+        });
+
+        this.discoveryService.addClientExpiredListener(client -> {
+            if(this.clientObservableList.remove(client)) {
+                System.out.println("Expired client (" + client.toString() + ")");
+            }
+        });
+    }
+    //endregion Constructor
 
     /**
      * Is called, when the window has been initialized.
      */
     @FXML
     protected void initialize() throws IOException {
-        this.pathToFolder = new SimpleStringProperty();
-
-        this.textFieldFolder.textProperty().bindBidirectional(this.getPathToFolderProperty());
 
         this.songObservableList = FXCollections.observableArrayList();
 
@@ -91,42 +110,12 @@ public class MainWindowViewModel {
         this.mediaPlayer = new AudioPlayer(this.songObservableList);
         this.mediaPlayer.isPlayingProperty().addListener((observable, oldValue, newValue) -> this.onIsPlayingChanged());
 
-        // Init Table
-        this.tableViewSongs.setItems(this.songObservableList);
-        this.tableViewSongs.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        this.initializeTable();
+        this.initializeClientListView();
+        this.initializeBindings();
 
-        tableColumnTitle.setCellValueFactory(
-                new PropertyValueFactory<Song, String>("title")
-        );
-
-        tableColumnArtist.setCellValueFactory(
-                new PropertyValueFactory<Song, String>("artist")
-        );
-
-        // Implement DoubleClick for rows.
-        this.tableViewSongs.setRowFactory(tv -> {
-            TableRow<Song> row = new TableRow<>();
-            row.setOnMouseClicked(event -> {
-                if (event.getClickCount() >= 2 && (!row.isEmpty())) {
-                    // Check if its a song.
-                    if (Song.class.isInstance(row.getItem()))
-                        this.mediaPlayer.play(row.getItem());
-                }
-            });
-            return row;
-        });
-
-        this.clientObservableList = Clients.getInstance().getClients();
-        this.listViewClients.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        this.listViewClients.setItems(this.clientObservableList);
-
-        // Bind Slider to Volume property
-        this.sliderVolume.valueProperty().bindBidirectional(this.mediaPlayer.volumeProperty());
-
-        // Bind CurrentDuration Label to CurrentDuration Property
-        Bindings.bindBidirectional(this.labelCurrentDuration.textProperty(), this.mediaPlayer.currentMediaTime(), new DurationStringConverter());
-
-        this.bindSongTrackerSlider();
+        System.out.println("Starting discovery Service...");
+        this.discoveryService.start();
 
         // Init MusicStreamService
         this.musicStreamController = new TCPMusicStreamController();
@@ -154,7 +143,26 @@ public class MainWindowViewModel {
         return this.tableViewSongs.getSelectionModel().getSelectedItem();
     }
 
-    /* Events */
+    /**
+     * Sets the view (stage) this ViewModel is handling.
+     * @param stage View or stage of this ViewModel.
+     */
+    public void setStage(Stage stage) {
+        if(this.stage != null) {
+            this.stage.setOnCloseRequest(null);
+        }
+
+        this.stage = stage;
+
+        if(this.stage != null){
+            this.stage.setOnCloseRequest(event -> {
+                this.discoveryService.stop();
+                System.out.println("Stopped Discovery Service!");
+            });
+        }
+    }
+
+    //region Events
 
     @FXML
     public void onSearchButtonClicked() {
@@ -227,23 +235,84 @@ public class MainWindowViewModel {
             this.buttonPlayPause.setSelected(false);
         }
     }
+    //endregion
 
+    //region initialization
+
+    /**
+     * Initializes the table containing the songs.
+     */
+    private void initializeTable() {
+
+        this.tableViewSongs.setItems(this.songObservableList);
+        this.tableViewSongs.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+
+        tableColumnTitle.setCellValueFactory(
+                new PropertyValueFactory<Song, String>("title")
+        );
+
+        tableColumnArtist.setCellValueFactory(
+                new PropertyValueFactory<Song, String>("artist")
+        );
+
+        // Implement DoubleClick for rows.
+        this.tableViewSongs.setRowFactory(tv -> {
+            TableRow<Song> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() >= 2 && (!row.isEmpty())) {
+                    // Check if its a song.
+                    if (Song.class.isInstance(row.getItem()))
+                        this.mediaPlayer.play(row.getItem());
+                }
+            });
+            return row;
+        });
+    }
+
+    /**
+     * Initializes the different bindings needed to connect the View and the ViewModel.
+     */
+    private void initializeBindings(){
+        // Do binding for the music folder.
+        this.pathToFolder = new SimpleStringProperty();
+        this.textFieldFolder.textProperty().bindBidirectional(this.getPathToFolderProperty());
+
+        // Bind Slider to Volume property
+        this.sliderVolume.valueProperty().bindBidirectional(this.mediaPlayer.volumeProperty());
+
+        // Bind CurrentDuration Label to CurrentDuration Property
+        Bindings.bindBidirectional(this.labelCurrentDuration.textProperty(), this.mediaPlayer.currentMediaTime(), new DurationStringConverter());
+
+        this.bindSongTrackerSlider();
+    }
+
+    /**
+     * Initializes specifically the tracker slider for the song.
+     */
     private void bindSongTrackerSlider() {
         // Create a DoubleBinding which calculates the value of the duration-slider.
         DoubleBinding durationPercentageBinding = Bindings.createDoubleBinding(() -> {
-            if (this.mediaPlayer.totalMediaDuration().get() != null && this.mediaPlayer.totalMediaDuration().get().toSeconds() > 0) {
-                return this.mediaPlayer.currentMediaTime().get().toSeconds() * 100 / this.mediaPlayer.totalMediaDuration().get().toSeconds();
-            } else {
-                return (double) 0;
-            }
-        },
-        this.mediaPlayer.currentMediaTime()
+                    if (this.mediaPlayer.totalMediaDuration().get() != null && this.mediaPlayer.totalMediaDuration().get().toSeconds() > 0) {
+                        return this.mediaPlayer.currentMediaTime().get().toSeconds() * 100 / this.mediaPlayer.totalMediaDuration().get().toSeconds();
+                    } else {
+                        return (double) 0;
+                    }
+                },
+                this.mediaPlayer.currentMediaTime()
         );
 
         this.songTrackerSlider.valueProperty().bind(durationPercentageBinding);
     }
 
-    private void unbindSongTrackerSlider() {
-
+    /**
+     * Initializes the ListView showing the connected clients.
+     */
+    private void initializeClientListView() {
+        this.clientObservableList = FXCollections.observableArrayList();
+        this.listViewClients.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        this.listViewClients.setItems(this.clientObservableList);
     }
+
+    //endregion
+
 }

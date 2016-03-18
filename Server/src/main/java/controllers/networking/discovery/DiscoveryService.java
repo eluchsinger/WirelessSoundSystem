@@ -1,6 +1,8 @@
 package controllers.networking.discovery;
 
 import controllers.networking.Utility;
+import controllers.networking.discovery.callbacks.OnClientExpired;
+import controllers.networking.discovery.callbacks.OnClientFound;
 import models.clients.Client;
 import models.clients.Clients;
 import javafx.application.Platform;
@@ -12,6 +14,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -26,7 +29,7 @@ import java.util.logging.Logger;
  */
 public class DiscoveryService {
 
-    //region Members & Constants
+    //region Constants
     /**
      * This is the port used for discovery. Client receiving port.
      */
@@ -70,7 +73,9 @@ public class DiscoveryService {
      */
     private static final int READING_BUFFER_SIZE = SERVER_FOUND_MESSAGE.length() + 1;
 
+    //endregion Constants
 
+    //region Members
     /**
      * The socket from which the discovery datagrams are sent.
      */
@@ -80,11 +85,6 @@ public class DiscoveryService {
      * The socket that is reading the incoming datagrams.
      */
     private static DatagramSocket readingSocket;
-
-    /**
-     * Instance of the singleton.
-     */
-    private static DiscoveryService ourInstance = new DiscoveryService();
 
     /**
      * This boolean controls the finishing of the
@@ -105,16 +105,27 @@ public class DiscoveryService {
     private Thread responseThread;
 
     /**
-     * Gets the instance of the DiscoveryService Singleton.
+     * List of listeners listening for client found events.
      */
-    public static DiscoveryService getInstance() {
-        return ourInstance;
-    }
+    private List<OnClientFound> clientFoundListeners;
 
-    //endregion
+    /**
+     * List of listeners listening for client found events.
+     */
+    private List<OnClientExpired> clientExpiredListeners;
 
-    private DiscoveryService() {
+    //endregion Members
+
+    //region Constructor
+
+    /**
+     * Default Constructor
+     */
+    public DiscoveryService() {
+        this.clientFoundListeners = new ArrayList<>();
+        this.clientExpiredListeners = new ArrayList<>();
     }
+    //endregion Constructor
 
     /**
      * Starts the DiscoveryService and all its threads.
@@ -286,12 +297,16 @@ public class DiscoveryService {
     private synchronized void foundClient(InetAddress inetAddress) {
         Logger.getLogger(DiscoveryService.class.getName()).log(Level.INFO,"Found new Client. IP = " + inetAddress.getHostAddress());
 
-        Client tmp = new Client(inetAddress, "FoundClient");
+        Client client = new Client(inetAddress, "FoundClient");
 
-        // This method runs the lambda on the JavaFX thread.
-        Platform.runLater(() -> {
-            Clients.getInstance().seenClient(tmp);
-        });
+        for(OnClientFound listener : this.clientFoundListeners){
+            listener.onFoundClient(client);
+        }
+
+//        // This method runs the lambda on the JavaFX thread.
+//        Platform.runLater(() -> {
+//            Clients.getInstance().seenClient(tmp);
+//        });
     }
 
     /**
@@ -303,7 +318,32 @@ public class DiscoveryService {
     private synchronized void expiredClient(List<Client> clients){
         // Dont call runLater, if the list is empty.
         if(clients.size() > 0) {
-            Platform.runLater(() -> Clients.getInstance().getClients().removeAll(clients));
+            for(OnClientExpired listener : this.clientExpiredListeners){
+                for(Client client : clients){
+                    listener.onClientExpired(client);
+                }
+            }
+//            Platform.runLater(() -> Clients.getInstance().getClients().removeAll(clients));
         }
     }
+
+    //region Listener Handling
+
+    public void addClientFoundListener(OnClientFound listener) {
+        this.clientFoundListeners.add(listener);
+    }
+
+    public void removeClientFoundListener(OnClientFound listener) {
+        this.clientFoundListeners.remove(listener);
+    }
+
+    public void addClientExpiredListener(OnClientExpired listener) {
+        this.clientExpiredListeners.add(listener);
+    }
+
+    public void removeClientExpiredListener(OnClientExpired listener) {
+        this.clientExpiredListeners.remove(listener);
+    }
+
+    //endregion Listener Handling
 }

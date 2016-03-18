@@ -18,18 +18,25 @@ public class Client implements Comparable {
     //endregion
 
     //region Constructors
+
+    /**
+     * Default Constructor
+     */
+    public Client(){
+        this(InetAddress.getLoopbackAddress(), "");
+    }
+
+    /**
+     * Constructor with parameters
+     * @param inetAddress
+     * @param name
+     */
     public Client(InetAddress inetAddress, String name){
         this.name = new SimpleStringProperty(name);
         this.inetAddress = new SimpleObjectProperty<>(inetAddress);
         this.lastSeen = LocalDateTime.now();
     }
 
-    public Client(InetAddress inetAddress){
-        this(inetAddress, "");
-    }
-
-    @Deprecated
-    public Client(String name){ this(null, name); }
     //endregion
 
     //region Accessors
