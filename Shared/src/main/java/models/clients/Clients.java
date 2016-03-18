@@ -46,8 +46,9 @@ public class Clients {
      */
     public void seenClient(Client client){
 
-        Client clientInList = null;
+        Client clientInList;
 
+        // If client is not in the list of clients.
         if(!this.getClients().contains(client)){
             this.getClients().add(client);
             clientInList = client;

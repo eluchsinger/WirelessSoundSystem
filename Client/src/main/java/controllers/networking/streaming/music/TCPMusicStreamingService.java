@@ -7,7 +7,7 @@ import controllers.networking.streaming.music.callback.OnPlay;
 import controllers.networking.streaming.music.callback.OnStop;
 import models.clients.Server;
 import models.networking.dtos.PlayCommand;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import utils.exceptions.NotImplementedException;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -123,18 +123,19 @@ public class TCPMusicStreamingService implements MusicStreamingService {
 
         while (running && !this.getSocket().isClosed() && this.getSocket().isConnected()) {
             try {
+                Object receivedObject = null;
                 try(ObjectInputStream ois = new ObjectInputStream(this.getSocket().getInputStream())) {
-
-                    Object received = ois.readObject();
-
-                    // If it's a play command.
-                    if(received instanceof PlayCommand) {
-                        PlayCommand command = (PlayCommand) ois.readObject();
-                        this.cache.writeData(command.data);
-                        this.setCurrentServiceStatus(ServiceStatus.READY);
-                        this.onPlayCommandReceived();
-                    }
+                    receivedObject = ois.readObject();
                 }
+
+                // If it's a play command.
+                if(receivedObject instanceof PlayCommand) {
+                    PlayCommand command = (PlayCommand) receivedObject;
+                    this.cache.writeData(command.data);
+                    this.setCurrentServiceStatus(ServiceStatus.READY);
+                    this.onPlayCommandReceived();
+                }
+
             } catch (SocketTimeoutException ignore) {
             } catch (IOException | ClassNotFoundException e) {
                 Logger.getLogger(this.getClass().getName())

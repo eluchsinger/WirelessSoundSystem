@@ -3,11 +3,14 @@ package controllers.networking.streaming.music;
 import controllers.io.cache.file.DynamicFileCacheService;
 import controllers.io.cache.file.FileCacheService;
 import controllers.networking.streaming.music.callback.OnMusicStreamingStatusChanged;
+import controllers.networking.streaming.music.callback.OnPlay;
+import controllers.networking.streaming.music.callback.OnStop;
 import controllers.statistics.NetworkStatisticsController;
 import models.clients.Server;
 import models.networking.SongCache;
 import models.networking.SongDatagram;
 import models.networking.messages.StreamingMessage;
+import utils.exceptions.NotImplementedException;
 import utils.networking.SongDatagramBuilder;
 
 import java.io.IOException;
@@ -299,6 +302,26 @@ public class UDPMusicStreamingService implements MusicStreamingService{
      */
     public void removeServiceStatusChangedListener(OnMusicStreamingStatusChanged listener){
         this.statusChangedListeners.remove(listener);
+    }
+
+    @Override
+    public void addOnPlayListener(OnPlay listener) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void removeOnPlayListener(OnPlay listener) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void addOnStopListener(OnStop listener) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void removeOnStopListener(OnStop listener) {
+        throw new NotImplementedException();
     }
 
     /**

@@ -207,9 +207,7 @@ public class DiscoveryService {
      * was added multiple times, it removes only ONCE.
      * @param listener listener to remove.
      */
-    public void removeOnServerConnectedListener(OnServerConnected listener) {
-        this.onServerConnectedList.remove(listener);
-    }
+    public void removeOnServerConnectedListener(OnServerConnected listener) { this.onServerConnectedList.remove(listener); }
 
     /**
      * Adds an OnServerDisconnectedListener.

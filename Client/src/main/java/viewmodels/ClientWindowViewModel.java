@@ -5,6 +5,7 @@ import controllers.networking.streaming.music.MusicStreamingService;
 import controllers.networking.streaming.music.ServiceStatus;
 import controllers.networking.streaming.music.TCPMusicStreamingService;
 import controllers.networking.streaming.music.UDPMusicStreamingService;
+import controllers.networking.streaming.music.callback.OnPlay;
 import controllers.statistics.NetworkStatisticsController;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -99,6 +100,8 @@ public class ClientWindowViewModel {
             });
         });
 
+        this.musicStreamingService.addOnPlayListener(this::startPlaying);
+        this.musicStreamingService.addOnStopListener(this::stopPlaying);
 
         System.out.println("Check!");
     }
