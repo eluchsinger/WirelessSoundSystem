@@ -123,7 +123,7 @@ public class TCPMusicStreamingService implements MusicStreamingService {
 
         while (running && !this.getSocket().isClosed() && this.getSocket().isConnected()) {
             try {
-                Object receivedObject = null;
+                Object receivedObject;
                 try(ObjectInputStream ois = new ObjectInputStream(this.getSocket().getInputStream())) {
                     receivedObject = ois.readObject();
                 }

@@ -1,11 +1,29 @@
-apply plugin: 'java'
-apply plugin: 'application'
+plugins {
+    id 'maven-publish'
+    id 'java' // or 'groovy' Must be explicitly applied
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '1.2.3'
+}
 
 repositories {
     mavenCentral()
 }
 
 mainClassName = "controllers.Main"
+
+shadowJar {
+    baseName = 'wss-client-all'
+    classifier = ''
+}
+
+publishing {
+    publications {
+        shadow(MavenPublication) {
+            from components.shadow
+            artifactId = 'wss-client-all'
+        }
+    }
+}
 
 task executeClient(type: JavaExec){
     main = "controllers.Main"
