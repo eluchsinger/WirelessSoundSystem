@@ -7,6 +7,7 @@ import controllers.networking.discovery.DiscoveryService;
 import controllers.networking.streaming.music.MusicStreamController;
 import controllers.networking.streaming.music.TCPMusicStreamController;
 import controllers.networking.streaming.music.UDPMusicStreamController;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 import models.clients.Client;
 import models.clients.Clients;
@@ -230,15 +231,17 @@ public class MainWindowViewModel {
 
         // Adding clients.
         this.discoveryService.addClientFoundListener(client -> {
-            this.clientObservableList.add(client);
+            Platform.runLater(() -> this.clientObservableList.add(client));
             System.out.println("Added client (" + client.toString() + ")");
         });
 
         // Expired clients
         this.discoveryService.addClientExpiredListener(client -> {
-            if(this.clientObservableList.remove(client)) {
-                System.out.println("Expired client (" + client.toString() + ")");
-            }
+            Platform.runLater(() -> {
+                if(this.clientObservableList.remove(client)) {
+                    System.out.println("Expired client (" + client.toString() + ")");
+                }
+            });
         });
 
         System.out.println("Starting discovery Service...");

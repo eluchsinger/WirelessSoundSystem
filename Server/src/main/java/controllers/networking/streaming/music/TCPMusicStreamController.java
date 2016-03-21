@@ -1,5 +1,6 @@
 package controllers.networking.streaming.music;
 
+import models.NetworkClient;
 import models.clients.Server;
 import models.networking.dtos.PlayCommand;
 import models.networking.dtos.StopCommand;
@@ -46,7 +47,7 @@ public class TCPMusicStreamController implements MusicStreamController {
      * Caution: Even if it's a synchronized list, you NEED to manually
      * synchronize when iterating over it (look at specifications)
      */
-    private final List<Socket> connections;
+    private List<NetworkClient> connections;
 
     /**
      * Starts the service.
@@ -71,9 +72,9 @@ public class TCPMusicStreamController implements MusicStreamController {
 
             // Sync connections list for the iteration.
             synchronized (this.connections) {
-                for(Socket socket : this.connections) {
-                    ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-                    oos.writeObject(new PlayCommand(data));
+                for(NetworkClient client: this.connections) {
+                    client.getOutputStream()
+                            .writeObject(new PlayCommand(data));
                 }
             }
         }
@@ -90,12 +91,10 @@ public class TCPMusicStreamController implements MusicStreamController {
     public void stop() {
         try {
             synchronized (this.connections) {
-                Iterator<Socket> iterator = this.connections.iterator();
+                Iterator<NetworkClient> iterator = this.connections.iterator();
                 while(iterator.hasNext()){
-                    Socket socket = iterator.next();
-                    ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-                    oos.writeObject(new StopCommand());
-                    oos.close();
+                    NetworkClient client = iterator.next();
+                    client.getOutputStream().writeObject(new StopCommand());
                 }
             }
         }
@@ -126,7 +125,7 @@ public class TCPMusicStreamController implements MusicStreamController {
             Socket socket = this.getServerSocket().accept();
             socket.setKeepAlive(true);
             socket.setReuseAddress(true);
-            this.connections.add(socket);
+            this.connections.add(new NetworkClient(socket));
         } catch (IOException e) {
             Logger.getLogger(this.getClass().getName())
                     .log(Level.WARNING, "Error accepting connection", e);

@@ -55,6 +55,7 @@ public class TCPMusicStreamingService implements MusicStreamingService {
     private List<OnStop> stopCommandListeners;
 
     private Socket socket;
+    private ObjectInputStream currentOIS;
 
     /**
      * File cache. The songs have to be cached here when they
@@ -84,8 +85,8 @@ public class TCPMusicStreamingService implements MusicStreamingService {
     public void start() {
 
         try {
-            this.socket = this.initSocket(this.currentServer.getServerAddress(),
-                    this.currentServer.getServerListeningPort());
+            this.setSocket(this.initSocket(this.currentServer.getServerAddress(),
+                    this.currentServer.getServerListeningPort()));
             this.initThread();
             this.setCurrentServiceStatus(ServiceStatus.WAITING);
         } catch (IOException exception) {
@@ -124,8 +125,7 @@ public class TCPMusicStreamingService implements MusicStreamingService {
 
             try {
                 Object receivedObject;
-                ObjectInputStream ois = new ObjectInputStream(this.getSocket().getInputStream());
-                receivedObject = ois.readObject();
+                receivedObject = this.currentOIS.readObject();
 
                 // If it's a play command.
                 if(receivedObject instanceof PlayCommand) {
@@ -143,8 +143,8 @@ public class TCPMusicStreamingService implements MusicStreamingService {
             } catch(SocketException socketException) {
                 try {
                     // Try to reconnect
-                    this.socket = this.initSocket(this.currentServer.getServerAddress(),
-                            this.currentServer.getServerListeningPort());
+                    this.setSocket(this.initSocket(this.currentServer.getServerAddress(),
+                            this.currentServer.getServerListeningPort()));
                 }
                 catch(Exception e) {
                     Logger.getLogger(this.getClass().getName())
@@ -184,6 +184,33 @@ public class TCPMusicStreamingService implements MusicStreamingService {
      */
     private synchronized Socket getSocket() {
         return this.socket;
+    }
+
+    /**
+     * Sets the current socket and the objectinputstream.
+     * @param socket
+     * @throws IOException
+     */
+    private synchronized void setSocket(Socket socket) throws IOException {
+        this.socket = socket;
+
+        if(this.socket != null) {
+            if (!this.socket.isInputShutdown()) {
+                this.currentOIS =
+                        new ObjectInputStream(socket.getInputStream());
+            } else {
+                if (this.currentOIS != null) {
+                    this.currentOIS.close();
+                    this.currentOIS = null;
+                }
+            }
+        }
+        else {
+            if(this.currentOIS != null) {
+                this.currentOIS.close();
+                this.currentOIS = null;
+            }
+        }
     }
 
     /**
