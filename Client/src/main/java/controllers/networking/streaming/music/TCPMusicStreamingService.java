@@ -7,13 +7,12 @@ import controllers.networking.streaming.music.callback.OnPlay;
 import controllers.networking.streaming.music.callback.OnStop;
 import models.clients.Server;
 import models.networking.dtos.PlayCommand;
+import models.networking.dtos.StopCommand;
 import utils.exceptions.NotImplementedException;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.SocketTimeoutException;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -72,7 +71,7 @@ public class TCPMusicStreamingService implements MusicStreamingService {
         this.setCurrentServiceStatus(ServiceStatus.STOPPED);
     }
 
-    private void initializeListeners(){
+    private void initializeListeners() {
         this.statusChangedListeners = new ArrayList<>();
         this.playCommandListeners = new ArrayList<>();
         this.stopCommandListeners = new ArrayList<>();
@@ -121,12 +120,12 @@ public class TCPMusicStreamingService implements MusicStreamingService {
      */
     private void listen() {
 
-        while (running && !this.getSocket().isClosed() && this.getSocket().isConnected()) {
+        while (running && !this.getSocket().isClosed()) {
+
             try {
                 Object receivedObject;
-                try(ObjectInputStream ois = new ObjectInputStream(this.getSocket().getInputStream())) {
-                    receivedObject = ois.readObject();
-                }
+                ObjectInputStream ois = new ObjectInputStream(this.getSocket().getInputStream());
+                receivedObject = ois.readObject();
 
                 // If it's a play command.
                 if(receivedObject instanceof PlayCommand) {
@@ -135,9 +134,24 @@ public class TCPMusicStreamingService implements MusicStreamingService {
                     this.setCurrentServiceStatus(ServiceStatus.READY);
                     this.onPlayCommandReceived();
                 }
+                else if(receivedObject instanceof StopCommand) {
+                    System.out.println("Received StopCommand");
+                    this.onStopCommandReceived();
+                }
 
             } catch (SocketTimeoutException ignore) {
-            } catch (IOException | ClassNotFoundException e) {
+            } catch(SocketException socketException) {
+                try {
+                    // Try to reconnect
+                    this.socket = this.initSocket(this.currentServer.getServerAddress(),
+                            this.currentServer.getServerListeningPort());
+                }
+                catch(Exception e) {
+                    Logger.getLogger(this.getClass().getName())
+                            .log(Level.SEVERE, "Error in the TCPStreaming listener!", e);
+                }
+            }
+            catch (IOException | ClassNotFoundException e) {
                 Logger.getLogger(this.getClass().getName())
                         .log(Level.SEVERE, "Error in the TCPStreaming listener!", e);
             }
@@ -205,6 +219,7 @@ public class TCPMusicStreamingService implements MusicStreamingService {
         try {
             Socket socket = new Socket(address, Server.STREAMING_PORT);
             socket.setSoTimeout(SOCKET_TIMEOUT);
+            socket.setTrafficClass(0x04);
             return socket;
         } catch (IOException exception) {
             throw new IOException("Error initializing socket with address "

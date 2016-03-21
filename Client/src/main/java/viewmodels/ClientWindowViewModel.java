@@ -81,6 +81,7 @@ public class ClientWindowViewModel {
                 .getFileURI()
                 .toString()));
         this.mediaPlayer.play();
+        System.out.println("Playing!");
     }
 
     private void stopPlaying() {
@@ -88,6 +89,7 @@ public class ClientWindowViewModel {
         if(this.mediaPlayer != null){
             this.mediaPlayer.stop();
             this.mediaPlayer = null;
+            System.out.println("Stopped!");
         }
     }
 

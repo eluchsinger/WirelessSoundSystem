@@ -4,9 +4,6 @@ import controllers.networking.Utility;
 import controllers.networking.discovery.callbacks.OnClientExpired;
 import controllers.networking.discovery.callbacks.OnClientFound;
 import models.clients.Client;
-import models.clients.Clients;
-import javafx.application.Platform;
-import javafx.concurrent.Task;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -14,8 +11,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -79,12 +76,12 @@ public class DiscoveryService {
     /**
      * The socket from which the discovery datagrams are sent.
      */
-    private static DatagramSocket discoverySocket;
+    private DatagramSocket discoverySocket;
 
     /**
      * The socket that is reading the incoming datagrams.
      */
-    private static DatagramSocket readingSocket;
+    private DatagramSocket readingSocket;
 
     /**
      * This boolean controls the finishing of the
@@ -114,6 +111,10 @@ public class DiscoveryService {
      */
     private List<OnClientExpired> clientExpiredListeners;
 
+    /**
+     * Internal list used to keep track of connected clients.
+     */
+    private Set<Client> clientsConnected;
     //endregion Members
 
     //region Constructor
@@ -122,6 +123,7 @@ public class DiscoveryService {
      * Default Constructor
      */
     public DiscoveryService() {
+        this.clientsConnected = new TreeSet<>();
         this.clientFoundListeners = new ArrayList<>();
         this.clientExpiredListeners = new ArrayList<>();
     }
@@ -188,11 +190,11 @@ public class DiscoveryService {
     private void discover() {
         try {
             // Initialize the Socket.
-            if (DiscoveryService.discoverySocket == null) {
-                DiscoveryService.discoverySocket = new DatagramSocket();
-                DiscoveryService.discoverySocket.setBroadcast(true);
+            if (this.discoverySocket == null) {
+                this.discoverySocket = new DatagramSocket();
+                this.discoverySocket.setBroadcast(true);
                 // Set the Traffic Class to LOW_COST (0x02)
-                DiscoveryService.discoverySocket.setTrafficClass(0x02);
+                this.discoverySocket.setTrafficClass(0x02);
             }
 
             // Get the bytes of the data to send.
@@ -208,28 +210,33 @@ public class DiscoveryService {
                         DiscoveryService.DISCOVERY_PORT
                 );
 
-                DiscoveryService.discoverySocket.send(datagram);
+                this.discoverySocket.send(datagram);
 
-                Logger.getLogger(DiscoveryService.class.getName()).log(Level.INFO, "BEEP (Broadcast an: " + broadcastAddress.getHostAddress() + ":"
+                Logger.getLogger(this.getClass().getName())
+                        .log(Level.INFO, "BEEP (Broadcast an: " + broadcastAddress.getHostAddress() + ":"
                         + datagram.getPort() + ")");
 
-                Logger.getLogger(DiscoveryService.class.getName()).log(Level.INFO, "Checking timeouts...");
-                KeepAliveTask keepAliveTask = new KeepAliveTask(Clients.getInstance().getClients(), CLIENT_TIMEOUT, LocalDateTime.now());
-                keepAliveTask.run();
-                List<Client> expiredClients = keepAliveTask.get();
+                Logger.getLogger(this.getClass().getName())
+                        .log(Level.INFO, "Checking timeouts...");
 
-                if(expiredClients.size() > 0) {
-                    System.out.println(expiredClients.size() + " expired clients...");
-                    this.expiredClient(expiredClients);
-                }
+
+                this.checkExpiredClients();
+//                KeepAliveTask keepAliveTask = new KeepAliveTask(Clients.getInstance().getClients(), CLIENT_TIMEOUT, LocalDateTime.now());
+//                keepAliveTask.run();
+//                List<Client> expiredClients = keepAliveTask.get();
+//
+//                if(expiredClients.size() > 0) {
+//                    System.out.println(expiredClients.size() + " expired clients...");
+//                    this.expiredClient(expiredClients);
+//                }
 
             }
             catch(NullPointerException nullPointerException){
-                Logger.getLogger(DiscoveryService.class.getName()).log(Level.INFO,
-                        "The Server is not connected to a network.");
+                Logger.getLogger(this.getClass().getName())
+                        .log(Level.INFO, "The Server is not connected to a network.");
             }
         } catch (Exception e) {
-            Logger.getLogger(DiscoveryService.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
         }
     }
 
@@ -241,9 +248,9 @@ public class DiscoveryService {
         System.out.println("Listening for client responses... (Port: " + DiscoveryService.READING_PORT + ")");
 
         try {
-            if (DiscoveryService.readingSocket == null) {
-                DiscoveryService.readingSocket = new DatagramSocket(DiscoveryService.READING_PORT);
-                DiscoveryService.readingSocket.setSoTimeout(DiscoveryService.READING_TIMEOUT);
+            if (this.readingSocket == null) {
+                this.readingSocket = new DatagramSocket(DiscoveryService.READING_PORT);
+                this.readingSocket.setSoTimeout(DiscoveryService.READING_TIMEOUT);
             }
 
             // Listening Loop
@@ -253,7 +260,7 @@ public class DiscoveryService {
 
                 try {
                     // If the message is bigger than the READING_BUFFER_SIZE, it gets truncated (the last part is lost!)
-                    DiscoveryService.readingSocket.receive(receivedPacket);
+                    this.readingSocket.receive(receivedPacket);
                     String message = new String(receivedPacket.getData());
                     message = message.trim(); // Trim stuff, because the buffer was too big.
 
@@ -270,7 +277,8 @@ public class DiscoveryService {
                             String log = "Received Datagram (IP = " + receivedPacket.getAddress().getHostAddress()
                                     + ").\nContent: " + message;
 
-                            Logger.getLogger(DiscoveryService.class.getName()).log(Level.INFO, log);
+                            Logger.getLogger(this.getClass().getName())
+                                    .log(Level.INFO, log);
                         }
                     }
                 }
@@ -281,7 +289,8 @@ public class DiscoveryService {
                 }
             }
         } catch (IOException e) {
-            Logger.getLogger(DiscoveryService.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(this.getClass().getName())
+                    .log(Level.SEVERE, null, e);
         }
         finally {
             this.isListening = false;
@@ -295,35 +304,48 @@ public class DiscoveryService {
      * @param inetAddress The InetAddress of the client foundClient.
      */
     private synchronized void foundClient(InetAddress inetAddress) {
-        Logger.getLogger(DiscoveryService.class.getName()).log(Level.INFO,"Found new Client. IP = " + inetAddress.getHostAddress());
+        Logger.getLogger(this.getClass().getName())
+                .log(Level.INFO,"Found new Client. IP = " + inetAddress.getHostAddress());
 
         Client client = new Client(inetAddress, "FoundClient");
 
-        for(OnClientFound listener : this.clientFoundListeners){
-            listener.onFoundClient(client);
+        // Try to add (if it is not already there).
+        if(this.clientsConnected.add(client)) {
+            for (OnClientFound listener : this.clientFoundListeners) {
+                listener.onFoundClient(client);
+            }
         }
-
-//        // This method runs the lambda on the JavaFX thread.
-//        Platform.runLater(() -> {
-//            Clients.getInstance().seenClient(tmp);
-//        });
     }
 
     /**
      * Called when a client is expired. Handles what happens next.
      * (Currently: Removes them from the Clients list).
      * THREADSAFE.
-     * @param clients expired clients.
+     * @param client expired client.
      */
-    private synchronized void expiredClient(List<Client> clients){
+    private synchronized void expiredClient(Client client){
         // Dont call runLater, if the list is empty.
-        if(clients.size() > 0) {
+        if(this.clientsConnected.remove(client)){
             for(OnClientExpired listener : this.clientExpiredListeners){
-                for(Client client : clients){
-                    listener.onClientExpired(client);
-                }
+                listener.onClientExpired(client);
             }
-//            Platform.runLater(() -> Clients.getInstance().getClients().removeAll(clients));
+        }
+    }
+
+    /**
+     * Checks for expired clients.
+     */
+    private synchronized void checkExpiredClients(){
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        Iterator<Client> iterator = this.clientsConnected.iterator();
+
+        while(iterator.hasNext()) {
+            Client client = iterator.next();
+            long difference = client.getLastSeen().until(currentDateTime, ChronoUnit.MILLIS);
+
+            if(difference > CLIENT_TIMEOUT){
+                this.expiredClient(client);
+            }
         }
     }
 

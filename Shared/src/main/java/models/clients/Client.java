@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleStringProperty;
 
 import java.net.InetAddress;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * Created by Esteban Luchsinger on 30.11.2015.

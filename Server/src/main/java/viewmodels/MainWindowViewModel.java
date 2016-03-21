@@ -212,12 +212,12 @@ public class MainWindowViewModel {
             if(this.getSelectedSong() != null) {
                 // Start streaming...
                 System.out.println("Streaming the new song: " + this.getSelectedSong().getTitle());
-//                Mp3NetworkStream.streamSong(this.getSelectedSong());
                 this.musicStreamController.play(this.getSelectedSong());
             }
         } else {
             this.buttonPlayPause.setId("play-button");
             this.buttonPlayPause.setSelected(false);
+            this.musicStreamController.stop();
         }
     }
     //endregion
@@ -230,11 +230,8 @@ public class MainWindowViewModel {
 
         // Adding clients.
         this.discoveryService.addClientFoundListener(client -> {
-            // Add only if it contained the item already.
-            if(!this.clientObservableList.contains(client)) {
-                this.clientObservableList.add(client);
-                System.out.println("Added client (" + client.toString() + ")");
-            }
+            this.clientObservableList.add(client);
+            System.out.println("Added client (" + client.toString() + ")");
         });
 
         // Expired clients

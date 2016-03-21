@@ -64,6 +64,11 @@ public class UDPMusicStreamController implements MusicStreamController{
         }
     }
 
+    @Override
+    public void stop() {
+        throw new RuntimeException("Not Implemented method");
+    }
+
     /**
      * Caches the song.
      * @param song Song to cache

@@ -12,4 +12,5 @@ public interface MusicStreamController {
      * @param song Song to stream.
      */
     void play(Song song);
+    void stop();
 }

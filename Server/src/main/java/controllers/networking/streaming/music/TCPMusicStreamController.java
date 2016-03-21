@@ -2,6 +2,7 @@ package controllers.networking.streaming.music;
 
 import models.clients.Server;
 import models.networking.dtos.PlayCommand;
+import models.networking.dtos.StopCommand;
 import models.songs.Song;
 
 import java.io.File;
@@ -12,6 +13,7 @@ import java.net.Socket;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -68,18 +70,38 @@ public class TCPMusicStreamController implements MusicStreamController {
             byte[] data = this.getSongData(song);
 
             // Sync connections list for the iteration.
-            synchronized (this.connections){
-
+            synchronized (this.connections) {
                 for(Socket socket : this.connections) {
-                    try(ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream())) {
-                        oos.writeObject(new PlayCommand(data));
-                        oos.close();
-                    }
+                    ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+                    oos.writeObject(new PlayCommand(data));
                 }
             }
         }
         catch(IOException iOException){
-            Logger.getLogger(this.getClass().getName()).log(Level.WARNING, "Error playing song", iOException);
+            Logger.getLogger(this.getClass().getName())
+                    .log(Level.WARNING, "Error playing song", iOException);
+        }
+    }
+
+    /**
+     * Sends a stop command to the connected clients.
+     */
+    @Override
+    public void stop() {
+        try {
+            synchronized (this.connections) {
+                Iterator<Socket> iterator = this.connections.iterator();
+                while(iterator.hasNext()){
+                    Socket socket = iterator.next();
+                    ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+                    oos.writeObject(new StopCommand());
+                    oos.close();
+                }
+            }
+        }
+        catch (IOException iOException) {
+            Logger.getLogger(this.getClass().getName())
+                    .log(Level.WARNING, "Error stopping song", iOException);
         }
     }
 
@@ -102,9 +124,30 @@ public class TCPMusicStreamController implements MusicStreamController {
     private void acceptConnections() {
         try {
             Socket socket = this.getServerSocket().accept();
+            socket.setKeepAlive(true);
+            socket.setReuseAddress(true);
             this.connections.add(socket);
         } catch (IOException e) {
-            Logger.getLogger(this.getClass().getName()).log(Level.WARNING, "Error accepting connection", e);
+            Logger.getLogger(this.getClass().getName())
+                    .log(Level.WARNING, "Error accepting connection", e);
+        }
+    }
+
+    /**
+     * Prepares a socket, checking if it was closed already and creating a new
+     * socket if needed.
+     * @param originalSocket Original socket.
+     * @return Returns an open socket.
+     * @throws IOException
+     */
+    private static Socket prepareSocket(Socket originalSocket) throws IOException {
+        if(originalSocket.isClosed()) {
+            Socket newSocket = new Socket(originalSocket.getInetAddress(),
+                    originalSocket.getPort());
+            return newSocket;
+        }
+        else {
+            return originalSocket;
         }
     }
 
