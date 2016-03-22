@@ -236,13 +236,12 @@ public class MainWindowViewModel {
         });
 
         // Expired clients
-        this.discoveryService.addClientExpiredListener(client -> {
-            Platform.runLater(() -> {
+        this.discoveryService.addClientExpiredListener(client ->
+                Platform.runLater(() -> {
                 if(this.clientObservableList.remove(client)) {
                     System.out.println("Expired client (" + client.toString() + ")");
                 }
-            });
-        });
+        }));
 
         System.out.println("Starting discovery Service...");
         this.discoveryService.start();

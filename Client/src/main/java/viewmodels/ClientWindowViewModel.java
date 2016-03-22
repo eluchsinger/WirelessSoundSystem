@@ -28,9 +28,11 @@ public class ClientWindowViewModel {
 
     @FXML
     private Label labelStatus;
-
     @FXML
-    private StackedAreaChart<Number, Number> statisticsChart;
+    private Label labelSongTitle;
+    @FXML
+    private Label labelArtist;
+
     private Stage stage;
 
     private MediaPlayer mediaPlayer;
@@ -50,7 +52,6 @@ public class ClientWindowViewModel {
     protected void initialize() throws IOException {
         this.initializeStreamingService();
         this.initializeDiscoveryService();
-        this.initializeStatistics();
     }
 
     /**
@@ -74,6 +75,9 @@ public class ClientWindowViewModel {
         }
     }
 
+    /**
+     * Starts playing the song in the cache.
+     */
     private void startPlaying() {
         this.stopPlaying();
 
@@ -84,11 +88,17 @@ public class ClientWindowViewModel {
         System.out.println("Playing!");
     }
 
+    /**
+     * Stops playing.
+     */
     private void stopPlaying() {
 
         if(this.mediaPlayer != null){
             this.mediaPlayer.stop();
             this.mediaPlayer = null;
+            this.labelSongTitle.setText("");
+            this.labelArtist.setText("");
+            this.labelStatus.setText("STOPPED");
             System.out.println("Stopped!");
         }
     }
@@ -98,16 +108,19 @@ public class ClientWindowViewModel {
 
         System.out.print("Starting Streaming Service... ");
 
-        this.musicStreamingService.addServiceStatusChangedListener(newStatus -> {
-            System.out.println("New Status: " + newStatus.name());
-            Platform.runLater(() -> {
-                this.labelStatus.setText(newStatus.name());
-                this.lastStatus = newStatus;
-            });
-        });
+        // Handle onStatusChanged
+        this.musicStreamingService.addServiceStatusChangedListener(newStatus -> System.out.println("New Status: " + newStatus.name()));
 
-        this.musicStreamingService.addOnPlayListener(this::startPlaying);
-        this.musicStreamingService.addOnStopListener(this::stopPlaying);
+        // Handle onPlay message.
+        this.musicStreamingService.addOnPlayListener((songTitle, artist) -> Platform.runLater(() -> {
+            this.labelSongTitle.setText(songTitle);
+            this.labelArtist.setText(artist);
+            this.labelStatus.setText("PLAYING");
+            this.startPlaying();
+        }));
+
+        // Handle onStop
+        this.musicStreamingService.addOnStopListener(() -> Platform.runLater(this::stopPlaying));
 
         System.out.println("Check!");
     }
@@ -125,30 +138,6 @@ public class ClientWindowViewModel {
         });
         this.discoveryService.start();
         System.out.println("Check!");
-    }
-
-    private void initializeStatistics() {
-
-        // IF UDP: Use packets for statistics (0-100%).
-        if(this.musicStreamingService instanceof UDPMusicStreamingService) {
-            System.out.println("Statistics Mode: UDP");
-            NumberAxis axis = ((NumberAxis)this.statisticsChart.getYAxis());
-            axis.setAutoRanging(false);
-            axis.setUpperBound(100);
-            axis.setTickUnit(20);
-
-            axis.setLabel("Empfangene Packete (%)");
-        }
-
-        // IF TCP: Use bytes for statistics (0-x%) --> Open upper-bound.
-        if(this.musicStreamingService instanceof TCPMusicStreamingService) {
-            System.out.println("Statistics Mode: TCP");
-
-            this.statisticsChart.getYAxis().setLabel("Empfangene Bytes (Total)");
-        }
-
-        this.statisticsChart.setData(NetworkStatisticsController.getInstance().getStatisticsList());
-
     }
 
     //endregion

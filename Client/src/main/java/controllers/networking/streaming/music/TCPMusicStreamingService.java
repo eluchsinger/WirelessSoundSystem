@@ -132,7 +132,7 @@ public class TCPMusicStreamingService implements MusicStreamingService {
                     PlayCommand command = (PlayCommand) receivedObject;
                     this.cache.writeData(command.data);
                     this.setCurrentServiceStatus(ServiceStatus.READY);
-                    this.onPlayCommandReceived();
+                    this.onPlayCommandReceived(command.songTitle, command.artist);
                 }
                 else if(receivedObject instanceof StopCommand) {
                     System.out.println("Received StopCommand");
@@ -314,8 +314,8 @@ public class TCPMusicStreamingService implements MusicStreamingService {
         }
     }
 
-    private void onPlayCommandReceived() {
-        this.playCommandListeners.forEach(OnPlay::play);
+    private void onPlayCommandReceived(String songTitle, String artist) {
+        this.playCommandListeners.forEach(onPlay -> onPlay.play(songTitle, artist));
     }
 
     private void onStopCommandReceived() {

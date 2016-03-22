@@ -221,15 +221,6 @@ public class DiscoveryService {
 
 
                 this.checkExpiredClients();
-//                KeepAliveTask keepAliveTask = new KeepAliveTask(Clients.getInstance().getClients(), CLIENT_TIMEOUT, LocalDateTime.now());
-//                keepAliveTask.run();
-//                List<Client> expiredClients = keepAliveTask.get();
-//
-//                if(expiredClients.size() > 0) {
-//                    System.out.println(expiredClients.size() + " expired clients...");
-//                    this.expiredClient(expiredClients);
-//                }
-
             }
             catch(NullPointerException nullPointerException){
                 Logger.getLogger(this.getClass().getName())

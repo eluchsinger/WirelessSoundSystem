@@ -70,11 +70,14 @@ public class TCPMusicStreamController implements MusicStreamController {
         try {
             byte[] data = this.getSongData(song);
 
+            String songTitle = song.getTitle();
+            String artist = song.getArtist();
+
             // Sync connections list for the iteration.
             synchronized (this.connections) {
                 for(NetworkClient client: this.connections) {
                     client.getOutputStream()
-                            .writeObject(new PlayCommand(data));
+                            .writeObject(new PlayCommand(songTitle, artist, data));
                 }
             }
         }

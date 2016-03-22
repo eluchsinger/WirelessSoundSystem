@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.chart.NumberAxis?>
-<?import javafx.scene.chart.StackedAreaChart?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <BorderPane minHeight="400.0" minWidth="600.0" xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" fx:controller="viewmodels.ClientWindowViewModel">
@@ -27,14 +26,20 @@
             </HBox>
          </top>
          <center>
-            <StackedAreaChart fx:id="statisticsChart" title="Streaming Statistik" visible="false" BorderPane.alignment="CENTER">
-              <xAxis>
-                <NumberAxis label="Zeit (Sekunden)" side="BOTTOM" />
-              </xAxis>
-              <yAxis>
-                <NumberAxis lowerBound="0" side="LEFT" />
-              </yAxis>
-            </StackedAreaChart>
+            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Label fx:id="labelSongTitle" alignment="CENTER">
+                     <font>
+                        <Font name="Calibri" size="42.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="labelArtist" alignment="CENTER">
+                     <font>
+                        <Font name="Calibri" size="42.0" />
+                     </font>
+                  </Label>
+               </children>
+            </VBox>
          </center>
       </BorderPane>
    </center>
