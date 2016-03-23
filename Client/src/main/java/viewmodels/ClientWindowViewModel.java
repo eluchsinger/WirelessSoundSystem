@@ -37,7 +37,6 @@ public class ClientWindowViewModel {
 
     private MediaPlayer mediaPlayer;
 
-    private ServiceStatus lastStatus = ServiceStatus.STOPPED;
 
     /**
      * Constructor
@@ -67,10 +66,8 @@ public class ClientWindowViewModel {
 
         if(this.stage != null){
             this.stage.setOnCloseRequest(event -> {
-
                 this.musicStreamingService.stop();
                 this.discoveryService.stop();
-
             });
         }
     }

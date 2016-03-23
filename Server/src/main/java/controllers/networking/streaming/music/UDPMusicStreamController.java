@@ -65,7 +65,7 @@ public class UDPMusicStreamController implements MusicStreamController{
     }
 
     @Override
-    public void stop() {
+    public void stopPlaying() {
         throw new RuntimeException("Not Implemented method");
     }
 

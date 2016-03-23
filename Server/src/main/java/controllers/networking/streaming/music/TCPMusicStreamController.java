@@ -6,11 +6,13 @@ import models.networking.dtos.PlayCommand;
 import models.networking.dtos.StopCommand;
 import models.songs.Song;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,7 +24,7 @@ import java.util.logging.Logger;
 /**
  * Created by Esteban Luchsinger on 07.03.2016.
  */
-public class TCPMusicStreamController implements MusicStreamController {
+public class TCPMusicStreamController implements MusicStreamController, Closeable {
 
     /**
      * The destination port for datagrams sent to the clients.
@@ -35,6 +37,9 @@ public class TCPMusicStreamController implements MusicStreamController {
      */
     private final static int TIMEOUT_FOR_RESPONSES = 1000;
 
+    /**
+     * Server TCP Socket.
+     */
     private ServerSocket serverSocket;
 
     /**
@@ -49,6 +54,8 @@ public class TCPMusicStreamController implements MusicStreamController {
      */
     private List<NetworkClient> connections;
 
+    private boolean isStopped;
+
     /**
      * Starts the service.
      * @throws IOException
@@ -59,6 +66,7 @@ public class TCPMusicStreamController implements MusicStreamController {
         this.connectionAcceptingThread = new Thread(this::acceptConnections);
         this.connectionAcceptingThread.setDaemon(true);
         this.connectionAcceptingThread.start();
+        this.isStopped = false;
     }
 
     /**
@@ -88,10 +96,10 @@ public class TCPMusicStreamController implements MusicStreamController {
     }
 
     /**
-     * Sends a stop command to the connected clients.
+     * Sends a Stop command to the connected clients.
      */
     @Override
-    public void stop() {
+    public void stopPlaying() {
         try {
             synchronized (this.connections) {
                 Iterator<NetworkClient> iterator = this.connections.iterator();
@@ -105,6 +113,13 @@ public class TCPMusicStreamController implements MusicStreamController {
             Logger.getLogger(this.getClass().getName())
                     .log(Level.WARNING, "Error stopping song", iOException);
         }
+    }
+
+    /**
+     * Stops the TCPStreaming Service and frees the Sockets and Data.
+     * ALWAYS call this method, when the Service is not needed.
+     */
+    public void stop() throws IOException {
     }
 
     /**
@@ -129,7 +144,13 @@ public class TCPMusicStreamController implements MusicStreamController {
             socket.setKeepAlive(true);
             socket.setReuseAddress(true);
             this.connections.add(new NetworkClient(socket));
-        } catch (IOException e) {
+        } catch (SocketException socketException) {
+            if(socketException.getMessage().equals("socket closed")) {
+                Logger.getLogger(this.getClass().getName())
+                        .log(Level.INFO, "Socket closed", socketException);
+            }
+        }
+        catch (IOException e) {
             Logger.getLogger(this.getClass().getName())
                     .log(Level.WARNING, "Error accepting connection", e);
         }
@@ -159,5 +180,29 @@ public class TCPMusicStreamController implements MusicStreamController {
      */
     private synchronized ServerSocket getServerSocket(){
         return this.serverSocket;
+    }
+
+    /**
+     * Closes this stream and releases any system resources associated
+     * with it. If the stream is already closed then invoking this
+     * method has no effect.
+     * <p>
+     * <p> As noted in {@link AutoCloseable#close()}, cases where the
+     * close may fail require careful attention. It is strongly advised
+     * to relinquish the underlying resources and to internally
+     * <em>mark</em> the {@code Closeable} as closed, prior to throwing
+     * the {@code IOException}.
+     *
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    public void close() throws IOException {
+        if(this.getServerSocket() != null && !this.getServerSocket().isClosed()) {
+            this.getServerSocket().close();
+        }
+
+        for(NetworkClient networkClient : this.connections) {
+            networkClient.close();
+        }
     }
 }

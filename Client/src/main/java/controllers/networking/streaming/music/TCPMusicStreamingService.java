@@ -91,7 +91,8 @@ public class TCPMusicStreamingService implements MusicStreamingService {
             this.setCurrentServiceStatus(ServiceStatus.WAITING);
         } catch (IOException exception) {
             this.running = false;
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "Starting Streaming Service", exception);
+            Logger.getLogger(this.getClass().getName())
+                    .log(Level.SEVERE, "Starting Streaming Service", exception);
         }
     }
 
@@ -112,6 +113,18 @@ public class TCPMusicStreamingService implements MusicStreamingService {
         } finally {
             if (this.listeningThread == null || !this.listeningThread.isAlive())
                 this.setCurrentServiceStatus(ServiceStatus.STOPPED);
+
+            // Close the socket.
+            if(this.getSocket() != null) {
+                try {
+                    if(!this.getSocket().isClosed())
+                        this.getSocket().close();
+                } catch (IOException e) {
+                    Logger.getLogger(this.getClass().getName())
+                            .log(Level.SEVERE,
+                                    "Error closing the open socket", e);
+                }
+            }
         }
     }
 
@@ -192,23 +205,32 @@ public class TCPMusicStreamingService implements MusicStreamingService {
      * @throws IOException
      */
     private synchronized void setSocket(Socket socket) throws IOException {
-        this.socket = socket;
 
-        if(this.socket != null) {
-            if (!this.socket.isInputShutdown()) {
-                this.currentOIS =
-                        new ObjectInputStream(socket.getInputStream());
+        // Change only if the socket really changed.
+        // (By Reference)
+        if(this.socket != socket) {
+            // If the socket is not null, close it first!
+            if(this.socket != null && !this.socket.isClosed()) {
+                this.socket.close();
+            }
+
+            this.socket = socket;
+
+            if (this.socket != null) {
+                if (!this.socket.isInputShutdown()) {
+                    this.currentOIS =
+                            new ObjectInputStream(socket.getInputStream());
+                } else {
+                    if (this.currentOIS != null) {
+                        this.currentOIS.close();
+                        this.currentOIS = null;
+                    }
+                }
             } else {
                 if (this.currentOIS != null) {
                     this.currentOIS.close();
                     this.currentOIS = null;
                 }
-            }
-        }
-        else {
-            if(this.currentOIS != null) {
-                this.currentOIS.close();
-                this.currentOIS = null;
             }
         }
     }

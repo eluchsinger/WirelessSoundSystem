@@ -86,7 +86,7 @@ public class DiscoveryService {
     /**
      * This boolean controls the finishing of the
      * responseThread. If the thread is started, it is set to true.
-     * If the isListening is set to false, the thread will stop (probable delay: DiscoveryService.READING_TIMEOUT)
+     * If the isListening is set to false, the thread will stopPlaying (probable delay: DiscoveryService.READING_TIMEOUT)
      */
     private volatile boolean isListening = false;
 

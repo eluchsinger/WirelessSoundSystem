@@ -48,6 +48,8 @@ public class NetworkClient extends Client {
      * Closes the NetworkClient.
      */
     public void close() throws IOException {
-        this.outputStream.close();
+        if(this.getSocket() != null && !this.getSocket().isClosed()) {
+            this.socket.close();
+        }
     }
 }

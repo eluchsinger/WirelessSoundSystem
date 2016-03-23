@@ -6,11 +6,9 @@ import controllers.media.music.AudioPlayer;
 import controllers.networking.discovery.DiscoveryService;
 import controllers.networking.streaming.music.MusicStreamController;
 import controllers.networking.streaming.music.TCPMusicStreamController;
-import controllers.networking.streaming.music.UDPMusicStreamController;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 import models.clients.Client;
-import models.clients.Clients;
 import models.songs.Song;
 import utils.DurationStringConverter;
 import javafx.beans.binding.Bindings;
@@ -24,9 +22,12 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.DirectoryChooser;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Esteban Luchsinger on 30.11.2015.
@@ -143,6 +144,15 @@ public class MainWindowViewModel {
                 if(this.discoveryService != null) {
                     this.discoveryService.stop();
                     System.out.println("Stopped Discovery Service!");
+                    if(this.musicStreamController instanceof Closeable) {
+                        try {
+                            ((Closeable)this.musicStreamController).close();
+                        } catch (IOException e) {
+                            Logger.getLogger(this.getClass().getName())
+                                    .log(Level.SEVERE, "Could not close the StreamController!",
+                                            e);
+                        }
+                    }
                 }
             });
         }
@@ -218,7 +228,7 @@ public class MainWindowViewModel {
         } else {
             this.buttonPlayPause.setId("play-button");
             this.buttonPlayPause.setSelected(false);
-            this.musicStreamController.stop();
+            this.musicStreamController.stopPlaying();
         }
     }
     //endregion
