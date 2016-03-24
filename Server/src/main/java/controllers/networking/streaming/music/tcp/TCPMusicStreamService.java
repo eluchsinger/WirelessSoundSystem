@@ -31,6 +31,9 @@ public class TCPMusicStreamService {
      */
     public final static int EXECUTOR_CLOSING_AWAITING_TIME = 1000;
 
+    /**
+     * The server socket channel.
+     */
     private ServerSocketChannel serverSocketChannel;
     /**
      * The acceptSelector is looking for new clients connecting.
@@ -164,9 +167,7 @@ public class TCPMusicStreamService {
                             System.out.println("Connected Client: " + client);
                             client.configureBlocking(false);
 
-                            // Todo: Add new client to client-list.
                             this.registerReadSelector(client);
-
                             this.connectedClients.add(new SocketChannelNetworkClient(client));
                         }
                     }
@@ -233,21 +234,22 @@ public class TCPMusicStreamService {
                         // Todo: Maybe returns a wrong channel: Check it!
                         SocketChannel socketChannel = (SocketChannel)key.channel();
 
-                        // Todo: List synchronization before using it!
-                        Optional<NetworkClient> clientOptional = this.connectedClients.stream()
-                                .filter(nc -> nc.getSocket().getChannel().equals(socketChannel))
-                                .findFirst();
+                        synchronized(this.connectedClients) {
+                            Optional<NetworkClient> clientOptional = this.connectedClients.stream()
+                                    .filter(nc -> nc.getSocket().getChannel().equals(socketChannel))
+                                    .findFirst();
 
-                        if(clientOptional.isPresent()) {
-                            try {
-                                Object obj = clientOptional.get().getObjectInputStream().readObject();
+                            if (clientOptional.isPresent()) {
+                                try {
+                                    Object obj = clientOptional.get().getObjectInputStream().readObject();
 
-                                if(obj != null) {
-                                    this.onObjectReceived(obj);
+                                    if (obj != null) {
+                                        this.onObjectReceived(obj);
+                                    }
+                                } catch (ClassNotFoundException e) {
+                                    Logger.getLogger(this.getClass().getName())
+                                            .log(Level.WARNING, "Class not found reading object", e);
                                 }
-                            } catch (ClassNotFoundException e) {
-                                Logger.getLogger(this.getClass().getName())
-                                        .log(Level.WARNING, "Class not found reading object", e);
                             }
                         }
                     }
