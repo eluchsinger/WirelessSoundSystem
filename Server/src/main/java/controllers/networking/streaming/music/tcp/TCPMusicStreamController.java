@@ -1,6 +1,7 @@
-package controllers.networking.streaming.music;
+package controllers.networking.streaming.music.tcp;
 
-import models.NetworkClient;
+import controllers.networking.streaming.music.MusicStreamController;
+import models.SocketNetworkClient;
 import models.clients.Server;
 import models.networking.dtos.PlayCommand;
 import models.networking.dtos.StopCommand;
@@ -9,7 +10,6 @@ import models.songs.Song;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -52,7 +52,7 @@ public class TCPMusicStreamController implements MusicStreamController, Closeabl
      * Caution: Even if it's a synchronized list, you NEED to manually
      * synchronize when iterating over it (look at specifications)
      */
-    private List<NetworkClient> connections;
+    private List<SocketNetworkClient> connections;
 
     private boolean isStopped;
 
@@ -83,8 +83,8 @@ public class TCPMusicStreamController implements MusicStreamController, Closeabl
 
             // Sync connections list for the iteration.
             synchronized (this.connections) {
-                for(NetworkClient client: this.connections) {
-                    client.getOutputStream()
+                for(SocketNetworkClient client: this.connections) {
+                    client.getObjectOutputStream()
                             .writeObject(new PlayCommand(songTitle, artist, data));
                 }
             }
@@ -102,10 +102,10 @@ public class TCPMusicStreamController implements MusicStreamController, Closeabl
     public void stopPlaying() {
         try {
             synchronized (this.connections) {
-                Iterator<NetworkClient> iterator = this.connections.iterator();
+                Iterator<SocketNetworkClient> iterator = this.connections.iterator();
                 while(iterator.hasNext()){
-                    NetworkClient client = iterator.next();
-                    client.getOutputStream().writeObject(new StopCommand());
+                    SocketNetworkClient client = iterator.next();
+                    client.getObjectOutputStream().writeObject(new StopCommand());
                 }
             }
         }
@@ -113,13 +113,6 @@ public class TCPMusicStreamController implements MusicStreamController, Closeabl
             Logger.getLogger(this.getClass().getName())
                     .log(Level.WARNING, "Error stopping song", iOException);
         }
-    }
-
-    /**
-     * Stops the TCPStreaming Service and frees the Sockets and Data.
-     * ALWAYS call this method, when the Service is not needed.
-     */
-    public void stop() throws IOException {
     }
 
     /**
@@ -143,34 +136,16 @@ public class TCPMusicStreamController implements MusicStreamController, Closeabl
             Socket socket = this.getServerSocket().accept();
             socket.setKeepAlive(true);
             socket.setReuseAddress(true);
-            this.connections.add(new NetworkClient(socket));
+            this.connections.add(new SocketNetworkClient(socket));
         } catch (SocketException socketException) {
             if(socketException.getMessage().equals("socket closed")) {
                 Logger.getLogger(this.getClass().getName())
-                        .log(Level.INFO, "Socket closed", socketException);
+                        .log(Level.WARNING, "Socket closed", socketException);
             }
         }
         catch (IOException e) {
             Logger.getLogger(this.getClass().getName())
                     .log(Level.WARNING, "Error accepting connection", e);
-        }
-    }
-
-    /**
-     * Prepares a socket, checking if it was closed already and creating a new
-     * socket if needed.
-     * @param originalSocket Original socket.
-     * @return Returns an open socket.
-     * @throws IOException
-     */
-    private static Socket prepareSocket(Socket originalSocket) throws IOException {
-        if(originalSocket.isClosed()) {
-            Socket newSocket = new Socket(originalSocket.getInetAddress(),
-                    originalSocket.getPort());
-            return newSocket;
-        }
-        else {
-            return originalSocket;
         }
     }
 
@@ -197,12 +172,15 @@ public class TCPMusicStreamController implements MusicStreamController, Closeabl
      */
     @Override
     public void close() throws IOException {
+        this.isStopped = true;
+
         if(this.getServerSocket() != null && !this.getServerSocket().isClosed()) {
             this.getServerSocket().close();
         }
 
-        for(NetworkClient networkClient : this.connections) {
-            networkClient.close();
+        for(SocketNetworkClient socketNetworkClient : this.connections) {
+            socketNetworkClient.close();
         }
+        System.out.println("Closing the StreamController.");
     }
 }
