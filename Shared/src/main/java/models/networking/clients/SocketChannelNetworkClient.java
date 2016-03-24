@@ -1,28 +1,48 @@
-package models;
+package models.networking.clients;
 
 import models.clients.Client;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.nio.channels.SocketChannel;
 
 /**
  * Created by Esteban Luchsinger on 24.03.2016.
+ * A NetworkClient implementation using the NIO SocketChannel.
  */
 public class SocketChannelNetworkClient extends Client implements NetworkClient {
 
     private final SocketChannel socketChannel;
     private final ObjectOutputStream objectOutputStream;
+    private final ObjectInputStream objectInputStream;
 
+    /**
+     * Constructor
+     * @param socketChannel Open socket channel.
+     * @throws IOException
+     */
     public SocketChannelNetworkClient(SocketChannel socketChannel) throws IOException {
         this.socketChannel = socketChannel;
         this.objectOutputStream = new ObjectOutputStream(this.socketChannel.socket().getOutputStream());
+        this.objectInputStream = new ObjectInputStream(this.socketChannel.socket().getInputStream());
     }
 
+    /**
+     * @return Returns the ObjectOutputStream opened for the SocketChannel.
+     */
     @Override
     public ObjectOutputStream getObjectOutputStream() {
         return this.objectOutputStream;
+    }
+
+    /**
+     * @return Returns the ObjectInputStream opened for the SocketChannel
+     */
+    @Override
+    public ObjectInputStream getObjectInputStream() {
+        return this.objectInputStream;
     }
 
     /**
@@ -42,8 +62,12 @@ public class SocketChannelNetworkClient extends Client implements NetworkClient 
     public void close() throws IOException {
         this.socketChannel.close();
         this.objectOutputStream.close();
+        this.objectInputStream.close();
     }
 
+    /**
+     * @return Returns the current socket.
+     */
     public Socket getSocket(){
         return this.socketChannel.socket();
     }

@@ -1,6 +1,7 @@
 package models;
 
 import models.clients.Client;
+import models.networking.clients.NetworkClient;
 
 import java.io.Closeable;
 import java.io.IOException;

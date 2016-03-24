@@ -2,15 +2,8 @@ package viewmodels;
 
 import controllers.networking.discovery.DiscoveryService;
 import controllers.networking.streaming.music.MusicStreamingService;
-import controllers.networking.streaming.music.ServiceStatus;
-import controllers.networking.streaming.music.TCPMusicStreamingService;
-import controllers.networking.streaming.music.UDPMusicStreamingService;
-import controllers.networking.streaming.music.callback.OnPlay;
-import controllers.statistics.NetworkStatisticsController;
-import javafx.application.Platform;
+import controllers.networking.streaming.music.tcp.TCPMusicStreamingService;
 import javafx.fxml.FXML;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.StackedAreaChart;
 import javafx.scene.control.Label;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -25,6 +18,7 @@ public class ClientWindowViewModel {
 
     private DiscoveryService discoveryService;
     private MusicStreamingService musicStreamingService;
+    private TCPMusicStreamingService service;
 
     @FXML
     private Label labelStatus;
@@ -44,7 +38,7 @@ public class ClientWindowViewModel {
      */
     public ClientWindowViewModel() throws IOException {
         this.discoveryService = new DiscoveryService();
-        this.musicStreamingService = new TCPMusicStreamingService();
+//        this.musicStreamingService = new TCPMusicStreamingController();
     }
 
     @FXML
@@ -66,7 +60,12 @@ public class ClientWindowViewModel {
 
         if(this.stage != null){
             this.stage.setOnCloseRequest(event -> {
-                this.musicStreamingService.stop();
+                try {
+                    this.service.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+//                this.musicStreamingService.stop();
                 this.discoveryService.stop();
             });
         }
@@ -101,23 +100,24 @@ public class ClientWindowViewModel {
     }
 
     //region initializers
-    private void initializeStreamingService() {
+    private void initializeStreamingService() throws IOException {
 
         System.out.print("Starting Streaming Service... ");
+        this.service  = new TCPMusicStreamingService();
 
-        // Handle onStatusChanged
-        this.musicStreamingService.addServiceStatusChangedListener(newStatus -> System.out.println("New Status: " + newStatus.name()));
-
-        // Handle onPlay message.
-        this.musicStreamingService.addOnPlayListener((songTitle, artist) -> Platform.runLater(() -> {
-            this.labelSongTitle.setText(songTitle);
-            this.labelArtist.setText(artist);
-            this.labelStatus.setText("PLAYING");
-            this.startPlaying();
-        }));
-
-        // Handle onStop
-        this.musicStreamingService.addOnStopListener(() -> Platform.runLater(this::stopPlaying));
+//        // Handle onStatusChanged
+//        this.musicStreamingService.addServiceStatusChangedListener(newStatus -> System.out.println("New Status: " + newStatus.name()));
+//
+//        // Handle onPlay message.
+//        this.musicStreamingService.addOnPlayListener((songTitle, artist) -> Platform.runLater(() -> {
+//            this.labelSongTitle.setText(songTitle);
+//            this.labelArtist.setText(artist);
+//            this.labelStatus.setText("PLAYING");
+//            this.startPlaying();
+//        }));
+//
+//        // Handle onStop
+//        this.musicStreamingService.addOnStopListener(() -> Platform.runLater(this::stopPlaying));
 
         System.out.println("Check!");
     }
@@ -127,11 +127,16 @@ public class ClientWindowViewModel {
 
         this.discoveryService.addOnServerConnectedListener(server -> {
 
-            this.musicStreamingService.stop();
-            this.musicStreamingService.setServer(server);
-
-            // Start Service.
-            this.musicStreamingService.start();
+            try {
+                this.service.setCurrentServer(server);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+//            this.musicStreamingService.stop();
+//            this.musicStreamingService.setServer(server);
+//
+//            // Start Service.
+//            this.musicStreamingService.start();
         });
         this.discoveryService.start();
         System.out.println("Check!");

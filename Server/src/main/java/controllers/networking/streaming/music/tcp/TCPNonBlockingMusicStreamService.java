@@ -1,10 +1,13 @@
 package controllers.networking.streaming.music.tcp;
 
+import controllers.networking.streaming.music.MusicStreamController;
 import controllers.networking.streaming.music.tcp.callbacks.OnObjectReceived;
-import models.NetworkClient;
-import models.SocketChannelNetworkClient;
 import models.clients.Server;
+import models.networking.clients.NetworkClient;
+import models.networking.clients.SocketChannelNetworkClient;
+import models.songs.Song;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SelectionKey;
@@ -22,8 +25,14 @@ import java.util.logging.Logger;
 
 /**
  * Created by Esteban Luchsinger on 23.03.2016.
+ * Non-Blocking NIO TCPMusicStreamService.
  */
-public class TCPMusicStreamService {
+public class TCPNonBlockingMusicStreamService implements MusicStreamController, Closeable {
+    /**
+     * Set this true, if the channel should be blocking.
+     */
+    private static final boolean BLOCKING_MODE = true;
+
     /**
      * Amount of time that the application will wait for the executor
      * to stop working, when the service is stopped.
@@ -78,14 +87,15 @@ public class TCPMusicStreamService {
      * (The listening is not yet running, call start() to run.)
      * @throws IOException
      */
-    public TCPMusicStreamService() throws IOException {
+    public TCPNonBlockingMusicStreamService() throws IOException {
 
         this.onObjectReceivedListeners = new ArrayList<>();
         this.connectedClients = new ArrayList<>();
 
         this.serverSocketChannel = ServerSocketChannel.open();
-        this.serverSocketChannel.configureBlocking(false);
+        this.serverSocketChannel.configureBlocking(BLOCKING_MODE);
         this.serverSocketChannel.bind(new InetSocketAddress(Server.STREAMING_PORT));
+        System.out.println("Listening for TCP on port: " + Server.STREAMING_PORT);
         this.acceptSelector = Selector.open(); // Register to the server
         this.readSelector = Selector.open(); // Register to the clients.
         this.serverSocketChannel.register(this.acceptSelector,
@@ -110,12 +120,22 @@ public class TCPMusicStreamService {
 
     /**
      * Stops the streaming service and frees the resources.
-     * @throws IOException
+     * (This method is redundant with #close())
+     * @throws IOException When an I/O Error happens.
      */
     public void stop() throws IOException {
+
         this.isRunning = false;
+        this.acceptSelector.close();
+        this.readSelector.close();
         this.stopExecutorService(this.acceptanceExecutorService);
         this.stopExecutorService(this.readingExecutorService);
+
+        // Close all clients.
+        for(NetworkClient networkClient : this.connectedClients) {
+            networkClient.close();
+        }
+
         this.serverSocketChannel.close();
     }
 
@@ -123,7 +143,7 @@ public class TCPMusicStreamService {
      * Stops the executor service.
      * First tries to stop the executor in a soft way, then after timeout it will
      * force the executor to stop.
-     * For more informations look up Executors at:
+     * For more information look up Executors at:
      * http://winterbe.com/posts/2015/04/07/java8-concurrency-tutorial-thread-executor-examples/
      * @param executorService The executor service to stop.
      */
@@ -132,10 +152,11 @@ public class TCPMusicStreamService {
         try {
             logger.log(Level.INFO, "Attempt to shutdown executor in TCP Streaming Service.");
             executorService.shutdown();
-            executorService.awaitTermination(5, TimeUnit.SECONDS);
+            if(!executorService.isShutdown())
+                executorService.awaitTermination(5, TimeUnit.SECONDS);
         }
         catch(InterruptedException e) {
-            logger.log(Level.INFO, "Task interrupted", e);
+            logger.log(Level.WARNING, "Stop executor service interrupted", e);
         }
         finally {
             if(!executorService.isShutdown()) {
@@ -161,11 +182,14 @@ public class TCPMusicStreamService {
                     while (iterator.hasNext()) {
                         SelectionKey key = iterator.next();
                         iterator.remove();
+                        if(key.isConnectable()) {
+                            ((SocketChannel)key.channel()).finishConnect();
+                        }
                         if (key.isAcceptable()) {
                             // Accept new client.
                             SocketChannel client = this.serverSocketChannel.accept();
                             System.out.println("Connected Client: " + client);
-                            client.configureBlocking(false);
+                            client.configureBlocking(BLOCKING_MODE);
 
                             this.registerReadSelector(client);
                             this.connectedClients.add(new SocketChannelNetworkClient(client));
@@ -218,6 +242,9 @@ public class TCPMusicStreamService {
     }
     //endregion Acceptance Multi-Thread
 
+    /**
+     * Reading
+     */
     private void readTask() {
         while(this.isRunning) {
             try {
@@ -292,6 +319,30 @@ public class TCPMusicStreamService {
         synchronized(this.onObjectReceivedListeners) {
             this.onObjectReceivedListeners.forEach(onObjectReceived -> onObjectReceived.onObjectReceived(object));
         }
+    }
+
+    /**
+     * Streams the song.
+     *
+     * @param song Song to stream.
+     */
+    @Override
+    public void play(Song song) {
+        throw new RuntimeException("NotImplemented");
+    }
+
+    @Override
+    public void stopPlaying() {
+        throw new RuntimeException("NotImplemented");
+    }
+
+    /**
+     * Calls the method stop()
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    public void close() throws IOException {
+        this.stop();
     }
     //endregion Listeners
 }

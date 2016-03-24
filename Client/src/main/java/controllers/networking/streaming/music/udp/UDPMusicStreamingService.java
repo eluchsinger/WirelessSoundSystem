@@ -1,7 +1,9 @@
-package controllers.networking.streaming.music;
+package controllers.networking.streaming.music.udp;
 
 import controllers.io.cache.file.DynamicFileCacheService;
 import controllers.io.cache.file.FileCacheService;
+import controllers.networking.streaming.music.MusicStreamingService;
+import controllers.networking.streaming.music.ServiceStatus;
 import controllers.networking.streaming.music.callback.OnMusicStreamingStatusChanged;
 import controllers.networking.streaming.music.callback.OnPlay;
 import controllers.networking.streaming.music.callback.OnStop;
@@ -25,7 +27,7 @@ import java.util.logging.Logger;
 /**
  * Created by Esteban Luchsinger on 15.12.2015.
  */
-public class UDPMusicStreamingService implements MusicStreamingService{
+public class UDPMusicStreamingService implements MusicStreamingService {
     private final static String MULTICAST_GROUP_ADDRESS = "239.255.42.100";
     private final static int STREAM_READING_PORT = 6049;
 
