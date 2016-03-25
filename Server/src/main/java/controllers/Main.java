@@ -1,6 +1,5 @@
 package controllers;
 
-import controllers.networking.discovery.DiscoveryService;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -22,7 +21,7 @@ public class Main extends Application {
         // Setting logger
         Logger log = LogManager.getLogManager().getLogger("");
         for(Handler h : log.getHandlers()){
-            h.setLevel(Level.INFO);
+//            h.setLevel(Level.INFO);
             h.setLevel(Level.WARNING);
         }
 

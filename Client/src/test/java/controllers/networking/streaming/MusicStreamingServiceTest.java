@@ -1,10 +1,10 @@
 package controllers.networking.streaming;
 
-import controllers.networking.streaming.music.UDPMusicStreamingService;
 import controllers.networking.streaming.music.ServiceStatus;
+import controllers.networking.streaming.music.udp.UDPMusicStreamingService;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by Esteban Luchsinger on 23.02.2016.

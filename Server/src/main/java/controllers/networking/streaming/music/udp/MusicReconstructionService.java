@@ -1,4 +1,4 @@
-package controllers.networking.streaming.music;
+package controllers.networking.streaming.music.udp;
 
 import models.clients.Server;
 import models.networking.SongCache;

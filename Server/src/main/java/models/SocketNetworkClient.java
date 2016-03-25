@@ -1,8 +1,11 @@
 package models;
 
 import models.clients.Client;
+import models.networking.clients.NetworkClient;
 
+import java.io.Closeable;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -10,11 +13,12 @@ import java.net.Socket;
 
 /**
  * Created by Esteban Luchsinger on 18.03.2016.
- * Wraps a NetworkClient
+ * Wraps a Client on the Network.
  */
-public class NetworkClient extends Client {
+public class SocketNetworkClient extends Client implements NetworkClient, Closeable {
     private final Socket socket;
     private final ObjectOutputStream outputStream;
+    private final ObjectInputStream inputStream;
 
     /**
      * Default Constructor
@@ -22,34 +26,41 @@ public class NetworkClient extends Client {
      * @param port Port of the client.
      * @throws IOException
      */
-    public NetworkClient(InetAddress inetAddress, int port) throws IOException {
+    public SocketNetworkClient(InetAddress inetAddress, int port) throws IOException {
         this(new Socket(inetAddress, port));
     }
 
-    public NetworkClient(Socket socket) throws IOException {
+    public SocketNetworkClient(Socket socket) throws IOException {
 
         this.socket = socket;
         this.outputStream =
                 new ObjectOutputStream(this.socket.getOutputStream());
+        this.inputStream =
+                new ObjectInputStream(this.socket.getInputStream());
     }
 
     /**
-     * @return Returns the socket of the NetworkClient.
+     * @return Returns the socket of the SocketNetworkClient.
      */
     public Socket getSocket() {
         return this.socket;
     }
 
-    public ObjectOutputStream getOutputStream() {
+    @Override
+    public ObjectOutputStream getObjectOutputStream() {
         return this.outputStream;
     }
 
+    @Override
+    public ObjectInputStream getObjectInputStream() { return this.inputStream; }
+
     /**
-     * Closes the NetworkClient.
+     * Closes the SocketNetworkClient.
      */
     public void close() throws IOException {
         if(this.getSocket() != null && !this.getSocket().isClosed()) {
             this.socket.close();
         }
+
     }
 }

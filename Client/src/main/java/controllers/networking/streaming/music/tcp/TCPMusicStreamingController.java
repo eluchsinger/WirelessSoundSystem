@@ -1,7 +1,9 @@
-package controllers.networking.streaming.music;
+package controllers.networking.streaming.music.tcp;
 
 import controllers.io.cache.file.FileCacheService;
 import controllers.io.cache.file.StaticFileCacheService;
+import controllers.networking.streaming.music.MusicStreamingService;
+import controllers.networking.streaming.music.ServiceStatus;
 import controllers.networking.streaming.music.callback.OnMusicStreamingStatusChanged;
 import controllers.networking.streaming.music.callback.OnPlay;
 import controllers.networking.streaming.music.callback.OnStop;
@@ -12,7 +14,10 @@ import utils.exceptions.NotImplementedException;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.net.*;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -20,9 +25,9 @@ import java.util.logging.Logger;
 
 /**
  * Created by Esteban Luchsinger on 01.03.2016.
- * The TCP streaming uses Base-64 encoding.
+ * The old TCP Music Streaming Controller using the old Socket implementation (as opposed to NIO).
  */
-public class TCPMusicStreamingService implements MusicStreamingService {
+public class TCPMusicStreamingController implements MusicStreamingService {
 
     //region Constants
 
@@ -61,12 +66,12 @@ public class TCPMusicStreamingService implements MusicStreamingService {
      * File cache. The songs have to be cached here when they
      * were received completely.
      */
-    private FileCacheService cache;
+    private final FileCacheService cache;
 
     /**
      * Default constructor
      */
-    public TCPMusicStreamingService() throws IOException {
+    public TCPMusicStreamingController() throws IOException {
         this.initializeListeners();
         this.cache = new StaticFileCacheService();
         this.setCurrentServiceStatus(ServiceStatus.STOPPED);

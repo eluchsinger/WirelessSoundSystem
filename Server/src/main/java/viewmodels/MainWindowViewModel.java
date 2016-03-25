@@ -5,12 +5,8 @@ import controllers.media.MediaPlayer;
 import controllers.media.music.AudioPlayer;
 import controllers.networking.discovery.DiscoveryService;
 import controllers.networking.streaming.music.MusicStreamController;
-import controllers.networking.streaming.music.TCPMusicStreamController;
+import controllers.networking.streaming.music.tcp.TCPMusicStreamController;
 import javafx.application.Platform;
-import javafx.stage.Stage;
-import models.clients.Client;
-import models.songs.Song;
-import utils.DurationStringConverter;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.SimpleStringProperty;
@@ -21,6 +17,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
+import models.clients.Client;
+import models.songs.Song;
+import utils.DurationStringConverter;
 
 import java.io.Closeable;
 import java.io.File;
@@ -248,10 +248,10 @@ public class MainWindowViewModel {
         // Expired clients
         this.discoveryService.addClientExpiredListener(client ->
                 Platform.runLater(() -> {
-                if(this.clientObservableList.remove(client)) {
-                    System.out.println("Expired client (" + client.toString() + ")");
-                }
-        }));
+                    if(this.clientObservableList.remove(client)) {
+                        System.out.println("Expired client (" + client.toString() + ")");
+                    }
+                }));
 
         System.out.println("Starting discovery Service...");
         this.discoveryService.start();

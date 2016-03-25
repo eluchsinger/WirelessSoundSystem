@@ -1,5 +1,6 @@
-package controllers.networking.streaming.music;
+package controllers.networking.streaming.music.udp;
 
+import controllers.networking.streaming.music.MusicStreamController;
 import models.clients.Clients;
 import models.networking.SongCache;
 import models.networking.SongDatagram;
@@ -19,7 +20,7 @@ import java.util.logging.Logger;
  * Created by Esteban Luchsinger on 07.03.2016.
  * Streams Music using the UDP Protocol.
  */
-public class UDPMusicStreamController implements MusicStreamController{
+public class UDPMusicStreamController implements MusicStreamController {
 
     /**
      * The destination port for datagrams sent to the clients.
