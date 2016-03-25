@@ -24,9 +24,10 @@ public class SocketChannelNetworkClient extends Client implements NetworkClient 
      * @throws IOException
      */
     public SocketChannelNetworkClient(SocketChannel socketChannel) throws IOException {
-        this.socketChannel = socketChannel;
-        this.objectOutputStream = new ObjectOutputStream(this.socketChannel.socket().getOutputStream());
-        this.objectInputStream = new ObjectInputStream(this.socketChannel.socket().getInputStream());
+        throw new RuntimeException("Dont use this: Experimental.");
+//        this.socketChannel = socketChannel;
+//        this.objectOutputStream = new ObjectOutputStream(this.socketChannel.socket().getOutputStream());
+//        this.objectInputStream = new ObjectInputStream(this.socketChannel.socket().getInputStream());
     }
 
     /**

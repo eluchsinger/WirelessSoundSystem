@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -42,6 +44,8 @@ public class TCPMusicStreamController implements MusicStreamController, Closeabl
      */
     private ServerSocket serverSocket;
 
+
+    private final ExecutorService acceptanceExecutor;
     /**
      * Thread whose only purpose is to accept incoming connections.
      */
@@ -63,10 +67,12 @@ public class TCPMusicStreamController implements MusicStreamController, Closeabl
     public TCPMusicStreamController() throws IOException {
         this.serverSocket = new ServerSocket(Server.STREAMING_PORT);
         this.connections = Collections.synchronizedList(new ArrayList<>());
-        this.connectionAcceptingThread = new Thread(this::acceptConnections);
-        this.connectionAcceptingThread.setDaemon(true);
-        this.connectionAcceptingThread.start();
+        this.acceptanceExecutor = Executors.newSingleThreadExecutor();
+//        this.connectionAcceptingThread = new Thread(this::acceptConnections);
+//        this.connectionAcceptingThread.setDaemon(true);
+//        this.connectionAcceptingThread.start();
         this.isStopped = false;
+        this.acceptanceExecutor.submit(this::acceptConnections);
     }
 
     /**
@@ -130,6 +136,7 @@ public class TCPMusicStreamController implements MusicStreamController, Closeabl
 
     /**
      * This method accepts incoming connections.
+     * Run on a separate thread, in order to make it non-blocking for the end-user.
      */
     private void acceptConnections() {
         try {

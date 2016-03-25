@@ -4,7 +4,8 @@ import controllers.io.SongsHandler;
 import controllers.media.MediaPlayer;
 import controllers.media.music.AudioPlayer;
 import controllers.networking.discovery.DiscoveryService;
-import controllers.networking.streaming.music.tcp.TCPNonBlockingMusicStreamService;
+import controllers.networking.streaming.music.MusicStreamController;
+import controllers.networking.streaming.music.tcp.TCPMusicStreamController;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
@@ -21,6 +22,7 @@ import models.clients.Client;
 import models.songs.Song;
 import utils.DurationStringConverter;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -32,8 +34,7 @@ import java.util.logging.Logger;
  */
 public class MainWindowViewModel {
     private MediaPlayer<Song> mediaPlayer;
-//    private MusicStreamController musicStreamController;
-    private TCPNonBlockingMusicStreamService musicStreamController;
+    private MusicStreamController musicStreamController;
     private DiscoveryService discoveryService;
 
     // Properties
@@ -102,14 +103,7 @@ public class MainWindowViewModel {
         this.initializeDiscoveryService();
 
         // Init MusicStreamService
-        this.initializeMusicStreamingService();
-//        this.musicStreamController = new TCPMusicStreamController();
-    }
-
-    private void initializeMusicStreamingService() throws IOException {
-        this.musicStreamController = new TCPNonBlockingMusicStreamService();
-        this.musicStreamController.start();
-        this.musicStreamController.addOnObjectReceivedListener(System.out::println);
+        this.musicStreamController = new TCPMusicStreamController();
     }
 
     /* Properties */
@@ -150,11 +144,14 @@ public class MainWindowViewModel {
                 if(this.discoveryService != null) {
                     this.discoveryService.stop();
                     System.out.println("Stopped Discovery Service!");
-                    try {
-                        this.musicStreamController.close();
-                    } catch (IOException e) {
-                        Logger.getLogger(this.getClass().getName())
-                                .log(Level.SEVERE, "Could not close the StreamController!", e);
+                    if(this.musicStreamController instanceof Closeable) {
+                        try {
+                            ((Closeable)this.musicStreamController).close();
+                        } catch (IOException e) {
+                            Logger.getLogger(this.getClass().getName())
+                                    .log(Level.SEVERE, "Could not close the StreamController!",
+                                            e);
+                        }
                     }
                 }
             });
@@ -251,10 +248,10 @@ public class MainWindowViewModel {
         // Expired clients
         this.discoveryService.addClientExpiredListener(client ->
                 Platform.runLater(() -> {
-                if(this.clientObservableList.remove(client)) {
-                    System.out.println("Expired client (" + client.toString() + ")");
-                }
-        }));
+                    if(this.clientObservableList.remove(client)) {
+                        System.out.println("Expired client (" + client.toString() + ")");
+                    }
+                }));
 
         System.out.println("Starting discovery Service...");
         this.discoveryService.start();
