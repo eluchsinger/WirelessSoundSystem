@@ -4,7 +4,6 @@ import controllers.networking.discovery.callback.OnServerConnected;
 import controllers.networking.discovery.callback.OnServerDisconnected;
 import models.clients.Server;
 
-import java.io.IOException;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,11 +36,6 @@ public class DiscoveryService {
     private static final String DISCOVERY_MESSAGE = "WSSServer";
 
     /**
-     * This is the message that should be sent if a client found the server.
-     */
-    private static final String SERVER_FOUND_MESSAGE = "WSSClient";
-
-    /**
      * This is the reading buffer. In best case it would be the size of the receiving message.
      */
     private static final int SCANNING_BUFFER_SIZE = DISCOVERY_MESSAGE.length() + 1;
@@ -52,10 +46,11 @@ public class DiscoveryService {
     private static final int SCANNING_TIMEOUT = 2000;
 
     private Thread scanningThread;
+    private final Logger logger;
     private volatile boolean isWorking = false;
 
-    public DiscoveryService()
-    {
+    public DiscoveryService() {
+        this.logger = Logger.getLogger(this.getClass().getName());
         this.onServerConnectedList = new ArrayList<>();
         this.onServerDisconnectedList = new ArrayList<>();
         this.currentServer = null;
@@ -86,7 +81,7 @@ public class DiscoveryService {
 
                 this.scanningThread.start();
             } catch (SocketException e) {
-                Logger.getLogger(DiscoveryService.class.getName()).log(Level.SEVERE, null, e);
+                this.logger.log(Level.SEVERE, null, e);
 
                 try {
                     this.stop();
@@ -107,7 +102,7 @@ public class DiscoveryService {
 
             if (this.scanningThread.isAlive()) {
                 this.isWorking = false;
-                System.out.println("Stopping listening...");
+                this.logger.log(Level.INFO, "Stopping logger...");
             }
 
             this.scanningSocket = null;
@@ -120,7 +115,6 @@ public class DiscoveryService {
         System.out.println("Discovering servers... (Port: " + DiscoveryService.SCANNING_PORT + ")");
 
         try {
-
             while (isWorking) {
                 byte[] receivingBuffer = new byte[DiscoveryService.SCANNING_BUFFER_SIZE];
                 DatagramPacket receivedPacket = new DatagramPacket(receivingBuffer, receivingBuffer.length);
@@ -143,7 +137,7 @@ public class DiscoveryService {
                         String log = "Received Datagram (IP = " + receivedPacket.getAddress().getHostAddress()
                                 + ").\nContent: " + message;
 
-                        Logger.getLogger(DiscoveryService.class.getName()).log(Level.INFO, log);
+                        this.logger.log(Level.INFO, log);
                     }
                 }
                 // This catch is called if the socket was timed out. It's normal.
@@ -153,12 +147,12 @@ public class DiscoveryService {
                 }
             }
         } catch (Exception e) {
-            Logger.getLogger(DiscoveryService.class.getName()).log(Level.SEVERE, null, e);
+            this.logger.log(Level.SEVERE, "Error scanning DiscoveryService", e);
         } finally {
             this.isWorking = false;
             this.scanningSocket = null;
             this.responseSocket = null;
-            System.out.println("Discovery Listening stopped!");
+            this.logger.log(Level.INFO, "Discovery Listening stopped!");
         }
     }
 
@@ -168,28 +162,18 @@ public class DiscoveryService {
      * @param serverListeningPort Listening port of the server.
      */
     private void foundServer(InetAddress inetAddress, int serverListeningPort) {
-        try {
-            byte[] sendingData = SERVER_FOUND_MESSAGE.getBytes();
-            DatagramPacket packet = new DatagramPacket(sendingData, sendingData.length,
-                    inetAddress, serverListeningPort);
-            this.responseSocket.send(packet);
+        Server foundServer = new Server(inetAddress, serverListeningPort);
 
-            Server foundServer = new Server(inetAddress, serverListeningPort);
-
-            // Add to current server, if needed.
-            if(this.currentServer == null){
-                this.currentServer = foundServer;
-                this.onServerConnected(foundServer);
-            }
-            else if(!this.currentServer.equals(foundServer)){
-                // New Server found.
-                this.onServerDisconnected(this.currentServer);
-                this.currentServer = foundServer;
-                this.onServerConnected(foundServer);
-            }
-
-        } catch (IOException e) {
-            Logger.getLogger(DiscoveryService.class.getName()).log(Level.SEVERE, null, e);
+        // Add to current server, if needed.
+        if(this.currentServer == null){
+            this.currentServer = foundServer;
+            this.onServerConnected(foundServer);
+        }
+        else if(!this.currentServer.equals(foundServer)){
+            // New Server found.
+            this.onServerDisconnected(this.currentServer);
+            this.currentServer = foundServer;
+            this.onServerConnected(foundServer);
         }
     }
 
@@ -232,7 +216,6 @@ public class DiscoveryService {
      * @param server Connected server.
      */
     private void onServerConnected(Server server){
-
         for(OnServerConnected listener : this.onServerConnectedList) {
             listener.serverConnected(server);
         }
@@ -243,7 +226,6 @@ public class DiscoveryService {
      * @param server Disconnected Server.
      */
     private void onServerDisconnected(Server server) {
-
         for(OnServerDisconnected listener : this.onServerDisconnectedList) {
             listener.serverDisconnected(server);
         }

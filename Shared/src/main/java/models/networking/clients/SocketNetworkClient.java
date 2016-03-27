@@ -1,12 +1,8 @@
-package models;
+package models.networking.clients;
 
 import models.clients.Client;
-import models.networking.clients.NetworkClient;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 
@@ -35,6 +31,9 @@ public class SocketNetworkClient extends Client implements NetworkClient, Closea
         this.socket = socket;
         this.outputStream =
                 new ObjectOutputStream(this.socket.getOutputStream());
+        // Need to flush the OOS before opening the OIS. (By both sides)
+        // http://stackoverflow.com/a/7586021/2632991
+        this.outputStream.flush();
         this.inputStream =
                 new ObjectInputStream(this.socket.getInputStream());
     }
@@ -55,12 +54,30 @@ public class SocketNetworkClient extends Client implements NetworkClient, Closea
     public ObjectInputStream getObjectInputStream() { return this.inputStream; }
 
     /**
+     * Sends an object to the connected socket.
+     * This method will send an object like a non-blocking mode.
+     * @param object Object to send. MUST implement the serializable interface.
+     * @throws IOException
+     */
+    @Override
+    public void send(Object object) throws IOException {
+
+        if(object == null)
+            throw new NullPointerException("Object is null.");
+        if(object instanceof Serializable)
+            throw new RuntimeException("The object must implement the serializable interface");
+
+        this.getObjectOutputStream().writeObject(object);
+
+        // Todo: Implement multi-threading.
+    }
+
+    /**
      * Closes the SocketNetworkClient.
      */
     public void close() throws IOException {
         if(this.getSocket() != null && !this.getSocket().isClosed()) {
             this.socket.close();
         }
-
     }
 }

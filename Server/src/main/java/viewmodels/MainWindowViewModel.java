@@ -1,12 +1,12 @@
 package viewmodels;
 
+import controllers.ClientController;
 import controllers.io.SongsHandler;
 import controllers.media.MediaPlayer;
 import controllers.media.music.AudioPlayer;
 import controllers.networking.discovery.DiscoveryService;
 import controllers.networking.streaming.music.MusicStreamController;
-import controllers.networking.streaming.music.tcp.TCPMusicStreamController;
-import javafx.application.Platform;
+import controllers.networking.streaming.music.tcp.TCPSocketServer;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.SimpleStringProperty;
@@ -18,7 +18,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
-import models.clients.Client;
+import models.networking.clients.NetworkClient;
 import models.songs.Song;
 import utils.DurationStringConverter;
 
@@ -37,10 +37,13 @@ public class MainWindowViewModel {
     private MusicStreamController musicStreamController;
     private DiscoveryService discoveryService;
 
+    private TCPSocketServer tcpServer;
+    private ClientController clientController;
+
     // Properties
     private StringProperty pathToFolder;
     private ObservableList<Song> songObservableList;
-    private ObservableList<Client> clientObservableList;
+    private ObservableList<NetworkClient> clientObservableList;
 
     /* Elements */
     @FXML
@@ -59,7 +62,7 @@ public class MainWindowViewModel {
     private TextField textFieldFolder;
 
     @FXML
-    private ListView<Client> listViewClients;
+    private ListView<NetworkClient> listViewClients;
 
     @FXML
     private TableView<Song> tableViewSongs;
@@ -97,13 +100,18 @@ public class MainWindowViewModel {
         this.mediaPlayer = new AudioPlayer(this.songObservableList);
         this.mediaPlayer.isPlayingProperty().addListener((observable, oldValue, newValue) -> this.onIsPlayingChanged());
 
+        this.tcpServer = new TCPSocketServer();
+        this.clientController = new ClientController(this.tcpServer);
+
+        this.tcpServer.start();
+
         this.initializeTable();
         this.initializeClientListView();
         this.initializeBindings();
         this.initializeDiscoveryService();
 
         // Init MusicStreamService
-        this.musicStreamController = new TCPMusicStreamController();
+//        this.musicStreamController = new TCPMusicStreamController();
     }
 
     /* Properties */
@@ -144,7 +152,7 @@ public class MainWindowViewModel {
                 if(this.discoveryService != null) {
                     this.discoveryService.stop();
                     System.out.println("Stopped Discovery Service!");
-                    if(this.musicStreamController instanceof Closeable) {
+                    if(this.musicStreamController != null && this.musicStreamController instanceof Closeable) {
                         try {
                             ((Closeable)this.musicStreamController).close();
                         } catch (IOException e) {
@@ -152,6 +160,15 @@ public class MainWindowViewModel {
                                     .log(Level.SEVERE, "Could not close the StreamController!",
                                             e);
                         }
+                    }
+                }
+
+                if(this.tcpServer != null) {
+                    try {
+                        this.tcpServer.close();
+                    } catch (IOException e) {
+                        Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
+                                "Could not close TCP Server.", e);
                     }
                 }
             });
@@ -239,20 +256,6 @@ public class MainWindowViewModel {
 
         this.discoveryService = new DiscoveryService();
 
-        // Adding clients.
-        this.discoveryService.addClientFoundListener(client -> {
-            Platform.runLater(() -> this.clientObservableList.add(client));
-            System.out.println("Added client (" + client.toString() + ")");
-        });
-
-        // Expired clients
-        this.discoveryService.addClientExpiredListener(client ->
-                Platform.runLater(() -> {
-                    if(this.clientObservableList.remove(client)) {
-                        System.out.println("Expired client (" + client.toString() + ")");
-                    }
-                }));
-
         System.out.println("Starting discovery Service...");
         this.discoveryService.start();
     }
@@ -326,7 +329,8 @@ public class MainWindowViewModel {
      * Initializes the ListView showing the connected clients.
      */
     private void initializeClientListView() {
-        this.clientObservableList = FXCollections.observableArrayList();
+//        this.clientObservableList = FXCollections.observableArrayList();
+        this.clientObservableList = this.clientController.getClients();
         this.listViewClients.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         this.listViewClients.setItems(this.clientObservableList);
     }

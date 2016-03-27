@@ -1,11 +1,12 @@
 package controllers.networking.streaming.music.tcp;
 
 import controllers.networking.streaming.music.MusicStreamController;
-import models.SocketNetworkClient;
 import models.clients.Server;
+import models.networking.clients.SocketNetworkClient;
 import models.networking.dtos.PlayCommand;
 import models.networking.dtos.StopCommand;
 import models.songs.Song;
+import utils.concurrent.ExecutorServiceUtils;
 
 import java.io.Closeable;
 import java.io.File;
@@ -16,7 +17,6 @@ import java.net.SocketException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -42,7 +42,7 @@ public class TCPMusicStreamController implements MusicStreamController, Closeabl
     /**
      * Server TCP Socket.
      */
-    private ServerSocket serverSocket;
+    private final ServerSocket serverSocket;
 
 
     private final ExecutorService acceptanceExecutor;
@@ -56,7 +56,7 @@ public class TCPMusicStreamController implements MusicStreamController, Closeabl
      * Caution: Even if it's a synchronized list, you NEED to manually
      * synchronize when iterating over it (look at specifications)
      */
-    private List<SocketNetworkClient> connections;
+    private final List<SocketNetworkClient> connections;
 
     private boolean isStopped;
 
@@ -68,10 +68,8 @@ public class TCPMusicStreamController implements MusicStreamController, Closeabl
         this.serverSocket = new ServerSocket(Server.STREAMING_PORT);
         this.connections = Collections.synchronizedList(new ArrayList<>());
         this.acceptanceExecutor = Executors.newSingleThreadExecutor();
-//        this.connectionAcceptingThread = new Thread(this::acceptConnections);
-//        this.connectionAcceptingThread.setDaemon(true);
-//        this.connectionAcceptingThread.start();
         this.isStopped = false;
+        // Start accepting connections
         this.acceptanceExecutor.submit(this::acceptConnections);
     }
 
@@ -108,9 +106,7 @@ public class TCPMusicStreamController implements MusicStreamController, Closeabl
     public void stopPlaying() {
         try {
             synchronized (this.connections) {
-                Iterator<SocketNetworkClient> iterator = this.connections.iterator();
-                while(iterator.hasNext()){
-                    SocketNetworkClient client = iterator.next();
+                for(SocketNetworkClient client : this.connections) {
                     client.getObjectOutputStream().writeObject(new StopCommand());
                 }
             }
@@ -145,7 +141,8 @@ public class TCPMusicStreamController implements MusicStreamController, Closeabl
             socket.setReuseAddress(true);
             this.connections.add(new SocketNetworkClient(socket));
         } catch (SocketException socketException) {
-            if(socketException.getMessage().equals("socket closed")) {
+            // Throw the socket closed exception only, if the service should still be running.
+            if(socketException.getMessage().equals("socket closed") && !this.isStopped) {
                 Logger.getLogger(this.getClass().getName())
                         .log(Level.WARNING, "Socket closed", socketException);
             }
@@ -181,13 +178,19 @@ public class TCPMusicStreamController implements MusicStreamController, Closeabl
     public void close() throws IOException {
         this.isStopped = true;
 
+        // Stop the executor service.
+        ExecutorServiceUtils.stopExecutorService(this.acceptanceExecutor);
+
+        // Close all network client - connections.
+        for(SocketNetworkClient socketNetworkClient : this.connections) {
+            socketNetworkClient.close();
+        }
+
+        // Close the server socket.
         if(this.getServerSocket() != null && !this.getServerSocket().isClosed()) {
             this.getServerSocket().close();
         }
 
-        for(SocketNetworkClient socketNetworkClient : this.connections) {
-            socketNetworkClient.close();
-        }
         System.out.println("Closing the StreamController.");
     }
 }
