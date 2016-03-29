@@ -10,7 +10,6 @@ import java.util.logging.Logger;
  */
 public class ExecutorServiceUtils {
 
-
     /**
      * Stops the executor service.
      * First tries to stop the executor in a soft way, then after timeout it will

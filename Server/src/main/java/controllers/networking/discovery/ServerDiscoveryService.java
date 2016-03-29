@@ -1,6 +1,6 @@
 package controllers.networking.discovery;
 
-import controllers.networking.Utility;
+import utils.networking.NetUtil;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -15,10 +15,10 @@ import java.util.logging.Logger;
 
 /**
  * Created by Esteban Luchsinger on 04.12.2015.
- * Singleton handler for the DiscoveryService.
- * This singleton handles the whole DiscoveryProcess of the Clients of the WSS.
+ * Discovery Service Handler.
+ * Sends out beacons in an interval.
  */
-public class DiscoveryService implements Closeable {
+public class ServerDiscoveryService implements Closeable {
 
     //region Constants
     /**
@@ -27,9 +27,9 @@ public class DiscoveryService implements Closeable {
     private static final int DISCOVERY_PORT = 6583;
 
     /**
-     * Waiting delay for the discovery task to run again in seconds.
+     * Waiting delay for the discovery task to run again in milliseconds.
      */
-    private static final long DISCOVERY_TICK = 2;
+    private static final long DISCOVERY_TICK = 2 * 1000;
 
     /**
      * This is the message sent in the discovery protocol.
@@ -59,13 +59,13 @@ public class DiscoveryService implements Closeable {
     /**
      * Default Constructor
      */
-    public DiscoveryService() {
+    public ServerDiscoveryService() {
         this.logger = Logger.getLogger(this.getClass().getName());
     }
     //endregion Constructor
 
     /**
-     * Starts the DiscoveryService and all its threads.
+     * Starts the ServerDiscoveryService and all its threads.
      */
     public void start() {
 
@@ -75,14 +75,14 @@ public class DiscoveryService implements Closeable {
 
             this.discoveryScheduledService.scheduleAtFixedRate(this::discover
                     , 0
-                    , DiscoveryService.DISCOVERY_TICK
-                    , TimeUnit.SECONDS);
+                    , ServerDiscoveryService.DISCOVERY_TICK
+                    , TimeUnit.MILLISECONDS);
         }
 
     }
 
     /**
-     * Stops the DiscoveryService and all its threads.
+     * Stops the ServerDiscoveryService and all its threads.
      */
     public void stop() {
 
@@ -90,7 +90,7 @@ public class DiscoveryService implements Closeable {
         if (this.discoveryScheduledService != null) {
             this.discoveryScheduledService.shutdown();
             this.discoveryScheduledService = null;
-            System.out.println("Stopped sending...");
+            this.logger.log(Level.INFO, "Stopped DiscoveryService.");
         }
     }
 
@@ -110,16 +110,16 @@ public class DiscoveryService implements Closeable {
             }
 
             // Get the bytes of the data to send.
-            byte[] sendData = DiscoveryService.DISCOVERY_MESSAGE.getBytes();
+            byte[] sendData = ServerDiscoveryService.DISCOVERY_MESSAGE.getBytes();
 
             try {
-                InetAddress broadcastAddress = Utility.getBroadcastAddress4();
+                InetAddress broadcastAddress = NetUtil.getBroadcastAddress4();
                 // Create datagram packet for UDP.
                 DatagramPacket datagram = new DatagramPacket(
                         sendData,
                         sendData.length,
                         InetAddress.getByName(broadcastAddress.getHostAddress()),
-                        DiscoveryService.DISCOVERY_PORT
+                        ServerDiscoveryService.DISCOVERY_PORT
                 );
 
                 this.discoverySocket.send(datagram);

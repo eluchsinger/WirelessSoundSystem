@@ -1,6 +1,6 @@
 package viewmodels;
 
-import controllers.networking.discovery.DiscoveryService;
+import controllers.networking.discovery.ClientDiscoveryService;
 import controllers.networking.streaming.music.MusicStreamingService;
 import controllers.networking.streaming.music.tcp.TCPMusicStreamingController;
 import javafx.application.Platform;
@@ -17,7 +17,7 @@ import java.io.IOException;
  */
 public class ClientWindowViewModel {
 
-    private DiscoveryService discoveryService;
+    private ClientDiscoveryService clientDiscoveryService;
     private MusicStreamingService musicStreamingService;
 
     @FXML
@@ -37,7 +37,7 @@ public class ClientWindowViewModel {
      * @throws IOException
      */
     public ClientWindowViewModel() throws IOException {
-        this.discoveryService = new DiscoveryService();
+        this.clientDiscoveryService = new ClientDiscoveryService();
         this.musicStreamingService = new TCPMusicStreamingController();
     }
 
@@ -60,8 +60,8 @@ public class ClientWindowViewModel {
 
         if(this.stage != null){
             this.stage.setOnCloseRequest(event -> {
-                musicStreamingService.stop();
-                this.discoveryService.stop();
+                this.clientDiscoveryService.stop();
+                this.musicStreamingService.stop();
             });
         }
     }
@@ -119,7 +119,7 @@ public class ClientWindowViewModel {
     private void initializeDiscoveryService() {
         System.out.print("Starting discovery service... ");
 
-        this.discoveryService.addOnServerConnectedListener(server -> {
+        this.clientDiscoveryService.addOnServerConnectedListener(server -> {
 
             this.musicStreamingService.stop();
             this.musicStreamingService.setServer(server);
@@ -127,7 +127,7 @@ public class ClientWindowViewModel {
             // Start Service.
             this.musicStreamingService.start();
         });
-        this.discoveryService.start();
+        this.clientDiscoveryService.start();
         System.out.println("Check!");
     }
 

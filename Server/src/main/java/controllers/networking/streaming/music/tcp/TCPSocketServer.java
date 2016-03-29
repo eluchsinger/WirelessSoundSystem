@@ -93,7 +93,7 @@ public class TCPSocketServer implements Closeable {
                 NetworkClient client = new SocketNetworkClient(socket);
                 this.onClientConnected(client);
             } catch(SocketException socketException) {
-                Logger.getLogger(this.getClass().getName()).log(Level.WARNING
+                Logger.getLogger(this.getClass().getName()).log(Level.INFO
                         ,"Server Socket closed"
                         ,socketException);
             } catch (IOException e) {

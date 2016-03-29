@@ -12,9 +12,9 @@ import java.util.logging.Logger;
 
 /**
  * Created by Esteban Luchsinger on 08.12.2015.
- * This is the DiscoveryService of the Client.
+ * This is the ClientDiscoveryService of the Client.
  */
-public class DiscoveryService {
+public class ClientDiscoveryService {
 
     private DatagramSocket scanningSocket;
     private DatagramSocket responseSocket;
@@ -49,7 +49,7 @@ public class DiscoveryService {
     private final Logger logger;
     private volatile boolean isWorking = false;
 
-    public DiscoveryService() {
+    public ClientDiscoveryService() {
         this.logger = Logger.getLogger(this.getClass().getName());
         this.onServerConnectedList = new ArrayList<>();
         this.onServerDisconnectedList = new ArrayList<>();
@@ -66,8 +66,8 @@ public class DiscoveryService {
             try {
                 // Init Scanning Socket
                 if (this.scanningSocket == null) {
-                    this.scanningSocket = new DatagramSocket(DiscoveryService.SCANNING_PORT);
-                    this.scanningSocket.setSoTimeout(DiscoveryService.SCANNING_TIMEOUT);
+                    this.scanningSocket = new DatagramSocket(ClientDiscoveryService.SCANNING_PORT);
+                    this.scanningSocket.setSoTimeout(ClientDiscoveryService.SCANNING_TIMEOUT);
                 }
 
                 // Init response socket
@@ -100,9 +100,18 @@ public class DiscoveryService {
         // Response thread.
         if (this.scanningThread != null) {
 
+
             if (this.scanningThread.isAlive()) {
                 this.isWorking = false;
                 this.logger.log(Level.INFO, "Stopping Discovery...");
+
+                try {
+                    this.scanningThread.join(1000);
+                }
+                catch(InterruptedException interruptedException) {
+                    this.scanningThread.interrupt();
+                    this.logger.log(Level.INFO, "Discovery Service Interrupted");
+                }
             }
 
             this.scanningSocket = null;
@@ -112,11 +121,11 @@ public class DiscoveryService {
     }
 
     private void scan() {
-        System.out.println("Discovering servers... (Port: " + DiscoveryService.SCANNING_PORT + ")");
+        System.out.println("Discovering servers... (Port: " + ClientDiscoveryService.SCANNING_PORT + ")");
 
         try {
             while (isWorking) {
-                byte[] receivingBuffer = new byte[DiscoveryService.SCANNING_BUFFER_SIZE];
+                byte[] receivingBuffer = new byte[ClientDiscoveryService.SCANNING_BUFFER_SIZE];
                 DatagramPacket receivedPacket = new DatagramPacket(receivingBuffer, receivingBuffer.length);
 
                 try {
@@ -126,7 +135,7 @@ public class DiscoveryService {
                     message = message.trim(); // Trim stuff, because the buffer was too big.
 
                     // Handle the message, if it is a SERVER_FOUND_MESSAGE.
-                    if (message.equals(DiscoveryService.DISCOVERY_MESSAGE)) {
+                    if (message.equals(ClientDiscoveryService.DISCOVERY_MESSAGE)) {
                         if(!this.isWorking)
                             break;
                         this.foundServer(receivedPacket.getAddress(), Server.DISCOVERY_PORT);
@@ -143,11 +152,11 @@ public class DiscoveryService {
                 // This catch is called if the socket was timed out. It's normal.
                 catch (SocketTimeoutException e) {
                     // Uncomment this if you want to log the timeout exception.
-                    //Logger.getLogger(DiscoveryService.class.getName()).log(Level.INFO, "[WARNING]: Reading Socket timed out. Reinitializing reading...");
+                    //Logger.getLogger(ClientDiscoveryService.class.getName()).log(Level.INFO, "[WARNING]: Reading Socket timed out. Reinitializing reading...");
                 }
             }
         } catch (Exception e) {
-            this.logger.log(Level.SEVERE, "Error scanning DiscoveryService", e);
+            this.logger.log(Level.SEVERE, "Error scanning ClientDiscoveryService", e);
         } finally {
             this.isWorking = false;
             this.scanningSocket = null;

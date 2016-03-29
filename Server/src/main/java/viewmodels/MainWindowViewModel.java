@@ -4,10 +4,10 @@ import controllers.ClientController;
 import controllers.io.SongsHandler;
 import controllers.media.MediaPlayer;
 import controllers.media.music.AudioPlayer;
-import controllers.networking.discovery.DiscoveryService;
+import controllers.networking.discovery.ServerDiscoveryService;
 import controllers.networking.streaming.music.MusicStreamController;
+import controllers.networking.streaming.music.tcp.TCPMusicStreamController;
 import controllers.networking.streaming.music.tcp.TCPSocketServer;
-import controllers.networking.streaming.music.tcp.callbacks.TCPMusicStreamController;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.SimpleStringProperty;
@@ -38,7 +38,7 @@ public class MainWindowViewModel {
 
     private MediaPlayer<Song> mediaPlayer;
     private MusicStreamController musicStreamController;
-    private DiscoveryService discoveryService;
+    private ServerDiscoveryService serverDiscoveryService;
 
     private TCPSocketServer tcpServer;
     private ClientController clientController;
@@ -153,8 +153,8 @@ public class MainWindowViewModel {
 
         if(this.stage != null){
             this.stage.setOnCloseRequest(event -> {
-                if(this.discoveryService != null) {
-                    this.discoveryService.stop();
+                if(this.serverDiscoveryService != null) {
+                    this.serverDiscoveryService.stop();
                     System.out.println("Stopped Discovery Service!");
                     if(this.musicStreamController != null && this.musicStreamController instanceof Closeable) {
                         try {
@@ -263,10 +263,10 @@ public class MainWindowViewModel {
 
     private void initializeDiscoveryService() {
 
-        this.discoveryService = new DiscoveryService();
+        this.serverDiscoveryService = new ServerDiscoveryService();
 
         System.out.println("Starting discovery Service...");
-        this.discoveryService.start();
+        this.serverDiscoveryService.start();
     }
 
     /**

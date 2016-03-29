@@ -1,4 +1,4 @@
-package controllers.networking;
+package utils.networking;
 
 import java.net.InetAddress;
 import java.net.InterfaceAddress;
@@ -8,10 +8,14 @@ import java.util.Enumeration;
 
 /**
  * Created by Esteban Luchsinger on 03.12.2015.
+ * Provides some basic functionality.
  */
-public class Utility {
+public class NetUtil {
     private static InetAddress broadcastAddress;
 
+    /**
+     * Static initialization because this might be an expensive operation.
+     */
     static {
         try {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
@@ -36,6 +40,11 @@ public class Utility {
     }
 
 
+    /**
+     * Gets the local IPv4 address.
+     * Might have to set the JVM Machine to use IPv4 by default.
+     * @return Returns the IPv4 address of localhost.
+     */
     public static InetAddress getLocalAddress4(){
         InetAddress localAddress = null;
 

@@ -1,4 +1,4 @@
-package controllers.networking.streaming.music.tcp.callbacks;
+package controllers.networking.streaming.music.tcp;
 
 import controllers.ClientController;
 import controllers.networking.streaming.music.MusicStreamController;
@@ -21,10 +21,21 @@ import java.util.logging.Logger;
  */
 public class TCPMusicStreamController implements MusicStreamController {
 
+    /**
+     * The logger of this class.
+     * Just for comfort.
+     */
     private final Logger logger;
 
+    /**
+     * The client controller bound to this MusicController.
+     */
     private final ClientController clientController;
 
+    /**
+     * Creates a new instance of a music stream controller.
+     * @param clientController The client controller bound to this music controller.
+     */
     public TCPMusicStreamController(ClientController clientController) {
         this.logger = Logger.getLogger(this.getClass().getName());
 
