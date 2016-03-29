@@ -102,7 +102,7 @@ public class DiscoveryService {
 
             if (this.scanningThread.isAlive()) {
                 this.isWorking = false;
-                this.logger.log(Level.INFO, "Stopping logger...");
+                this.logger.log(Level.INFO, "Stopping Discovery...");
             }
 
             this.scanningSocket = null;
