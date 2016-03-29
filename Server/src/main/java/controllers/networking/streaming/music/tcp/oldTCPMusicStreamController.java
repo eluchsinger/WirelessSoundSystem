@@ -1,20 +1,18 @@
 package controllers.networking.streaming.music.tcp;
 
-import controllers.networking.streaming.music.MusicStreamController;
 import models.clients.Server;
 import models.networking.clients.SocketNetworkClient;
 import models.networking.dtos.PlayCommand;
 import models.networking.dtos.StopCommand;
 import models.songs.Song;
 import utils.concurrent.ExecutorServiceUtils;
+import utils.media.SongUtils;
 
 import java.io.Closeable;
-import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -26,7 +24,7 @@ import java.util.logging.Logger;
 /**
  * Created by Esteban Luchsinger on 07.03.2016.
  */
-public class TCPMusicStreamController implements MusicStreamController, Closeable {
+public class oldTCPMusicStreamController implements Closeable {
 
     /**
      * The destination port for datagrams sent to the clients.
@@ -64,7 +62,7 @@ public class TCPMusicStreamController implements MusicStreamController, Closeabl
      * Starts the service.
      * @throws IOException
      */
-    public TCPMusicStreamController() throws IOException {
+    public oldTCPMusicStreamController() throws IOException {
         this.serverSocket = new ServerSocket(Server.STREAMING_PORT);
         this.connections = Collections.synchronizedList(new ArrayList<>());
         this.acceptanceExecutor = Executors.newSingleThreadExecutor();
@@ -77,10 +75,9 @@ public class TCPMusicStreamController implements MusicStreamController, Closeabl
      * Streams the song.
      * @param song Song to stream.
      */
-    @Override
     public void play(Song song) {
         try {
-            byte[] data = this.getSongData(song);
+            byte[] data = SongUtils.getSongData(song);
 
             String songTitle = song.getTitle();
             String artist = song.getArtist();
@@ -102,7 +99,6 @@ public class TCPMusicStreamController implements MusicStreamController, Closeabl
     /**
      * Sends a Stop command to the connected clients.
      */
-    @Override
     public void stopPlaying() {
         try {
             synchronized (this.connections) {
@@ -117,18 +113,6 @@ public class TCPMusicStreamController implements MusicStreamController, Closeabl
         }
     }
 
-    /**
-     * Returns the data of the song.
-     * @param song
-     * @return Return an array of bytes with the data of the song.
-     * @throws IOException Throws IOException when the File could not be read (or found)
-     */
-    private byte[] getSongData(Song song) throws IOException {
-
-        // Get File Data.
-        File songFile = new File(song.getPath());
-        return Files.readAllBytes(songFile.toPath());
-    }
 
     /**
      * This method accepts incoming connections.

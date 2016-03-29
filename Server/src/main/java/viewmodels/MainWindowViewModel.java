@@ -7,6 +7,7 @@ import controllers.media.music.AudioPlayer;
 import controllers.networking.discovery.DiscoveryService;
 import controllers.networking.streaming.music.MusicStreamController;
 import controllers.networking.streaming.music.tcp.TCPSocketServer;
+import controllers.networking.streaming.music.tcp.callbacks.TCPMusicStreamController;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.SimpleStringProperty;
@@ -33,6 +34,8 @@ import java.util.logging.Logger;
  * Created by Esteban Luchsinger on 30.11.2015.
  */
 public class MainWindowViewModel {
+    private final Logger logger;
+
     private MediaPlayer<Song> mediaPlayer;
     private MusicStreamController musicStreamController;
     private DiscoveryService discoveryService;
@@ -43,7 +46,6 @@ public class MainWindowViewModel {
     // Properties
     private StringProperty pathToFolder;
     private ObservableList<Song> songObservableList;
-    private ObservableList<NetworkClient> clientObservableList;
 
     /* Elements */
     @FXML
@@ -85,7 +87,7 @@ public class MainWindowViewModel {
 
 
     //region Constructor
-    public MainWindowViewModel() { }
+    public MainWindowViewModel() { this.logger = Logger.getLogger(this.getClass().getName()); }
     //endregion Constructor
 
     /**
@@ -110,8 +112,10 @@ public class MainWindowViewModel {
         this.initializeBindings();
         this.initializeDiscoveryService();
 
+        this.musicStreamController = new TCPMusicStreamController(this.clientController);
+
         // Init MusicStreamService
-//        this.musicStreamController = new TCPMusicStreamController();
+//        this.musicStreamController = new oldTCPMusicStreamController();
     }
 
     /* Properties */
@@ -240,12 +244,17 @@ public class MainWindowViewModel {
             if(this.getSelectedSong() != null) {
                 // Start streaming...
                 System.out.println("Streaming the new song: " + this.getSelectedSong().getTitle());
-                this.musicStreamController.play(this.getSelectedSong());
+                try {
+                    this.musicStreamController.play(this.getSelectedSong());
+                }
+                catch(IOException ioException) {
+                    this.logger.log(Level.SEVERE, "Error trying to stream", ioException);
+                }
             }
         } else {
             this.buttonPlayPause.setId("play-button");
             this.buttonPlayPause.setSelected(false);
-            this.musicStreamController.stopPlaying();
+            this.musicStreamController.stop();
         }
     }
     //endregion
@@ -329,10 +338,8 @@ public class MainWindowViewModel {
      * Initializes the ListView showing the connected clients.
      */
     private void initializeClientListView() {
-//        this.clientObservableList = FXCollections.observableArrayList();
-        this.clientObservableList = this.clientController.getClients();
         this.listViewClients.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        this.listViewClients.setItems(this.clientObservableList);
+        this.listViewClients.setItems(this.clientController.getClients());
     }
 
     //endregion

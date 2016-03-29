@@ -22,7 +22,9 @@ public class ClientController {
      */
     public ClientController(TCPSocketServer socketServer) {
         this.logger = Logger.getLogger(this.getClass().getName());
-        this.clients = FXCollections.observableArrayList();
+
+        // Init a synchronized list.
+        this.clients = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
 
         socketServer.addOnClientConnectedListener(this::onClientConnected);
     }
