@@ -11,11 +11,16 @@ import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Esteban Luchsinger on 08.12.2015.
  */
 public class ClientWindowViewModel {
+
+    private final Logger logger;
 
     private ClientDiscoveryService clientDiscoveryService;
     private MusicStreamingService musicStreamingService;
@@ -37,6 +42,9 @@ public class ClientWindowViewModel {
      * @throws IOException
      */
     public ClientWindowViewModel() throws IOException {
+
+        this.logger = Logger.getLogger(this.getClass().getName());
+
         this.clientDiscoveryService = new ClientDiscoveryService();
         this.musicStreamingService = new TCPMusicStreamingController();
     }
@@ -67,7 +75,7 @@ public class ClientWindowViewModel {
     }
 
     /**
-     * Starts playing the song in the cache.
+     * Starts playing the song in the cache from the beginnning.
      */
     private void startPlaying() {
         this.stopPlaying();
@@ -76,11 +84,23 @@ public class ClientWindowViewModel {
                 .getFileURI()
                 .toString()));
         this.mediaPlayer.play();
-        System.out.println("Playing!");
+        this.logger.log(Level.INFO, "Now Playing");
+    }
+
+    private void startPlaying(Duration startTime) {
+        this.stopPlaying();
+
+        this.mediaPlayer = new MediaPlayer(new Media(this.musicStreamingService.getCache()
+                .getFileURI()
+                .toString()));
+
+        this.mediaPlayer.play();
+        this.logger.log(Level.INFO, "Now Playing from " + startTime);
+
     }
 
     /**
-     * Stops playing.
+     * Stops playing the currently played song.
      */
     private void stopPlaying() {
 
@@ -90,8 +110,22 @@ public class ClientWindowViewModel {
             this.labelSongTitle.setText("");
             this.labelArtist.setText("");
             this.labelStatus.setText("STOPPED");
-            System.out.println("Stopped!");
+            this.logger.log(Level.INFO, "Stopped playing");
         }
+    }
+
+    /**
+     * Resumes playing a new song.
+     */
+    private void resumePlaying() {
+
+    }
+
+    /**
+     * Pauses playing the song.
+     */
+    private void pausePlaying() {
+
     }
 
     //region initializers
