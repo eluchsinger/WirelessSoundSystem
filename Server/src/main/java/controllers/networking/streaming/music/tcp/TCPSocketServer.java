@@ -24,6 +24,7 @@ import java.util.logging.Logger;
  * This class is just here to accept incoming connections for clients.
  */
 public class TCPSocketServer implements Closeable {
+    private final Logger logger;
 
     /**
      * The maximum incoming connections waiting for acceptance.
@@ -49,6 +50,7 @@ public class TCPSocketServer implements Closeable {
      * @throws IOException Throws IOException if there was something wrong.
      */
     public TCPSocketServer() throws IOException {
+        this.logger = Logger.getLogger(this.getClass().getName());
         this.onClientConnectedListeners = new ArrayList<>();
         this.acceptingService = Executors.newSingleThreadExecutor();
         this.serverSocket = new ServerSocket(Server.STREAMING_PORT, MAXIMUM_BACKLOG);
@@ -93,11 +95,11 @@ public class TCPSocketServer implements Closeable {
                 NetworkClient client = new SocketNetworkClient(socket);
                 this.onClientConnected(client);
             } catch(SocketException socketException) {
-                Logger.getLogger(this.getClass().getName()).log(Level.INFO
+                this.logger.log(Level.INFO
                         ,"Server Socket closed"
                         ,socketException);
             } catch (IOException e) {
-                e.printStackTrace();
+                this.logger.log(Level.SEVERE, "Error accepting connections", e);
             }
         }
     }
@@ -108,8 +110,7 @@ public class TCPSocketServer implements Closeable {
      */
     private void onClientConnected(NetworkClient client) {
         synchronized (this.onClientConnectedListeners) {
-            Logger.getLogger(this.getClass().getName())
-                    .log(Level.INFO, "Network Client connected: " + client);
+            this.logger.log(Level.INFO, "Network Client connected: " + client);
             this.onClientConnectedListeners.forEach(listener -> listener.onClientConnected(client));
         }
     }
