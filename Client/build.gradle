@@ -9,7 +9,7 @@ repositories {
     mavenCentral()
 }
 
-mainClassName = "controllers.Main"
+mainClassName = "controllers.MainApp"
 
 shadowJar {
     baseName = 'wss-client-all'

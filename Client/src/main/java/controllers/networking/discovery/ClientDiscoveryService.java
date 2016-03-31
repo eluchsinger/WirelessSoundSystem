@@ -3,10 +3,15 @@ package controllers.networking.discovery;
 import controllers.networking.discovery.callback.OnServerConnected;
 import controllers.networking.discovery.callback.OnServerDisconnected;
 import models.clients.Server;
+import utils.concurrent.ExecutorServiceUtils;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,7 +19,7 @@ import java.util.logging.Logger;
  * Created by Esteban Luchsinger on 08.12.2015.
  * This is the ClientDiscoveryService of the Client.
  */
-public class ClientDiscoveryService {
+public class ClientDiscoveryService implements Closeable {
 
     private DatagramSocket scanningSocket;
     private DatagramSocket responseSocket;
@@ -22,6 +27,9 @@ public class ClientDiscoveryService {
     private List<OnServerConnected> onServerConnectedList;
     private List<OnServerDisconnected> onServerDisconnectedList;
 
+    /**
+     * Currently connected server.
+     */
     private Server currentServer;
 
     /**
@@ -45,7 +53,10 @@ public class ClientDiscoveryService {
      */
     private static final int SCANNING_TIMEOUT = 2000;
 
-    private Thread scanningThread;
+    /**
+     * The scanning executor is doing the discovery scans asynchronically.
+     */
+    private final ExecutorService scanningExecutor;
     private final Logger logger;
     private volatile boolean isWorking = false;
 
@@ -53,6 +64,7 @@ public class ClientDiscoveryService {
         this.logger = Logger.getLogger(this.getClass().getName());
         this.onServerConnectedList = new ArrayList<>();
         this.onServerDisconnectedList = new ArrayList<>();
+        this.scanningExecutor = Executors.newSingleThreadExecutor();
         this.currentServer = null;
     }
 
@@ -60,70 +72,57 @@ public class ClientDiscoveryService {
      * Starts the service.
      */
     public void start() {
-        // Start response service.
-        if (this.scanningThread == null || !this.scanningThread.isAlive()) {
 
-            try {
-                // Init Scanning Socket
-                if (this.scanningSocket == null) {
-                    this.scanningSocket = new DatagramSocket(ClientDiscoveryService.SCANNING_PORT);
-                    this.scanningSocket.setSoTimeout(ClientDiscoveryService.SCANNING_TIMEOUT);
-                }
-
-                // Init response socket
-                if (this.responseSocket == null) {
-                    this.responseSocket = new DatagramSocket();
-                }
-
-                this.scanningThread = new Thread(this::scan);
-                this.scanningThread.setDaemon(true);
-                this.isWorking = true;
-
-                this.scanningThread.start();
-            } catch (SocketException e) {
-                this.logger.log(Level.SEVERE, null, e);
-
-                try {
-                    this.stop();
-                } catch (Exception ignored) { }
-            }
-
+        if(!this.isWorking) {
+            this.isWorking = true;
+            this.scanningExecutor.submit(this::scan);
         }
     }
 
     /**
      * Stops the discovery service.
      * If stop is called when the service is already stopped, does nothing.
+     * Redundant call with stop().
+     * The DiscoveryService MUST be stopped to free blocked resources!
      */
     public void stop() {
 
-        // Response thread.
-        if (this.scanningThread != null) {
+        this.isWorking = false;
 
-
-            if (this.scanningThread.isAlive()) {
-                this.isWorking = false;
-                this.logger.log(Level.INFO, "Stopping Discovery...");
-
-                try {
-                    this.scanningThread.join(1000);
-                }
-                catch(InterruptedException interruptedException) {
-                    this.scanningThread.interrupt();
-                    this.logger.log(Level.INFO, "Discovery Service Interrupted");
-                }
-            }
-
+        if(this.scanningSocket != null) {
+            this.scanningSocket.close();
             this.scanningSocket = null;
-            this.responseSocket = null;
-            this.scanningThread = null;
         }
+
+        if(this.responseSocket != null) {
+            this.responseSocket.close();
+            this.responseSocket = null;
+        }
+
+        // Thread should be stopped anyways because close() throws a SocketException in the running thread.
+        ExecutorServiceUtils.stopExecutorService(this.scanningExecutor);
+
+        this.logger.log(Level.INFO, "Stopped Discovery service.");
     }
 
+    /**
+     * Scan method. Looks for incoming messages from Servers.
+     */
     private void scan() {
         System.out.println("Discovering servers... (Port: " + ClientDiscoveryService.SCANNING_PORT + ")");
 
         try {
+            // Init Scanning Socket
+            if (this.scanningSocket == null) {
+                this.scanningSocket = new DatagramSocket(ClientDiscoveryService.SCANNING_PORT);
+                this.scanningSocket.setSoTimeout(ClientDiscoveryService.SCANNING_TIMEOUT);
+            }
+
+            // Init response socket
+            if (this.responseSocket == null) {
+                this.responseSocket = new DatagramSocket();
+            }
+
             while (isWorking) {
                 byte[] receivingBuffer = new byte[ClientDiscoveryService.SCANNING_BUFFER_SIZE];
                 DatagramPacket receivedPacket = new DatagramPacket(receivingBuffer, receivingBuffer.length);
@@ -155,10 +154,20 @@ public class ClientDiscoveryService {
                     //Logger.getLogger(ClientDiscoveryService.class.getName()).log(Level.INFO, "[WARNING]: Reading Socket timed out. Reinitializing reading...");
                 }
             }
-        } catch (Exception e) {
-            this.logger.log(Level.SEVERE, "Error scanning ClientDiscoveryService", e);
+        } catch(SocketException socketException) {
+            if(socketException.getMessage().equals("socket closed")) {
+                this.logger.log(Level.INFO, "Socket closed in DiscoveryService");
+            }
+            else {
+                this.logger.log(Level.SEVERE, "Scanning error in DiscoveryService", socketException);
+            }
+        }
+        catch (Exception e) {
+            this.logger.log(Level.SEVERE, "Scanning error in DiscoveryService", e);
         } finally {
             this.isWorking = false;
+            this.scanningSocket.close();
+            this.responseSocket.close();
             this.scanningSocket = null;
             this.responseSocket = null;
             this.logger.log(Level.INFO, "Discovery Listening stopped!");
@@ -238,5 +247,23 @@ public class ClientDiscoveryService {
         for(OnServerDisconnected listener : this.onServerDisconnectedList) {
             listener.serverDisconnected(server);
         }
+    }
+
+    /**
+     * Closes this stream and releases any system resources associated
+     * with it. If the stream is already closed then invoking this
+     * method has no effect.
+     * <p>
+     * <p> As noted in {@link AutoCloseable#close()}, cases where the
+     * close may fail require careful attention. It is strongly advised
+     * to relinquish the underlying resources and to internally
+     * <em>mark</em> the {@code Closeable} as closed, prior to throwing
+     * the {@code IOException}.
+     *
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    public void close() throws IOException {
+        this.stop();
     }
 }
