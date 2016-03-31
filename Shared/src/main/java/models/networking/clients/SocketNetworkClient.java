@@ -26,6 +26,11 @@ public class SocketNetworkClient extends Client implements NetworkClient, Closea
         this(new Socket(inetAddress, port));
     }
 
+    /**
+     * Default constructor
+     * @param socket Connected socket.
+     * @throws IOException
+     */
     public SocketNetworkClient(Socket socket) throws IOException {
 
         this.socket = socket;
@@ -55,7 +60,7 @@ public class SocketNetworkClient extends Client implements NetworkClient, Closea
 
     /**
      * Sends an object to the connected socket.
-     * This method will send an object like a non-blocking mode.
+     * This method will send an object in a non-blocking mode (async).
      * @param object Object to send. MUST implement the serializable interface.
      * @throws IOException
      */
@@ -77,6 +82,7 @@ public class SocketNetworkClient extends Client implements NetworkClient, Closea
      */
     public void close() throws IOException {
         if(this.getSocket() != null && !this.getSocket().isClosed()) {
+            this.socket.getOutputStream().flush();
             this.socket.close();
         }
     }

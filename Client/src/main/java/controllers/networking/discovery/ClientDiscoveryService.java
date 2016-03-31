@@ -115,7 +115,7 @@ public class ClientDiscoveryService implements Closeable {
             // Init Scanning Socket
             if (this.scanningSocket == null) {
                 this.scanningSocket = new DatagramSocket(ClientDiscoveryService.SCANNING_PORT);
-                this.scanningSocket.setSoTimeout(ClientDiscoveryService.SCANNING_TIMEOUT);
+//                this.scanningSocket.setSoTimeout(ClientDiscoveryService.SCANNING_TIMEOUT);
             }
 
             // Init response socket
