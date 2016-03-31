@@ -10,7 +10,6 @@ import controllers.networking.streaming.music.callback.OnStop;
 import models.clients.Server;
 import models.networking.dtos.PlayCommand;
 import models.networking.dtos.StopCommand;
-import utils.exceptions.NotImplementedException;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -37,31 +36,50 @@ public class TCPMusicStreamingController implements MusicStreamingService {
      */
     private static final int SOCKET_TIMEOUT = 1000;
 
-    /**
-     * Size of the receiving buffer of the socket, before
-     * the data has to be cached.
-     */
-    private static final int SOCKET_BUFFER_SIZE = 4096;
     //endregion Constants
 
     //region Thread Requirements
+    /**
+     * Name of the listening thread.
+     */
     private static final String LISTENING_THREAD_NAME = "TCPListeningThread";
+
+    /**
+     * The thread listening for new connections.
+     */
     private Thread listeningThread;
     /**
      * Running state of the thread.
      * Is false if the thread should be cancelled.
      */
-    private volatile boolean running;
+    private volatile boolean isRunning;
+
     //endregion
+
+    /**
+     * Current status of the service.
+     */
+    private ServiceStatus currentServiceStatus;
+
+    /**
+     * The current server informations.
+     * This object may change if a new server is found.
+     */
     private Server currentServer;
 
-    private ServiceStatus currentServiceStatus;
-    private List<OnMusicStreamingStatusChanged> statusChangedListeners;
-    private List<OnPlay> playCommandListeners;
-    private List<OnStop> stopCommandListeners;
-
+    /**
+     * The current socket bound to the server.
+     */
     private Socket socket;
+
+    /**
+     * The current ObjectInputStream to the server.
+     */
     private ObjectInputStream objectInputStream;
+
+    /**
+     * The current ObjectOutputStream to the server.
+     */
     private ObjectOutputStream objectOutputStream;
 
     /**
@@ -69,6 +87,24 @@ public class TCPMusicStreamingController implements MusicStreamingService {
      * were received completely.
      */
     private final FileCacheService cache;
+
+    //region Listeners
+    /**
+     * List of listeners listening for currentServiceStatus changes.
+     */
+    private List<OnMusicStreamingStatusChanged> statusChangedListeners;
+
+    /**
+     * List of listeners listening for playCommands received.
+     */
+    private List<OnPlay> playCommandListeners;
+
+    /**
+     * List of listeners listening for stopCommands received.
+     */
+    private List<OnStop> stopCommandListeners;
+
+    //endregion listeners
 
     /**
      * Default constructor
@@ -97,7 +133,7 @@ public class TCPMusicStreamingController implements MusicStreamingService {
             this.initThread();
             this.setCurrentServiceStatus(ServiceStatus.WAITING);
         } catch (IOException exception) {
-            this.running = false;
+            this.isRunning = false;
             Logger.getLogger(this.getClass().getName())
                     .log(Level.SEVERE, "Failed starting Music Streaming Service.", exception);
         }
@@ -111,7 +147,7 @@ public class TCPMusicStreamingController implements MusicStreamingService {
     @Override
     public void stop() {
         try {
-            this.running = false;
+            this.isRunning = false;
             if (this.listeningThread != null && !this.listeningThread.isAlive())
                 this.listeningThread.join(SOCKET_TIMEOUT + 1000);
         } catch (InterruptedException e) {
@@ -141,7 +177,7 @@ public class TCPMusicStreamingController implements MusicStreamingService {
      */
     private void listen() {
 
-        while (running && !this.getSocket().isClosed()) {
+        while (this.isRunning && !this.getSocket().isClosed()) {
 
             try {
                 Object receivedObject;
@@ -163,9 +199,12 @@ public class TCPMusicStreamingController implements MusicStreamingService {
             } catch (SocketTimeoutException ignore) {
             } catch(SocketException socketException) {
                 try {
-                    // Try to reconnect
-                    this.setSocket(this.initSocket(this.currentServer.getServerAddress(),
-                            this.currentServer.getServerListeningPort()));
+                    // Only try to reconnect, if the service is still up & running.
+                    if(this.isRunning) {
+                        // Try to reconnect
+                        this.setSocket(this.initSocket(this.currentServer.getServerAddress(),
+                                this.currentServer.getServerListeningPort()));
+                    }
                 }
                 catch(Exception e) {
                     Logger.getLogger(this.getClass().getName())
@@ -178,18 +217,6 @@ public class TCPMusicStreamingController implements MusicStreamingService {
             }
         }
     }
-
-    /**
-     * Call this method, when the streaming finished (the StreamMessage FINAL was received).
-     * Example: "<stream>DATA</stream>"
-     * Concurrency: Not thread-safe!
-     *
-     * @param data Data received.
-     */
-    private void streamFinished(byte[] data) {
-        throw new NotImplementedException();
-    }
-
 
     @Override
     public void setServer(Server server) {
@@ -270,7 +297,7 @@ public class TCPMusicStreamingController implements MusicStreamingService {
 
         this.listeningThread = new Thread(this::listen, LISTENING_THREAD_NAME);
         this.listeningThread.setDaemon(true);
-        this.running = true;
+        this.isRunning = true;
         this.listeningThread.start();
     }
 
@@ -348,18 +375,34 @@ public class TCPMusicStreamingController implements MusicStreamingService {
     }
 
     //region Event Launchers
+
+    /**
+     * Call this method when the current ServiceStatus changes.
+     * Fires the corresponding event to all the listeners.
+     */
     private void onServiceStatusChanged() {
         for (OnMusicStreamingStatusChanged listener : this.statusChangedListeners) {
             listener.statusChanged(this.getCurrentServiceStatus());
         }
     }
 
+    /**
+     *
+     * Fires the corresponding event to all the listeners.
+     * @param songTitle
+     * @param artist
+     */
     private void onPlayCommandReceived(String songTitle, String artist) {
         this.playCommandListeners.forEach(onPlay -> onPlay.play(songTitle, artist));
     }
 
+    /**
+     *
+     * Fires the corresponding event to all the listeners.
+     */
     private void onStopCommandReceived() {
         this.stopCommandListeners.forEach(OnStop::stop);
     }
+
     //endregion Event Launchers
 }
