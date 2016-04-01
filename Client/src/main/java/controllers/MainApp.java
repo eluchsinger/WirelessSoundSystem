@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import viewmodels.ClientWindowViewModel;
 
@@ -23,6 +24,7 @@ public class MainApp extends Application {
         }
         primaryStage.setTitle("Wireless Sound System (Client)");
         primaryStage.setScene(new Scene(root, 600, 400));
+        primaryStage.getIcons().add(new Image(String.valueOf(getClass().getResource("/views/icons/png/Logo.png"))));
         primaryStage.show();
 
     }
