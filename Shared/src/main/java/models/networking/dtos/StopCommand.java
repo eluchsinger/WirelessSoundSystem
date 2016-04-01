@@ -7,6 +7,5 @@ import java.io.Serializable;
  * DataTransferObject: "Stop" Command
  */
 public class StopCommand implements Serializable {
-
     private static final long serialVersionUID = -776270820315865750L;
 }

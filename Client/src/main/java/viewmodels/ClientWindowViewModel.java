@@ -115,6 +115,14 @@ public class ClientWindowViewModel {
     }
 
     /**
+     * Renames the client.
+     * @param name New client name.
+     */
+    private void rename(String name) {
+        this.logger.log(Level.INFO, "Renaming to: " + name);
+    }
+
+    /**
      * Resumes playing a new song.
      */
     private void resumePlaying() {
@@ -129,12 +137,13 @@ public class ClientWindowViewModel {
     }
 
     //region initializers
+
     private void initializeStreamingService() throws IOException {
 
-        System.out.print("Starting Streaming Service... ");
+        logger.log(Level.INFO, "Starting Streaming Service... ");
 
         // Handle onStatusChanged
-        this.musicStreamingService.addServiceStatusChangedListener(newStatus -> System.out.println("New Status: " + newStatus.name()));
+        this.musicStreamingService.addServiceStatusChangedListener(newStatus -> logger.log(Level.INFO, "New Status: " + newStatus.name()));
 
         // Handle onPlay message.
         this.musicStreamingService.addOnPlayListener((songTitle, artist) -> Platform.runLater(() -> {
@@ -147,11 +156,15 @@ public class ClientWindowViewModel {
         // Handle onStop
         this.musicStreamingService.addOnStopListener(() -> Platform.runLater(this::stopPlaying));
 
-        System.out.println("Check!");
+        // Handle onRename
+        this.musicStreamingService.addOnRenameListener((name) -> Platform.runLater(() -> this.rename(name)));
+
+        logger.log(Level.INFO, "Check!");
     }
 
+
     private void initializeDiscoveryService() {
-        System.out.print("Starting discovery service... ");
+        logger.log(Level.INFO, "Starting discovery service... ");
 
         this.clientDiscoveryService.addOnServerConnectedListener(server -> {
 
@@ -162,8 +175,10 @@ public class ClientWindowViewModel {
             this.musicStreamingService.start();
         });
         this.clientDiscoveryService.start();
-        System.out.println("Check!");
+        logger.log(Level.INFO, "Check!");
     }
 
     //endregion
+
+
 }
