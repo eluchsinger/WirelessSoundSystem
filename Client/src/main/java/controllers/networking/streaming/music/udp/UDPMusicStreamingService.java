@@ -7,7 +7,6 @@ import controllers.networking.streaming.music.ServiceStatus;
 import controllers.networking.streaming.music.callback.OnMusicStreamingStatusChanged;
 import controllers.networking.streaming.music.callback.OnPlay;
 import controllers.networking.streaming.music.callback.OnStop;
-import controllers.statistics.NetworkStatisticsController;
 import models.clients.Server;
 import models.networking.SongCache;
 import models.networking.SongDatagram;
@@ -175,13 +174,6 @@ public class UDPMusicStreamingService implements MusicStreamingService {
                             buffer = new byte[bufferSize];
                             packet = new DatagramPacket(buffer, buffer.length);
                             readingSocket.receive(packet);
-
-                            if(this.validateInitializationPacket(packet)){
-                                NetworkStatisticsController
-                                        .getInstance()
-                                        .setTotalPacketsExpected(this.currentCache.getExpectedCacheSize());
-                                NetworkStatisticsController.getInstance().start();
-                            }
                             break;
                         case RECEIVING:
 
@@ -195,9 +187,6 @@ public class UDPMusicStreamingService implements MusicStreamingService {
                                 this.currentCache.add(songDatagram);
                                 this.dataReceived(songDatagram.getSongData());
 
-                                // *** Statistics ***
-                                NetworkStatisticsController.getInstance().addReceivedPacketMulticast();
-                                // ******************
                             }
                             catch(OutOfMemoryError outOfMemoryError){
 
