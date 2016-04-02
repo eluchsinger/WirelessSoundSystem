@@ -1,4 +1,4 @@
-package controllers;
+package controllers.clients;
 
 import controllers.networking.streaming.music.tcp.TCPSocketServer;
 import javafx.collections.FXCollections;

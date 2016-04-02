@@ -1,6 +1,6 @@
 package controllers.networking.streaming.music.tcp;
 
-import controllers.ClientController;
+import controllers.clients.ClientController;
 import controllers.networking.streaming.music.MusicStreamController;
 import models.networking.clients.NetworkClient;
 import models.networking.dtos.PlayCommand;

@@ -1,6 +1,7 @@
 package viewmodels;
 
-import controllers.ClientController;
+import controllers.clients.ClientController;
+import controllers.clients.NetworkClientStringConverter;
 import controllers.io.SongsHandler;
 import controllers.media.MediaPlayer;
 import controllers.media.music.AudioPlayer;
@@ -17,6 +18,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldListCell;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import models.networking.clients.NetworkClient;
@@ -113,9 +115,6 @@ public class MainWindowViewModel {
         this.initializeDiscoveryService();
 
         this.musicStreamController = new TCPMusicStreamController(this.clientController);
-
-        // Init MusicStreamService
-//        this.musicStreamController = new oldTCPMusicStreamController();
     }
 
     /* Properties */
@@ -340,6 +339,7 @@ public class MainWindowViewModel {
     private void initializeClientListView() {
         this.listViewClients.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         this.listViewClients.setItems(this.clientController.getClients());
+        this.listViewClients.setCellFactory(TextFieldListCell.forListView(new NetworkClientStringConverter(this.clientController)));
     }
 
     //endregion

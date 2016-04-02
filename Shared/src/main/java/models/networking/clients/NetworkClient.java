@@ -33,4 +33,16 @@ public interface NetworkClient extends Closeable {
      * @return Returns the socket corresponding to the NetworkClient.
      */
     Socket getSocket();
+
+
+    /**
+     * @return Returns the name of the Network Client.
+     */
+    String getName();
+
+    /**
+     * @return Sets the name of the Network Client.
+     */
+    void setName(String name);
+
 }

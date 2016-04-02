@@ -50,6 +50,7 @@ public class SocketNetworkClient extends Client implements NetworkClient, Closea
         return this.socket;
     }
 
+
     @Override
     public ObjectOutputStream getObjectOutputStream() {
         return this.outputStream;
