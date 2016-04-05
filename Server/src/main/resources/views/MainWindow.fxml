@@ -65,7 +65,7 @@
                   </Label>
                </children>
             </HBox>
-            <ListView fx:id="listViewClients" editable="true" style="-fx-border-color: BBB;" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
+            <ListView fx:id="listViewClients" editable="true" onEditCommit="#onListViewClientEditCommit" style="-fx-border-color: BBB;" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
          </children>
          <opaqueInsets>
             <Insets />

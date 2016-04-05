@@ -232,6 +232,14 @@ public class MainWindowViewModel {
     }
 
     /**
+     * This method is called, when a client is renamed, using the ListView.
+     */
+    @FXML
+    public void onListViewClientEditCommit() {
+        System.out.println("Client edit commit");
+    }
+
+    /**
      * This method gets called, when the isPlaying property of the mediaPlayer changes.
      * It handles the play/pause button behavior.
      */
@@ -341,6 +349,7 @@ public class MainWindowViewModel {
         this.listViewClients.setItems(this.clientController.getClients());
         this.listViewClients.setCellFactory(TextFieldListCell.forListView(new NetworkClientStringConverter(this.clientController)));
     }
+
 
     //endregion
 
