@@ -23,6 +23,8 @@ import javafx.stage.Stage;
 import models.networking.clients.NetworkClient;
 import models.networking.dtos.RenameCommand;
 import models.songs.Song;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import utils.DurationStringConverter;
 
 import java.io.Closeable;
@@ -30,8 +32,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Esteban Luchsinger on 30.11.2015.
@@ -90,7 +90,12 @@ public class MainWindowViewModel {
 
 
     //region Constructor
-    public MainWindowViewModel() { this.logger = Logger.getLogger(this.getClass().getName()); }
+    public MainWindowViewModel() {
+
+        // Init SLF4J logger
+        this.logger = LoggerFactory.getLogger(this.getClass().getName());
+        this.logger.info("Hello World! (SLF4J / Logcat)");
+    }
     //endregion Constructor
 
     /**
@@ -160,9 +165,7 @@ public class MainWindowViewModel {
                         try {
                             ((Closeable)this.musicStreamController).close();
                         } catch (IOException e) {
-                            Logger.getLogger(this.getClass().getName())
-                                    .log(Level.SEVERE, "Could not close the StreamController!",
-                                            e);
+                            this.logger.error("Could not close the StreamController", e);
                         }
                     }
                 }
@@ -171,8 +174,7 @@ public class MainWindowViewModel {
                     try {
                         this.tcpServer.close();
                     } catch (IOException e) {
-                        Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
-                                "Could not close TCP Server.", e);
+                        this.logger.error("Could not close TCP Server", e);
                     }
                 }
             });
@@ -205,7 +207,7 @@ public class MainWindowViewModel {
         if (this.mediaPlayer.isPlaying()) {
             this.mediaPlayer.pause();
         } else if (this.getSelectedSong() != null) {
-            System.out.println("Trying to play: " + this.getSelectedSong().getTitle());
+            this.logger.info("Trying to play: " + this.getSelectedSong().getTitle());
             this.mediaPlayer.play(this.getSelectedSong(), true);
         }
     }
@@ -251,12 +253,12 @@ public class MainWindowViewModel {
 
             if(this.getSelectedSong() != null) {
                 // Start streaming...
-                this.logger.log(Level.INFO, "Streaming the new song: " + this.getSelectedSong().getTitle());
+                this.logger.info("Streaming the new song: " + this.getSelectedSong().getTitle());
                 try {
                     this.musicStreamController.play(this.getSelectedSong());
                 }
                 catch(IOException ioException) {
-                    this.logger.log(Level.SEVERE, "Error trying to stream", ioException);
+                    this.logger.error("Error trying to stream", ioException);
                 }
             }
         } else {
@@ -373,7 +375,7 @@ public class MainWindowViewModel {
                             // Todo: Workaround! Make Observable.
                             this.listViewClients.refresh();
                         } catch (IOException e) {
-                            this.logger.log(Level.WARNING, "Could not rename the client (old name: "
+                            this.logger.warn( "Could not rename the client (old name: "
                                     + client.getName() + ")", e);
                         }
                     });
