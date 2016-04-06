@@ -72,12 +72,13 @@ public class SocketNetworkClient extends Client implements NetworkClient, Closea
 
         if(object == null)
             throw new NullPointerException("Object is null.");
-        if(object instanceof Serializable)
+        if(!(object instanceof Serializable))
             throw new RuntimeException("The object must implement the serializable interface");
 
         this.getObjectOutputStream().writeObject(object);
 
         // Todo: Implement multi-threading.
+        // Todo: Change the music streaming to use this method!
     }
 
     /**

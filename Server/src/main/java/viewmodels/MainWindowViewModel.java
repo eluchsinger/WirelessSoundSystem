@@ -21,6 +21,7 @@ import javafx.scene.image.Image;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import models.networking.clients.NetworkClient;
+import models.networking.dtos.RenameCommand;
 import models.songs.Song;
 import utils.DurationStringConverter;
 
@@ -250,7 +251,7 @@ public class MainWindowViewModel {
 
             if(this.getSelectedSong() != null) {
                 // Start streaming...
-                System.out.println("Streaming the new song: " + this.getSelectedSong().getTitle());
+                this.logger.log(Level.INFO, "Streaming the new song: " + this.getSelectedSong().getTitle());
                 try {
                     this.musicStreamController.play(this.getSelectedSong());
                 }
@@ -364,11 +365,18 @@ public class MainWindowViewModel {
 
                     // Change the name
                     Optional<String> result = dialog.showAndWait();
-                    result.ifPresent(client::setName);
-                    // Todo: Workaround! Make Observable.
-                    this.listViewClients.refresh();
+                    result.ifPresent(name -> {
+                        try {
+                            client.send(new RenameCommand(name));
+                            client.setName(name);
 
-                    // Todo: Send Command to client.
+                            // Todo: Workaround! Make Observable.
+                            this.listViewClients.refresh();
+                        } catch (IOException e) {
+                            this.logger.log(Level.WARNING, "Could not rename the client (old name: "
+                                    + client.getName() + ")", e);
+                        }
+                    });
                 }
             }
         });

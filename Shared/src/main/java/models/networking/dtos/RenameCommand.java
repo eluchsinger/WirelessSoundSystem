@@ -12,7 +12,7 @@ public class RenameCommand implements Serializable {
     /**
      * Name field
      */
-    private final String name;
+    public String name;
 
     /**
      * Constructor with parameter.
