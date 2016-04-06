@@ -24,9 +24,12 @@ public class ClientController {
         this.logger = Logger.getLogger(this.getClass().getName());
 
         // Init a synchronized list.
+//        ObservableList<NetworkClient> temporaryList = FXCollections.observableArrayList(new ArrayList<>(),
+//                (NetworkClient c) -> new Observable[] {c.nameProperty()});
         this.clients = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
 
         socketServer.addOnClientConnectedListener(this::onClientConnected);
+        //Todo: Add onDisconnectedListener
     }
 
     /**
@@ -36,6 +39,15 @@ public class ClientController {
     private void onClientConnected(NetworkClient client) {
         this.clients.add(client);
         this.logger.log(Level.INFO, "Client connected: " + client);
+    }
+
+    /**
+     * Called when a client disconnects
+     * @param client disconnected client
+     */
+    private void onClientDisconnected(NetworkClient client) {
+        this.clients.remove(client);
+        this.logger.log(Level.INFO, "Client disconnected: " + client);
     }
 
     /**

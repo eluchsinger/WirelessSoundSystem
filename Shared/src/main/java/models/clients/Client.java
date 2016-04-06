@@ -50,11 +50,11 @@ public class Client implements Comparable {
     }
 
     public String getName() {
-        return name.get();
+        return name.getValueSafe();
     }
 
     public void setName(String name) {
-        this.name.set(name);
+        this.name.setValue(name);
     }
     //endregion
 

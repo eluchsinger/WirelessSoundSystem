@@ -1,7 +1,6 @@
 package viewmodels;
 
 import controllers.clients.ClientController;
-import controllers.clients.NetworkClientStringConverter;
 import controllers.io.SongsHandler;
 import controllers.media.MediaPlayer;
 import controllers.media.music.AudioPlayer;
@@ -18,7 +17,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.cell.TextFieldListCell;
+import javafx.scene.image.Image;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import models.networking.clients.NetworkClient;
@@ -29,6 +28,7 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -347,7 +347,33 @@ public class MainWindowViewModel {
     private void initializeClientListView() {
         this.listViewClients.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         this.listViewClients.setItems(this.clientController.getClients());
-        this.listViewClients.setCellFactory(TextFieldListCell.forListView(new NetworkClientStringConverter(this.clientController)));
+
+        this.listViewClients.setOnMouseClicked(event -> {
+            if(event.getClickCount() == 2) {
+                // Show edit dialog.
+                NetworkClient client = this.listViewClients.getSelectionModel().getSelectedItem();
+                if(client != null) {
+                    TextInputDialog dialog = new TextInputDialog(client.toString());
+                    dialog.setTitle("Lautsprecher umbenennen");
+                    dialog.setHeaderText("Geben Sie den neuen Namen des Lautsprechers ein.");
+                    dialog.setContentText("Name:");
+
+                    // Set dialog icon
+                    Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+                    stage.getIcons().add(new Image(this.getClass().getResource("/views/icons/png/rename.png").toString()));
+
+                    // Change the name
+                    Optional<String> result = dialog.showAndWait();
+                    result.ifPresent(client::setName);
+                    // Todo: Workaround! Make Observable.
+                    this.listViewClients.refresh();
+
+                    // Todo: Send Command to client.
+                }
+            }
+        });
+////        this.listViewClients.setCellFactory(TextFieldListCell.forListView(new NetworkClientStringConverter(this.clientController)));
+//        this.listViewClients.setCellFactory(lv -> new ClientListCell());
     }
 
 

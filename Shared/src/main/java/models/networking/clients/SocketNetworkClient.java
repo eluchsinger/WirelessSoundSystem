@@ -41,6 +41,8 @@ public class SocketNetworkClient extends Client implements NetworkClient, Closea
         this.outputStream.flush();
         this.inputStream =
                 new ObjectInputStream(this.socket.getInputStream());
+
+        this.setName(socket.getInetAddress().getHostName());
     }
 
     /**
@@ -86,5 +88,13 @@ public class SocketNetworkClient extends Client implements NetworkClient, Closea
             this.socket.getOutputStream().flush();
             this.socket.close();
         }
+    }
+
+    /**
+     * @return For NetworkClients, return only the name.
+     */
+    @Override
+    public String toString() {
+        return this.getName();
     }
 }

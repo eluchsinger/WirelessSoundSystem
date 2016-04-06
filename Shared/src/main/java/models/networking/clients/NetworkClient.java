@@ -1,5 +1,7 @@
 package models.networking.clients;
 
+import javafx.beans.property.SimpleStringProperty;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -44,5 +46,11 @@ public interface NetworkClient extends Closeable {
      * @return Sets the name of the Network Client.
      */
     void setName(String name);
+
+    /**
+     * Because the name of the NetworkClient must be observable.
+     * @return
+     */
+    SimpleStringProperty nameProperty();
 
 }
