@@ -141,8 +141,8 @@ public class TCPMusicStreamingController implements MusicStreamingService {
             this.setCurrentServiceStatus(ServiceStatus.WAITING);
         } catch (IOException exception) {
             this.isRunning = false;
-            Logger.getLogger(this.getClass().getName())
-                    .log(Level.SEVERE, "Failed starting Music Streaming Service.", exception);
+            this.logger.log(Level.SEVERE, "Failed starting Music Streaming Service.", exception);
+
         }
     }
 
@@ -219,13 +219,11 @@ public class TCPMusicStreamingController implements MusicStreamingService {
                     }
                 }
                 catch(Exception e) {
-                    Logger.getLogger(this.getClass().getName())
-                            .log(Level.SEVERE, "Error in the TCPStreaming listener!", e);
+                    this.logger.log(Level.SEVERE, "Error in the TCPStreaming listener!", e);
                 }
             }
             catch (IOException | ClassNotFoundException e) {
-                Logger.getLogger(this.getClass().getName())
-                        .log(Level.SEVERE, "Error in the TCPStreaming listener!", e);
+                this.logger.log(Level.SEVERE, "Error in the TCPStreaming listener!", e);
             }
         }
     }

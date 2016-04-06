@@ -10,8 +10,11 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,7 +23,10 @@ import java.util.logging.Logger;
  */
 public class ClientWindowViewModel {
 
+    private static String CLIENT_NAME_PROPERTY = "";
+
     private final Logger logger;
+    private final Properties properties;
 
     private ClientDiscoveryService clientDiscoveryService;
     private MusicStreamingService musicStreamingService;
@@ -45,6 +51,24 @@ public class ClientWindowViewModel {
 
         this.logger = Logger.getLogger(this.getClass().getName());
 
+        Properties temporaryProperties = new Properties();
+        // Set properties
+        try (FileInputStream in = new FileInputStream("appProperties")) {
+            temporaryProperties.load(in);
+            String tmp = temporaryProperties.getProperty(CLIENT_NAME_PROPERTY, null);
+
+            if(tmp == null) {
+                this.logger.log(Level.INFO, "This client has no name.");
+            }
+            else {
+                this.logger.log(Level.INFO, "This client has name: " + tmp);
+            }
+        }
+        catch(IOException ex){
+            this.logger.log(Level.SEVERE, "Could not load properties");
+        }
+
+        this.properties = temporaryProperties;
         this.clientDiscoveryService = new ClientDiscoveryService();
         this.musicStreamingService = new TCPMusicStreamingController();
     }
@@ -119,7 +143,14 @@ public class ClientWindowViewModel {
      * @param name New client name.
      */
     private void rename(String name) {
-        this.logger.log(Level.INFO, "Renaming to: " + name);
+
+        try (FileOutputStream out = new FileOutputStream("appProperties")) {
+            this.properties.setProperty(CLIENT_NAME_PROPERTY, name);
+            this.properties.store(out, "No comment");
+            this.logger.log(Level.INFO, "Renamed to: " + name);
+        } catch (IOException e) {
+            this.logger.log(Level.WARNING, "Error saving namechange!", e);
+        }
     }
 
     /**
