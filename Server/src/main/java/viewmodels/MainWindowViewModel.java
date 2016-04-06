@@ -1,6 +1,6 @@
 package viewmodels;
 
-import controllers.ClientController;
+import controllers.clients.ClientController;
 import controllers.io.SongsHandler;
 import controllers.media.MediaPlayer;
 import controllers.media.music.AudioPlayer;
@@ -17,9 +17,11 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import models.networking.clients.NetworkClient;
+import models.networking.dtos.RenameCommand;
 import models.songs.Song;
 import utils.DurationStringConverter;
 
@@ -27,6 +29,7 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -113,9 +116,6 @@ public class MainWindowViewModel {
         this.initializeDiscoveryService();
 
         this.musicStreamController = new TCPMusicStreamController(this.clientController);
-
-        // Init MusicStreamService
-//        this.musicStreamController = new oldTCPMusicStreamController();
     }
 
     /* Properties */
@@ -233,6 +233,14 @@ public class MainWindowViewModel {
     }
 
     /**
+     * This method is called, when a client is renamed, using the ListView.
+     */
+    @FXML
+    public void onListViewClientEditCommit() {
+        System.out.println("Client edit commit");
+    }
+
+    /**
      * This method gets called, when the isPlaying property of the mediaPlayer changes.
      * It handles the play/pause button behavior.
      */
@@ -243,7 +251,7 @@ public class MainWindowViewModel {
 
             if(this.getSelectedSong() != null) {
                 // Start streaming...
-                System.out.println("Streaming the new song: " + this.getSelectedSong().getTitle());
+                this.logger.log(Level.INFO, "Streaming the new song: " + this.getSelectedSong().getTitle());
                 try {
                     this.musicStreamController.play(this.getSelectedSong());
                 }
@@ -340,7 +348,42 @@ public class MainWindowViewModel {
     private void initializeClientListView() {
         this.listViewClients.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         this.listViewClients.setItems(this.clientController.getClients());
+
+        this.listViewClients.setOnMouseClicked(event -> {
+            if(event.getClickCount() == 2) {
+                // Show edit dialog.
+                NetworkClient client = this.listViewClients.getSelectionModel().getSelectedItem();
+                if(client != null) {
+                    TextInputDialog dialog = new TextInputDialog(client.toString());
+                    dialog.setTitle("Lautsprecher umbenennen");
+                    dialog.setHeaderText("Geben Sie den neuen Namen des Lautsprechers ein.");
+                    dialog.setContentText("Name:");
+
+                    // Set dialog icon
+                    Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+                    stage.getIcons().add(new Image(this.getClass().getResource("/views/icons/png/rename.png").toString()));
+
+                    // Change the name
+                    Optional<String> result = dialog.showAndWait();
+                    result.ifPresent(name -> {
+                        try {
+                            client.send(new RenameCommand(name));
+                            client.setName(name);
+
+                            // Todo: Workaround! Make Observable.
+                            this.listViewClients.refresh();
+                        } catch (IOException e) {
+                            this.logger.log(Level.WARNING, "Could not rename the client (old name: "
+                                    + client.getName() + ")", e);
+                        }
+                    });
+                }
+            }
+        });
+////        this.listViewClients.setCellFactory(TextFieldListCell.forListView(new NetworkClientStringConverter(this.clientController)));
+//        this.listViewClients.setCellFactory(lv -> new ClientListCell());
     }
+
 
     //endregion
 

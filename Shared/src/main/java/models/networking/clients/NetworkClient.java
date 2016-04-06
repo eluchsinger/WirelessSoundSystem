@@ -1,5 +1,8 @@
 package models.networking.clients;
 
+import javafx.beans.property.SimpleStringProperty;
+import models.networking.clients.callbacks.OnDisconnected;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -33,4 +36,24 @@ public interface NetworkClient extends Closeable {
      * @return Returns the socket corresponding to the NetworkClient.
      */
     Socket getSocket();
+
+
+    /**
+     * @return Returns the name of the Network Client.
+     */
+    String getName();
+
+    /**
+     * @return Sets the name of the Network Client.
+     */
+    void setName(String name);
+
+    /**
+     * Because the name of the NetworkClient must be observable.
+     * @return
+     */
+    SimpleStringProperty nameProperty();
+
+    void addOnDisconnectedListener(OnDisconnected listener);
+    void removeOnDisconnectedListener(OnDisconnected listener);
 }

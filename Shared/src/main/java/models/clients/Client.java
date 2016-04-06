@@ -5,7 +5,6 @@ import javafx.beans.property.SimpleStringProperty;
 
 import java.net.InetAddress;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 /**
  * Created by Esteban Luchsinger on 30.11.2015.
@@ -51,11 +50,11 @@ public class Client implements Comparable {
     }
 
     public String getName() {
-        return name.get();
+        return name.getValueSafe();
     }
 
     public void setName(String name) {
-        this.name.set(name);
+        this.name.setValue(name);
     }
     //endregion
 
@@ -70,6 +69,12 @@ public class Client implements Comparable {
     //endregion
 
     //region Methods
+
+    /**
+     * Returns a string composed of the name and the HostAddress.
+     * Example: Living Room [192.168.1.1]
+     * @return
+     */
     @Override
     public String toString(){
         return this.getName() + " [" + this.getInetAddress().getHostAddress() + "]";
@@ -95,6 +100,13 @@ public class Client implements Comparable {
         }
     }
 
+    /**
+     * Compares two Clients for equality.
+     * Two clients are equal if the InetAddress is the same.
+     * If there is no InetAddress, the objects equality can not be determined and false is returned.
+     * @param obj Other object to comapare
+     * @return Returns true if the compared objects are equal. False if they are not.
+     */
     @Override
     public boolean equals(Object obj) {
         if (obj != null && obj.getClass() == this.getClass()) {
@@ -103,9 +115,7 @@ public class Client implements Comparable {
             // Try to compare the InetAddress.
             if (c.getInetAddress() != null && c.getInetAddress().equals(this.getInetAddress())) {
                 return true;
-            }
-            // If there is no IP-Address, try to compare the name.
-            else return c.getName() != null && c.getName() != "" && c.getName().equals(this.getName());
+            } else return false;
         } else {
             return false;
         }

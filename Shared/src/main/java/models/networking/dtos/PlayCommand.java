@@ -13,8 +13,6 @@ public class PlayCommand implements Serializable {
     public String artist;
     public byte[] data;
 
-
-
     public PlayCommand(byte[] data) { this("", "", data); }
 
     public PlayCommand(String songTitle, byte[] data) { this(songTitle, "", data); }
