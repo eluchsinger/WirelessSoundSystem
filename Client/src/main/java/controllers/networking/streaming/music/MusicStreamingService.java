@@ -46,4 +46,6 @@ public interface MusicStreamingService {
      * @return FileCacheService.
      */
     FileCacheService getCache();
+
+    void sendName(String name);
 }

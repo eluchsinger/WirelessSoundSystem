@@ -1,6 +1,7 @@
 package controllers.clients;
 
 import controllers.networking.streaming.music.tcp.TCPSocketServer;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import models.networking.clients.NetworkClient;
@@ -23,13 +24,9 @@ public class ClientController {
     public ClientController(TCPSocketServer socketServer) {
         this.logger = Logger.getLogger(this.getClass().getName());
 
-        // Init a synchronized list.
-//        ObservableList<NetworkClient> temporaryList = FXCollections.observableArrayList(new ArrayList<>(),
-//                (NetworkClient c) -> new Observable[] {c.nameProperty()});
         this.clients = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
 
         socketServer.addOnClientConnectedListener(this::onClientConnected);
-        //Todo: Add onDisconnectedListener
     }
 
     /**
@@ -37,8 +34,12 @@ public class ClientController {
      * @param client connected client.
      */
     private void onClientConnected(NetworkClient client) {
-        this.clients.add(client);
-        this.logger.log(Level.INFO, "Client connected: " + client);
+        Platform.runLater(() -> {
+            this.clients.add(client);
+            // Add the listener for when a client disconnects.
+            client.addOnDisconnectedListener(() -> this.onClientDisconnected(client));
+            this.logger.log(Level.INFO, "Client connected: " + client);
+        });
     }
 
     /**
@@ -46,8 +47,10 @@ public class ClientController {
      * @param client disconnected client
      */
     private void onClientDisconnected(NetworkClient client) {
-        this.clients.remove(client);
-        this.logger.log(Level.INFO, "Client disconnected: " + client);
+        Platform.runLater(() -> {
+            this.clients.remove(client);
+            this.logger.log(Level.INFO, "Client disconnected: " + client);
+        });
     }
 
     /**
@@ -56,4 +59,5 @@ public class ClientController {
     public ObservableList<NetworkClient> getClients() {
         return this.clients;
     }
+
 }

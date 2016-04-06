@@ -204,6 +204,13 @@ public class ClientWindowViewModel {
 
             // Start Service.
             this.musicStreamingService.start();
+
+            // Todo: Error -> Sometimes (when I restart the client quickly, after closing it) the name gets not read properly.
+            String name = this.properties.getProperty(CLIENT_NAME_PROPERTY, null);
+
+            if(name != null) {
+                this.musicStreamingService.sendName(name);
+            }
         });
         this.clientDiscoveryService.start();
         logger.log(Level.INFO, "Check!");

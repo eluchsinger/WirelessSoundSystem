@@ -379,6 +379,18 @@ public class TCPMusicStreamingController implements MusicStreamingService {
         return this.cache;
     }
 
+    /**
+     * Tells the server the name of this client.
+     * @param name
+     */
+    public void sendName(String name) {
+        try {
+            this.objectOutputStream.writeObject(new RenameCommand(name));
+        } catch(IOException ioException) {
+            this.logger.log(Level.WARNING, "Failed sending the current name to the server", ioException);
+        }
+    }
+
     //region Event Launchers
 
     /**

@@ -1,6 +1,7 @@
 package models.networking.clients;
 
 import javafx.beans.property.SimpleStringProperty;
+import models.networking.clients.callbacks.OnDisconnected;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -53,4 +54,6 @@ public interface NetworkClient extends Closeable {
      */
     SimpleStringProperty nameProperty();
 
+    void addOnDisconnectedListener(OnDisconnected listener);
+    void removeOnDisconnectedListener(OnDisconnected listener);
 }

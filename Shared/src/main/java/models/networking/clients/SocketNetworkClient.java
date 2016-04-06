@@ -1,10 +1,20 @@
 package models.networking.clients;
 
 import models.clients.Client;
+import models.networking.clients.callbacks.OnDisconnected;
+import models.networking.dtos.KeepAliveBeacon;
+import models.networking.dtos.RenameCommand;
+import utils.concurrent.ExecutorServiceUtils;
 
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -15,6 +25,12 @@ public class SocketNetworkClient extends Client implements NetworkClient, Closea
     private final Socket socket;
     private final ObjectOutputStream outputStream;
     private final ObjectInputStream inputStream;
+
+    private volatile boolean isWorking;
+
+    private final ExecutorService readingExecutor;
+
+    private final List<OnDisconnected> onDisconnectedListeners;
 
     /**
      * Default Constructor
@@ -33,6 +49,8 @@ public class SocketNetworkClient extends Client implements NetworkClient, Closea
      */
     public SocketNetworkClient(Socket socket) throws IOException {
 
+        this.onDisconnectedListeners = new ArrayList<>();
+
         this.socket = socket;
         this.outputStream =
                 new ObjectOutputStream(this.socket.getOutputStream());
@@ -43,6 +61,10 @@ public class SocketNetworkClient extends Client implements NetworkClient, Closea
                 new ObjectInputStream(this.socket.getInputStream());
 
         this.setName(socket.getInetAddress().getHostName());
+        this.isWorking = true;
+
+        this.readingExecutor = Executors.newSingleThreadExecutor();
+        this.readingExecutor.submit(this::listen);
     }
 
     /**
@@ -50,6 +72,16 @@ public class SocketNetworkClient extends Client implements NetworkClient, Closea
      */
     public Socket getSocket() {
         return this.socket;
+    }
+
+    @Override
+    public void addOnDisconnectedListener(OnDisconnected listener) {
+        this.onDisconnectedListeners.add(listener);
+    }
+
+    @Override
+    public void removeOnDisconnectedListener(OnDisconnected listener) {
+        this.onDisconnectedListeners.remove(listener);
     }
 
 
@@ -82,13 +114,53 @@ public class SocketNetworkClient extends Client implements NetworkClient, Closea
     }
 
     /**
+     * Listens for incoming messages from the client.
+     */
+    private void listen() {
+        while(isWorking && !this.socket.isClosed()) {
+            try {
+                Object receivedObject = this.inputStream.readObject();
+
+                if(receivedObject instanceof RenameCommand) {
+                    RenameCommand command = (RenameCommand) receivedObject;
+                    this.setName(command.getName());
+                }
+            }
+            catch(EOFException eofException) {
+                // An EOF Exception could be due to the client input stream being closed.
+                // Try to send a beacon to the client, to check if he is still available.
+                try {
+                    this.send(new KeepAliveBeacon());
+                } catch (IOException e) {
+                    // If the beacon failed, this client disconnected.
+                    try {
+                        this.close();
+                    } catch (IOException e1) {
+                        Logger.getLogger(this.getClass().getName())
+                                .log(Level.WARNING, "Error terminating the client.", e1);
+                    }
+                }
+            }
+            catch(IOException | ClassNotFoundException exception) {
+                Logger.getLogger(this.getClass().getName())
+                        .log(Level.WARNING, "Error receiving Object in client.", exception);
+            }
+        }
+    }
+
+    /**
      * Closes the SocketNetworkClient.
      */
     public void close() throws IOException {
+        this.isWorking = false;
         if(this.getSocket() != null && !this.getSocket().isClosed()) {
             this.socket.getOutputStream().flush();
             this.socket.close();
         }
+
+        ExecutorServiceUtils.stopExecutorService(this.readingExecutor);
+
+        this.onDisconnected();
     }
 
     /**
@@ -97,5 +169,9 @@ public class SocketNetworkClient extends Client implements NetworkClient, Closea
     @Override
     public String toString() {
         return this.getName();
+    }
+
+    private void onDisconnected() {
+        this.onDisconnectedListeners.forEach(OnDisconnected::onDisconnected);
     }
 }
