@@ -1,5 +1,7 @@
 package utils.networking;
 
+import org.slf4j.LoggerFactory;
+
 import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
@@ -57,14 +59,13 @@ public class NetUtil {
                 while (ee.hasMoreElements())
                 {
                     InetAddress i = (InetAddress) ee.nextElement();
-                    System.out.println(i.getHostAddress());
                     if (!i.isLinkLocalAddress() && !i.isMulticastAddress() && !i.isLoopbackAddress()){
                         localAddress = i;
                     }
                 }
             }
         } catch (SocketException e1) {
-            e1.printStackTrace();
+            LoggerFactory.getLogger(NetUtil.class).error("Filed getting the local address",e1);
         }
 
         return localAddress;

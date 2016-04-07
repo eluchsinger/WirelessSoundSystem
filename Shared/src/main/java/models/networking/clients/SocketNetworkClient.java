@@ -4,6 +4,8 @@ import models.clients.Client;
 import models.networking.clients.callbacks.OnDisconnected;
 import models.networking.dtos.KeepAliveBeacon;
 import models.networking.dtos.RenameCommand;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import utils.concurrent.ExecutorServiceUtils;
 
 import java.io.*;
@@ -13,8 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 /**
@@ -22,6 +22,8 @@ import java.util.logging.Logger;
  * Wraps a Client on the Network.
  */
 public class SocketNetworkClient extends Client implements NetworkClient, Closeable {
+    private final Logger logger;
+
     private final Socket socket;
     private final ObjectOutputStream outputStream;
     private final ObjectInputStream inputStream;
@@ -48,6 +50,7 @@ public class SocketNetworkClient extends Client implements NetworkClient, Closea
      * @throws IOException
      */
     public SocketNetworkClient(Socket socket) throws IOException {
+        this.logger = LoggerFactory.getLogger(this.getClass());
 
         this.onDisconnectedListeners = new ArrayList<>();
 
@@ -136,14 +139,12 @@ public class SocketNetworkClient extends Client implements NetworkClient, Closea
                     try {
                         this.close();
                     } catch (IOException e1) {
-                        Logger.getLogger(this.getClass().getName())
-                                .log(Level.WARNING, "Error terminating the client.", e1);
+                        this.logger.warn("Error terminating the client.", e1);
                     }
                 }
             }
             catch(IOException | ClassNotFoundException exception) {
-                Logger.getLogger(this.getClass().getName())
-                        .log(Level.WARNING, "Error receiving Object in client.", exception);
+                this.logger.warn("Error receiving Object in client.", exception);
             }
         }
     }

@@ -160,7 +160,7 @@ public class MainWindowViewModel {
             this.stage.setOnCloseRequest(event -> {
                 if(this.serverDiscoveryService != null) {
                     this.serverDiscoveryService.stop();
-                    System.out.println("Stopped Discovery Service!");
+                    this.logger.info("Stopped Discovery Service!");
                     if(this.musicStreamController != null && this.musicStreamController instanceof Closeable) {
                         try {
                             ((Closeable)this.musicStreamController).close();
@@ -275,7 +275,7 @@ public class MainWindowViewModel {
 
         this.serverDiscoveryService = new ServerDiscoveryService();
 
-        System.out.println("Starting discovery Service...");
+        this.logger.info("Starting discovery Service...");
         this.serverDiscoveryService.start();
     }
 
@@ -382,8 +382,6 @@ public class MainWindowViewModel {
                 }
             }
         });
-////        this.listViewClients.setCellFactory(TextFieldListCell.forListView(new NetworkClientStringConverter(this.clientController)));
-//        this.listViewClients.setCellFactory(lv -> new ClientListCell());
     }
 
 
