@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-
 /**
  * Created by Esteban Luchsinger on 18.03.2016.
  * Wraps a Client on the Network.
@@ -113,7 +112,6 @@ public class SocketNetworkClient extends Client implements NetworkClient, Closea
         this.getObjectOutputStream().writeObject(object);
 
         // Todo: Implement multi-threading.
-        // Todo: Change the music streaming to use this method!
     }
 
     /**

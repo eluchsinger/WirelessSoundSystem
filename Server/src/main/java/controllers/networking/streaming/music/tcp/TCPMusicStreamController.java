@@ -56,7 +56,7 @@ public class TCPMusicStreamController implements MusicStreamController {
 
         for(NetworkClient client : this.clientController.getClients()) {
             try {
-                client.getObjectOutputStream().writeObject(playCommand);
+                client.send(playCommand);
             }
             catch(IOException ioException) {
                 this.logger.warn("Error sending a play command to the client: " + client, ioException);
@@ -72,7 +72,7 @@ public class TCPMusicStreamController implements MusicStreamController {
         StopCommand stopCommand = new StopCommand();
         for(NetworkClient client : this.clientController.getClients()) {
             try {
-                client.getObjectOutputStream().writeObject(stopCommand);
+                client.send(stopCommand);
             }
             catch(IOException ioException) {
                 this.logger.warn("Error sending a stop command to the client: " + client, ioException);
