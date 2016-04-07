@@ -1,11 +1,12 @@
 package controllers.io.cache.file;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Esteban Luchsinger on 16.03.2016.
@@ -14,6 +15,7 @@ import java.util.logging.Logger;
  * is called again, it overwrites all the data.
  */
 public class StaticFileCacheService implements FileCacheService {
+    private final Logger logger;
     private final static String FILE_PREFIX = "wss";
     private final static String FILE_SUFFIX = ".mp3";
 
@@ -25,8 +27,8 @@ public class StaticFileCacheService implements FileCacheService {
      * @throws IOException
      */
     public StaticFileCacheService() throws IOException {
+        this.logger = LoggerFactory.getLogger(this.getClass());
         // Initialize path.
-
         String tempDir = System.getProperty("java.io.tmpdir");
 
         this.rootFile = File.createTempFile(FILE_PREFIX, FILE_SUFFIX, new File(tempDir));
@@ -55,14 +57,13 @@ public class StaticFileCacheService implements FileCacheService {
             }
         }
         catch(Exception e) {
-            Logger logger = Logger.getLogger(this.getClass().getName());
             if(file != null) {
                 String message = "Error writing data into the buffer.\n" +
                         "Path=" + this.rootFile.getAbsolutePath();
-                logger.log(Level.SEVERE, message, e);
+                this.logger.error(message, e);
             }
             else {
-                logger.log(Level.SEVERE, "Cache file is null when writing data", e);
+                this.logger.error("Cache file is null when writing data", e);
             }
         }
     }
@@ -94,17 +95,16 @@ public class StaticFileCacheService implements FileCacheService {
             }
 
             if(this.rootFile.createNewFile()) {
-                System.out.println("Created TempFile: " + this.rootFile.getAbsolutePath());
+                this.logger.info("Created TempFile: " + this.rootFile.getAbsolutePath());
             }
             else {
-                System.out.println("File already exists: " + this.rootFile.getAbsolutePath());
+                this.logger.info("File already exists: " + this.rootFile.getAbsolutePath());
             }
 
             this.rootFile.deleteOnExit();
             return this.rootFile;
         } catch (IOException e) {
-            Logger.getLogger(this.getClass().getName())
-                    .log(Level.SEVERE, "Failed creating temp file", e);
+            this.logger.error("Failed creating temp file", e);
             throw e;
         }
     }
@@ -120,8 +120,7 @@ public class StaticFileCacheService implements FileCacheService {
                     this.createFile();
             }
         } catch (IOException e) {
-            Logger.getLogger(this.getClass().getName())
-                    .log(Level.SEVERE, "Error getting file", e);
+            this.logger.error("Error getting file", e);
         }
 
         return this.rootFile;

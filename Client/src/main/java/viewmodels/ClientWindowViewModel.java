@@ -9,14 +9,14 @@ import javafx.scene.control.Label;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Esteban Luchsinger on 08.12.2015.
@@ -49,7 +49,7 @@ public class ClientWindowViewModel {
      */
     public ClientWindowViewModel() throws IOException {
 
-        this.logger = Logger.getLogger(this.getClass().getName());
+        this.logger = LoggerFactory.getLogger(this.getClass());
 
         Properties temporaryProperties = new Properties();
         // Set properties
@@ -58,14 +58,14 @@ public class ClientWindowViewModel {
             String tmp = temporaryProperties.getProperty(CLIENT_NAME_PROPERTY, null);
 
             if(tmp == null) {
-                this.logger.log(Level.INFO, "This client has no name.");
+                this.logger.info("This client has no name.");
             }
             else {
-                this.logger.log(Level.INFO, "This client has name: " + tmp);
+                this.logger.info("This client has name: " + tmp);
             }
         }
         catch(IOException ex){
-            this.logger.log(Level.SEVERE, "Could not load properties");
+            this.logger.error("Could not load properties");
         }
 
         this.properties = temporaryProperties;
@@ -108,7 +108,7 @@ public class ClientWindowViewModel {
                 .getFileURI()
                 .toString()));
         this.mediaPlayer.play();
-        this.logger.log(Level.INFO, "Now Playing");
+        this.logger.info("Now Playing");
     }
 
     private void startPlaying(Duration startTime) {
@@ -119,7 +119,7 @@ public class ClientWindowViewModel {
                 .toString()));
 
         this.mediaPlayer.play();
-        this.logger.log(Level.INFO, "Now Playing from " + startTime);
+        this.logger.info("Now Playing from " + startTime);
 
     }
 
@@ -134,7 +134,7 @@ public class ClientWindowViewModel {
             this.labelSongTitle.setText("");
             this.labelArtist.setText("");
             this.labelStatus.setText("STOPPED");
-            this.logger.log(Level.INFO, "Stopped playing");
+            this.logger.info("Stopped playing");
         }
     }
 
@@ -147,9 +147,9 @@ public class ClientWindowViewModel {
         try (FileOutputStream out = new FileOutputStream("appProperties")) {
             this.properties.setProperty(CLIENT_NAME_PROPERTY, name);
             this.properties.store(out, "No comment");
-            this.logger.log(Level.INFO, "Renamed to: " + name);
+            this.logger.info("Renamed to: " + name);
         } catch (IOException e) {
-            this.logger.log(Level.WARNING, "Error saving namechange!", e);
+            this.logger.warn("Error saving namechange!", e);
         }
     }
 
@@ -171,10 +171,10 @@ public class ClientWindowViewModel {
 
     private void initializeStreamingService() throws IOException {
 
-        logger.log(Level.INFO, "Starting Streaming Service... ");
+        logger.info("Starting Streaming Service... ");
 
         // Handle onStatusChanged
-        this.musicStreamingService.addServiceStatusChangedListener(newStatus -> logger.log(Level.INFO, "New Status: " + newStatus.name()));
+        this.musicStreamingService.addServiceStatusChangedListener(newStatus -> logger.info("New Status: " + newStatus.name()));
 
         // Handle onPlay message.
         this.musicStreamingService.addOnPlayListener((songTitle, artist) -> Platform.runLater(() -> {
@@ -190,12 +190,12 @@ public class ClientWindowViewModel {
         // Handle onRename
         this.musicStreamingService.addOnRenameListener((name) -> Platform.runLater(() -> this.rename(name)));
 
-        logger.log(Level.INFO, "Check!");
+        logger.info("Check!");
     }
 
 
     private void initializeDiscoveryService() {
-        logger.log(Level.INFO, "Starting discovery service... ");
+        logger.info("Starting discovery service... ");
 
         this.clientDiscoveryService.addOnServerConnectedListener(server -> {
 
@@ -213,7 +213,7 @@ public class ClientWindowViewModel {
             }
         });
         this.clientDiscoveryService.start();
-        logger.log(Level.INFO, "Check!");
+        logger.info("Check!");
     }
 
     //endregion
