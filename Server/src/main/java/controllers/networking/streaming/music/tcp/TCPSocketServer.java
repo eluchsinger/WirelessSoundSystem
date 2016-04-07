@@ -95,7 +95,7 @@ public class TCPSocketServer implements Closeable {
                 NetworkClient client = new SocketNetworkClient(socket);
                 this.onClientConnected(client);
             } catch(SocketException socketException) {
-                this.logger.info("Server Socket closed", socketException);
+                this.logger.info("Server Socket closed");
             } catch (IOException e) {
                 this.logger.error("Error accepting connections", e);
             }

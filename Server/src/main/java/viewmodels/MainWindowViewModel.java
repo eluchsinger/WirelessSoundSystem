@@ -73,10 +73,10 @@ public class MainWindowViewModel {
     private TableView<Song> tableViewSongs;
 
     @FXML
-    private TableColumn tableColumnTitle;
+    private TableColumn<Song, String> tableColumnTitle;
 
     @FXML
-    private TableColumn tableColumnArtist;
+    private TableColumn<Song, String> tableColumnArtist;
 
     @FXML
     private Slider sliderVolume;
