@@ -2,17 +2,24 @@ package controllers.io;
 
 import models.songs.Mp3Song;
 import models.songs.Song;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Esteban on 30.11.2015.
+ * Handles songs (ie: Reading songs from files)
  */
 public class SongsHandler {
+
+    private final Logger logger;
+
+    public SongsHandler() {
+        logger = LoggerFactory.getLogger(this.getClass());
+    }
 
     /**
      * Loads all songs from a directory.
@@ -27,14 +34,14 @@ public class SongsHandler {
 
         if(files.length > 0){
             for(File file : files) {
-                System.out.println(file.getName());
+                this.logger.info(file.getName());
             }
         }
         else{
-            System.out.println("No Music Files found.");
+            this.logger.info("No Music Files found.");
         }
 
-        System.out.println("Reading files...");
+        this.logger.info("Reading files...");
 
         List<Song> songList = new ArrayList<>();
         // Transform all songs into Song.
@@ -42,10 +49,10 @@ public class SongsHandler {
             try {
                 Song song = new Mp3Song(file.getPath());
                 songList.add(song);
-                System.out.println("Song: " + song.getTitle());
+                this.logger.info("Song added: " + song.getTitle());
 
             } catch (Exception e) {
-                Logger.getLogger(SongsHandler.class.getName()).log(Level.WARNING, "Fehler beim Laden eines Songs!", e);
+                this.logger.warn("Fehler beim Laden eines Songs!", e);
             }
         }
 

@@ -93,8 +93,8 @@ public class MainWindowViewModel {
     public MainWindowViewModel() {
 
         // Init SLF4J logger
-        this.logger = LoggerFactory.getLogger(this.getClass().getName());
-        this.logger.info("Hello World! (SLF4J / Logcat)");
+        this.logger = LoggerFactory.getLogger(this.getClass());
+        this.logger.info("Enable logger detect name mismatch setting");
     }
     //endregion Constructor
 

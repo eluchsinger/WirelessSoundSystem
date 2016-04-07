@@ -1,12 +1,14 @@
 package controllers.media.music;
 
-import models.songs.Song;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
+import models.songs.Song;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.Optional;
@@ -16,6 +18,7 @@ import java.util.Optional;
  */
 public class AudioPlayer implements controllers.media.MediaPlayer<Song> {
 
+    private final Logger logger;
     /**
      * Access only with the Accessor-Methods!
      */
@@ -36,6 +39,7 @@ public class AudioPlayer implements controllers.media.MediaPlayer<Song> {
     }
 
     public AudioPlayer(ObservableList<Song> songs) {
+        this.logger = LoggerFactory.getLogger(this.getClass());
         this.playlist = songs;
 
         this.isPlaying = new SimpleBooleanProperty();
@@ -48,7 +52,7 @@ public class AudioPlayer implements controllers.media.MediaPlayer<Song> {
     /**
      * Plays the selected trackc, if found.
      *
-     * @param track     The track that should be played. (Must not be the same reference as in the playlist).
+     * @param track The track that should be played. (Must not be the same reference as in the playlist).
      * @param tryResume Tries to resume the song, if it is paused.
      */
     public void play(Song track, boolean tryResume) {
@@ -220,7 +224,7 @@ public class AudioPlayer implements controllers.media.MediaPlayer<Song> {
         if (optSong.isPresent()) {
             return optSong.get();
         } else {
-            System.out.println("Next Song was not found! Using First song!");
+            this.logger.warn("Next Song was not found! Using first song!");
             return this.playlist.get(0);
         }
     }

@@ -1,5 +1,7 @@
 package controllers.networking.discovery;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import utils.networking.NetUtil;
 
 import java.io.Closeable;
@@ -10,8 +12,6 @@ import java.net.InetAddress;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Esteban Luchsinger on 04.12.2015.
@@ -60,7 +60,7 @@ public class ServerDiscoveryService implements Closeable {
      * Default Constructor
      */
     public ServerDiscoveryService() {
-        this.logger = Logger.getLogger(this.getClass().getName());
+        this.logger = LoggerFactory.getLogger(this.getClass());
     }
     //endregion Constructor
 
@@ -90,7 +90,7 @@ public class ServerDiscoveryService implements Closeable {
         if (this.discoveryScheduledService != null) {
             this.discoveryScheduledService.shutdown();
             this.discoveryScheduledService = null;
-            this.logger.log(Level.INFO, "Stopped DiscoveryService.");
+            this.logger.info("Stopped DiscoveryService.");
         }
     }
 
@@ -125,10 +125,10 @@ public class ServerDiscoveryService implements Closeable {
                 this.discoverySocket.send(datagram);
             }
             catch(NullPointerException nullPointerException){
-                this.logger.log(Level.INFO, "The Server is not connected to a network.");
+                this.logger.info("The Server is not connected to a network.");
             }
         } catch (Exception e) {
-            this.logger.log(Level.SEVERE, null, e);
+            this.logger.info("Error in discovery service", e);
         }
     }
 
