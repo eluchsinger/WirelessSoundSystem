@@ -3,6 +3,8 @@ package controllers.networking.discovery;
 import controllers.networking.discovery.callback.OnServerConnected;
 import controllers.networking.discovery.callback.OnServerDisconnected;
 import models.clients.Server;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import utils.concurrent.ExecutorServiceUtils;
 
 import java.io.Closeable;
@@ -12,8 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Esteban Luchsinger on 08.12.2015.
@@ -61,7 +61,7 @@ public class ClientDiscoveryService implements Closeable {
     private volatile boolean isWorking = false;
 
     public ClientDiscoveryService() {
-        this.logger = Logger.getLogger(this.getClass().getName());
+        this.logger = LoggerFactory.getLogger(this.getClass());
         this.onServerConnectedList = new ArrayList<>();
         this.onServerDisconnectedList = new ArrayList<>();
         this.scanningExecutor = Executors.newSingleThreadExecutor();
@@ -102,20 +102,19 @@ public class ClientDiscoveryService implements Closeable {
         // Thread should be stopped anyways because close() throws a SocketException in the running thread.
         ExecutorServiceUtils.stopExecutorService(this.scanningExecutor);
 
-        this.logger.log(Level.INFO, "Stopped Discovery service.");
+        this.logger.info("Stopped Discovery service.");
     }
 
     /**
      * Scan method. Looks for incoming messages from Servers.
      */
     private void scan() {
-        System.out.println("Discovering servers... (Port: " + ClientDiscoveryService.SCANNING_PORT + ")");
+        this.logger.info("Discovering servers... (Port: " + ClientDiscoveryService.SCANNING_PORT + ")");
 
         try {
             // Init Scanning Socket
             if (this.scanningSocket == null) {
                 this.scanningSocket = new DatagramSocket(ClientDiscoveryService.SCANNING_PORT);
-//                this.scanningSocket.setSoTimeout(ClientDiscoveryService.SCANNING_TIMEOUT);
             }
 
             // Init response socket
@@ -145,7 +144,7 @@ public class ClientDiscoveryService implements Closeable {
                         String log = "Received Datagram (IP = " + receivedPacket.getAddress().getHostAddress()
                                 + ").\nContent: " + message;
 
-                        this.logger.log(Level.INFO, log);
+                        this.logger.info(log);
                     }
                 }
                 // This catch is called if the socket was timed out. It's normal.
@@ -156,21 +155,21 @@ public class ClientDiscoveryService implements Closeable {
             }
         } catch(SocketException socketException) {
             if(socketException.getMessage().equals("socket closed")) {
-                this.logger.log(Level.INFO, "Socket closed in DiscoveryService");
+                this.logger.info("Socket closed in DiscoveryService");
             }
             else {
-                this.logger.log(Level.SEVERE, "Scanning error in DiscoveryService", socketException);
+                this.logger.error("Scanning error in DiscoveryService", socketException);
             }
         }
         catch (Exception e) {
-            this.logger.log(Level.SEVERE, "Scanning error in DiscoveryService", e);
+            this.logger.error("Scanning error in DiscoveryService", e);
         } finally {
             this.isWorking = false;
             this.scanningSocket.close();
             this.responseSocket.close();
             this.scanningSocket = null;
             this.responseSocket = null;
-            this.logger.log(Level.INFO, "Discovery Listening stopped!");
+            this.logger.error("Discovery Listening stopped!");
         }
     }
 

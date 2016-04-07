@@ -12,6 +12,8 @@ import models.clients.Server;
 import models.networking.dtos.PlayCommand;
 import models.networking.dtos.RenameCommand;
 import models.networking.dtos.StopCommand;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -22,8 +24,6 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Esteban Luchsinger on 01.03.2016.
@@ -116,7 +116,7 @@ public class TCPMusicStreamingController implements MusicStreamingService {
      * Default constructor
      */
     public TCPMusicStreamingController() throws IOException {
-        this.logger = Logger.getLogger(this.getClass().getName());
+        this.logger = LoggerFactory.getLogger(this.getClass());
 
         // Initialize Listeners
         this.statusChangedListeners = new ArrayList<>();
@@ -141,7 +141,7 @@ public class TCPMusicStreamingController implements MusicStreamingService {
             this.setCurrentServiceStatus(ServiceStatus.WAITING);
         } catch (IOException exception) {
             this.isRunning = false;
-            this.logger.log(Level.SEVERE, "Failed starting Music Streaming Service.", exception);
+            this.logger.error("Failed starting Music Streaming Service.", exception);
 
         }
     }
@@ -158,8 +158,7 @@ public class TCPMusicStreamingController implements MusicStreamingService {
             if (this.listeningThread != null && !this.listeningThread.isAlive())
                 this.listeningThread.join(SOCKET_TIMEOUT + 1000);
         } catch (InterruptedException e) {
-            this.logger.log(Level.SEVERE,
-                    "Error joining TCP Listening Thread", e);
+            this.logger.error("Error joining TCP Listening Thread", e);
         } finally {
             if (this.listeningThread == null || !this.listeningThread.isAlive())
                 this.setCurrentServiceStatus(ServiceStatus.STOPPED);
@@ -170,8 +169,7 @@ public class TCPMusicStreamingController implements MusicStreamingService {
                     if(!this.getSocket().isClosed())
                         this.getSocket().close();
                 } catch (IOException e) {
-                    this.logger.log(Level.SEVERE,
-                                    "Error closing the open socket", e);
+                    this.logger.error("Error closing the open socket", e);
                 }
             }
         }
@@ -191,18 +189,18 @@ public class TCPMusicStreamingController implements MusicStreamingService {
 
                 // If it's a play command.
                 if(receivedObject instanceof PlayCommand) {
-                    this.logger.log(Level.INFO, "Received PlayCommand");
+                    this.logger.info("Received PlayCommand");
                     PlayCommand command = (PlayCommand) receivedObject;
                     this.cache.writeData(command.data);
                     this.setCurrentServiceStatus(ServiceStatus.READY);
                     this.onPlayCommandReceived(command.songTitle, command.artist);
                 }
                 else if(receivedObject instanceof StopCommand) {
-                    this.logger.log(Level.INFO, "Received StopCommand");
+                    this.logger.info("Received StopCommand");
                     this.onStopCommandReceived();
                 }
                 else if(receivedObject instanceof RenameCommand) {
-                    this.logger.log(Level.INFO, "Received RenameCommand");
+                    this.logger.info("Received RenameCommand");
 
                     RenameCommand command = (RenameCommand) receivedObject;
                     this.onRenameCommandReceived(command.getName());
@@ -219,11 +217,11 @@ public class TCPMusicStreamingController implements MusicStreamingService {
                     }
                 }
                 catch(Exception e) {
-                    this.logger.log(Level.SEVERE, "Error in the TCPStreaming listener!", e);
+                    this.logger.error("Error in the TCPStreaming listener!", e);
                 }
             }
             catch (IOException | ClassNotFoundException e) {
-                this.logger.log(Level.SEVERE, "Error in the TCPStreaming listener!", e);
+                this.logger.error("Error in the TCPStreaming listener!", e);
             }
         }
     }
@@ -387,7 +385,7 @@ public class TCPMusicStreamingController implements MusicStreamingService {
         try {
             this.objectOutputStream.writeObject(new RenameCommand(name));
         } catch(IOException ioException) {
-            this.logger.log(Level.WARNING, "Failed sending the current name to the server", ioException);
+            this.logger.error("Failed sending the current name to the server", ioException);
         }
     }
 

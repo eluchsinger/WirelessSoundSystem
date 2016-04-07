@@ -8,22 +8,11 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import viewmodels.MainWindowViewModel;
 
-import java.util.logging.Handler;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
-
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
         System.setProperty("java.net.preferIPv4Stack" , "true");
-        // Setting logger
-        Logger log = LogManager.getLogManager().getLogger("");
-        for(Handler h : log.getHandlers()){
-//            h.setLevel(Level.INFO);
-//            h.setLevel(Level.WARNING);
-        }
-
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/MainWindow.fxml"));
         Parent root = loader.load();

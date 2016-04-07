@@ -1,6 +1,7 @@
 package controllers.io.cache.file;
 
-import controllers.io.cache.CacheService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,14 +11,13 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Esteban Luchsinger on 15.12.2015.
  * This class handles the handling of the cache that can grow and shrink dynamically.
  */
 public class DynamicFileCacheService implements FileCacheService {
+    private final Logger logger;
     private File file;
     private boolean isOpen;
 
@@ -36,6 +36,7 @@ public class DynamicFileCacheService implements FileCacheService {
      * has a handle on it (isOpen).
      */
     public DynamicFileCacheService() {
+        this.logger = LoggerFactory.getLogger(this.getClass());
         this.createFile();
     }
 
@@ -45,16 +46,14 @@ public class DynamicFileCacheService implements FileCacheService {
         try {
             this.file = File.createTempFile("wss", ".mp3", new File(tmpDir));
 
-            System.out.println("Created TempFile: " + this.file.getAbsolutePath());
+            this.logger.info("Created TempFile: " + this.file.getAbsolutePath());
 
             this.file.createNewFile();
             this.fileChannel = new RandomAccessFile(file, "rw").getChannel();
             this.file.deleteOnExit();
             this.cacheUsed = false;
         } catch (IOException e) {
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
-                    "Fehler beim Erstellen des Temp Files.",
-                    e);
+            this.logger.error("Fehler beim Erstellen des Temp Files.", e);
         }
     }
 
@@ -101,7 +100,7 @@ public class DynamicFileCacheService implements FileCacheService {
             try {
                 this.close();
             } catch (Exception ignore) {
-                ignore.printStackTrace();
+                this.logger.error("Error writing to the cache", ignore);
             }
             this.cacheUsed = true;
         }

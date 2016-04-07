@@ -4,6 +4,8 @@ import controllers.networking.streaming.music.tcp.callbacks.OnClientConnected;
 import models.clients.Server;
 import models.networking.clients.NetworkClient;
 import models.networking.clients.SocketNetworkClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import utils.concurrent.ExecutorServiceUtils;
 
 import java.io.Closeable;
@@ -15,8 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Esteban Luchsinger on 26.03.2016.
@@ -50,7 +50,7 @@ public class TCPSocketServer implements Closeable {
      * @throws IOException Throws IOException if there was something wrong.
      */
     public TCPSocketServer() throws IOException {
-        this.logger = Logger.getLogger(this.getClass().getName());
+        this.logger = LoggerFactory.getLogger(this.getClass());
         this.onClientConnectedListeners = new ArrayList<>();
         this.acceptingService = Executors.newSingleThreadExecutor();
         this.serverSocket = new ServerSocket(Server.STREAMING_PORT, MAXIMUM_BACKLOG);
@@ -95,11 +95,9 @@ public class TCPSocketServer implements Closeable {
                 NetworkClient client = new SocketNetworkClient(socket);
                 this.onClientConnected(client);
             } catch(SocketException socketException) {
-                this.logger.log(Level.INFO
-                        ,"Server Socket closed"
-                        ,socketException);
+                this.logger.info("Server Socket closed");
             } catch (IOException e) {
-                this.logger.log(Level.SEVERE, "Error accepting connections", e);
+                this.logger.error("Error accepting connections", e);
             }
         }
     }
@@ -110,7 +108,7 @@ public class TCPSocketServer implements Closeable {
      */
     private void onClientConnected(NetworkClient client) {
         synchronized (this.onClientConnectedListeners) {
-            this.logger.log(Level.INFO, "Network Client connected: " + client);
+            this.logger.info("Network client connected: " + client);
             this.onClientConnectedListeners.forEach(listener -> listener.onClientConnected(client));
         }
     }

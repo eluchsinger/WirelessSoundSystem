@@ -1,9 +1,10 @@
 package utils.concurrent;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Esteban Luchsinger on 25.03.2016.
@@ -40,30 +41,30 @@ public class ExecutorServiceUtils {
      * @param timeout The timeout time in milliseconds.
      */
     public static void stopExecutorService(ExecutorService executorService, long timeout) {
-        Logger logger = Logger.getLogger(ExecutorServiceUtils.class.getName());
+        Logger logger = LoggerFactory.getLogger(ExecutorServiceUtils.class);
 
         if(executorService != null && !executorService.isShutdown()) {
             try {
-                logger.log(Level.INFO, "Attempt to shutdown executor...");
+                logger.info("Attempt to shutdown executor...");
                 executorService.shutdown();
                 if (!executorService.isShutdown())
                     executorService.awaitTermination(timeout, TimeUnit.MILLISECONDS);
             } catch (InterruptedException e) {
-                logger.log(Level.WARNING, "Stop executor service interrupted", e);
+                logger.warn("Stop executor service interrupted", e);
             } finally {
                 if (!executorService.isShutdown()) {
-                    logger.log(Level.SEVERE, "Cancelling non-interrupted executor");
+                    logger.error("Cancelling non-interrupted executor");
                 }
                 executorService.shutdownNow();
-                logger.log(Level.INFO, "Executor shutdown finished");
+                logger.info("Executor shutdown finished");
             }
         }
         // If the executor is already null or shutdown.
         else {
             if(executorService == null)
-                logger.log(Level.WARNING, "Tried to shut down null executor");
+                logger.warn("Tried to shut down null executor");
             if(executorService.isShutdown())
-                logger.log(Level.INFO, "Executor service is alredy shutdown.");
+                logger.info("Executor service is alredy shutdown.");
         }
 
     }

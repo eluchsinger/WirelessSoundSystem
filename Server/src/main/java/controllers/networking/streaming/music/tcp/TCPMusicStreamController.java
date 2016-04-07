@@ -6,11 +6,11 @@ import models.networking.clients.NetworkClient;
 import models.networking.dtos.PlayCommand;
 import models.networking.dtos.StopCommand;
 import models.songs.Song;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import utils.media.SongUtils;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 /**
@@ -37,7 +37,7 @@ public class TCPMusicStreamController implements MusicStreamController {
      * @param clientController The client controller bound to this music controller.
      */
     public TCPMusicStreamController(ClientController clientController) {
-        this.logger = Logger.getLogger(this.getClass().getName());
+        this.logger = LoggerFactory.getLogger(this.getClass());
 
         this.clientController = clientController;
     }
@@ -56,10 +56,10 @@ public class TCPMusicStreamController implements MusicStreamController {
 
         for(NetworkClient client : this.clientController.getClients()) {
             try {
-                client.getObjectOutputStream().writeObject(playCommand);
+                client.send(playCommand);
             }
             catch(IOException ioException) {
-                this.logger.log(Level.WARNING, "Error sending a play command to the client: " + client, ioException);
+                this.logger.warn("Error sending a play command to the client: " + client, ioException);
             }
         }
     }
@@ -72,10 +72,10 @@ public class TCPMusicStreamController implements MusicStreamController {
         StopCommand stopCommand = new StopCommand();
         for(NetworkClient client : this.clientController.getClients()) {
             try {
-                client.getObjectOutputStream().writeObject(stopCommand);
+                client.send(stopCommand);
             }
             catch(IOException ioException) {
-                this.logger.log(Level.WARNING, "Error sending a stop command to the client: " + client, ioException);
+                this.logger.warn("Error sending a stop command to the client: " + client, ioException);
             }
         }
     }
