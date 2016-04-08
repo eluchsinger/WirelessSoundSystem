@@ -368,16 +368,11 @@ public class MainWindowViewModel {
                     // Change the name
                     Optional<String> result = dialog.showAndWait();
                     result.ifPresent(name -> {
-                        try {
-                            client.send(new RenameCommand(name));
-                            client.setName(name);
+                        client.send(new RenameCommand(name));
+                        client.setName(name);
 
-                            // Todo: Workaround! Make Observable.
-                            this.listViewClients.refresh();
-                        } catch (IOException e) {
-                            this.logger.warn( "Could not rename the client (old name: "
-                                    + client.getName() + ")", e);
-                        }
+                        // Todo: Workaround! Make Observable.
+                        this.listViewClients.refresh();
                     });
                 }
             }

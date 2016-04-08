@@ -55,13 +55,10 @@ public class TCPMusicStreamController implements MusicStreamController {
         PlayCommand playCommand = new PlayCommand(song.getTitle(), song.getArtist(), songData);
 
         for(NetworkClient client : this.clientController.getClients()) {
-            try {
-                client.send(playCommand);
-            }
-            catch(IOException ioException) {
-                this.logger.warn("Error sending a play command to the client: " + client, ioException);
-            }
+            client.send(playCommand);
         }
+
+        this.waitForClientsReceived();
     }
 
     /**
@@ -71,12 +68,17 @@ public class TCPMusicStreamController implements MusicStreamController {
     public void stop() {
         StopCommand stopCommand = new StopCommand();
         for(NetworkClient client : this.clientController.getClients()) {
-            try {
-                client.send(stopCommand);
-            }
-            catch(IOException ioException) {
-                this.logger.warn("Error sending a stop command to the client: " + client, ioException);
-            }
+            client.send(stopCommand);
         }
+        this.waitForClientsReceived();
+    }
+
+    /**
+     * Waits for all clients to receive the sent messages.
+     */
+    private void waitForClientsReceived() {
+
+        // Wait for all clients to receive the messages.
+        this.clientController.getClients().forEach(NetworkClient::waitForSending);
     }
 }

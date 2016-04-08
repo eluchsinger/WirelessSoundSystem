@@ -13,8 +13,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 /**
  * Created by Esteban Luchsinger on 18.03.2016.
@@ -29,7 +28,21 @@ public class SocketNetworkClient extends Client implements NetworkClient, Closea
 
     private volatile boolean isWorking;
 
+    /**
+     * This executor handles the reading of new messages.
+     */
     private final ExecutorService readingExecutor;
+
+    /**
+     * This executor handles the sending of messages to the client.
+     */
+    private final ExecutorService sendingExecutor;
+
+    /**
+     * The last async sending will be stored inside of this future.
+     * The future can be used to wait until the client received the data.
+     */
+    private Future<?> lastSentFuture;
 
     private final List<OnDisconnected> onDisconnectedListeners;
 
@@ -67,6 +80,11 @@ public class SocketNetworkClient extends Client implements NetworkClient, Closea
 
         this.readingExecutor = Executors.newSingleThreadExecutor();
         this.readingExecutor.submit(this::listen);
+
+        // Initialize the executor as single thread executor.
+        // A single thread executor ensures that every submit is executed in
+        // the correct order.
+        this.sendingExecutor = Executors.newSingleThreadExecutor();
     }
 
     /**
@@ -86,23 +104,72 @@ public class SocketNetworkClient extends Client implements NetworkClient, Closea
         this.onDisconnectedListeners.remove(listener);
     }
 
-
-    @Override
-    public ObjectOutputStream getObjectOutputStream() {
+    private ObjectOutputStream getObjectOutputStream() {
         return this.outputStream;
     }
 
-    @Override
-    public ObjectInputStream getObjectInputStream() { return this.inputStream; }
+    private ObjectInputStream getObjectInputStream() { return this.inputStream; }
 
     /**
-     * Sends an object to the connected socket.
+     * Sends an object to the connected socket (asynchronously).
      * This method will send an object in a non-blocking mode (async).
      * @param object Object to send. MUST implement the serializable interface.
-     * @throws IOException
      */
     @Override
-    public void send(Object object) throws IOException {
+    public void send(Object object) {
+        this.lastSentFuture = this.sendingExecutor.submit(() -> {
+            try {
+                this.sendSync(object);
+            } catch (IOException e) {
+                this.logger.warn("Error sending object " + object, e);
+            }
+        });
+    }
+
+    /**
+     * Waits until all object were sent.
+     * If needed, this method returns immediately.
+     * The timeout is not defined.
+     */
+    @Override
+    public void waitForSending() {
+        if(this.lastSentFuture != null) {
+            try {
+                this.lastSentFuture.get();
+            } catch (ExecutionException e) {
+                this.logger.warn("Error sending data to client " + this.toString(), e);
+            } catch (InterruptedException e) {
+                this.logger.warn("Sending data to client  " + this + " was interrupted.", e);
+            }
+        }
+    }
+
+    /**
+     * Waits until all objects were sent.
+     * If needed, this method returns immediately.
+     *
+     * @param timeout  Timeout time
+     * @param timeUnit TimeUnit for the timeout
+     */
+    @Override
+    public void waitForSending(long timeout, TimeUnit timeUnit) throws TimeoutException {
+        if(this.lastSentFuture != null) {
+            try {
+                this.lastSentFuture.get(timeout, timeUnit);
+            } catch (ExecutionException e) {
+                this.logger.warn("Error sending data to client " + this.toString(), e);
+            } catch (InterruptedException e) {
+                this.logger.warn("Sending data to client  " + this + " was interrupted.", e);
+            }
+        }
+    }
+
+    /**
+     * Sends the desired object synchronously.
+     * @param object Object to send
+     * @throws IOException
+     */
+    private void sendSync(Object object) throws IOException{
 
         if(object == null)
             throw new NullPointerException("Object is null.");
@@ -110,8 +177,6 @@ public class SocketNetworkClient extends Client implements NetworkClient, Closea
             throw new RuntimeException("The object must implement the serializable interface");
 
         this.getObjectOutputStream().writeObject(object);
-
-        // Todo: Implement multi-threading.
     }
 
     /**
@@ -120,18 +185,24 @@ public class SocketNetworkClient extends Client implements NetworkClient, Closea
     private void listen() {
         while(isWorking && !this.socket.isClosed()) {
             try {
-                Object receivedObject = this.inputStream.readObject();
+                Object receivedObject = this.getObjectInputStream().readObject();
 
                 if(receivedObject instanceof RenameCommand) {
                     RenameCommand command = (RenameCommand) receivedObject;
                     this.setName(command.getName());
+                } else {
+                    // The received object is unknown.
+                    this.logger.info("Received unknown command from client " + this.getName() +
+                            "\n" + receivedObject.toString());
                 }
             }
             catch(EOFException eofException) {
                 // An EOF Exception could be due to the client input stream being closed.
                 // Try to send a beacon to the client, to check if he is still available.
                 try {
-                    this.send(new KeepAliveBeacon());
+                    // Sends this beacon synchronously because if the client disconnected,
+                    // it will be the last object sent.
+                    this.sendSync(new KeepAliveBeacon());
                 } catch (IOException e) {
                     // If the beacon failed, this client disconnected.
                     try {
@@ -158,6 +229,7 @@ public class SocketNetworkClient extends Client implements NetworkClient, Closea
         }
 
         ExecutorServiceUtils.stopExecutorService(this.readingExecutor);
+        ExecutorServiceUtils.stopExecutorService(this.sendingExecutor);
 
         this.onDisconnected();
     }
