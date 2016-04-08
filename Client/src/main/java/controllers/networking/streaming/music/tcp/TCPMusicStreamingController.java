@@ -9,6 +9,7 @@ import controllers.networking.streaming.music.callback.OnPlay;
 import controllers.networking.streaming.music.callback.OnRename;
 import controllers.networking.streaming.music.callback.OnStop;
 import models.clients.Server;
+import models.networking.dtos.CacheSongCommand;
 import models.networking.dtos.PlayCommand;
 import models.networking.dtos.RenameCommand;
 import models.networking.dtos.StopCommand;
@@ -187,18 +188,25 @@ public class TCPMusicStreamingController implements MusicStreamingService {
                 Object receivedObject;
                 receivedObject = this.objectInputStream.readObject();
 
-                // If it's a play command.
-                if(receivedObject instanceof PlayCommand) {
-                    this.logger.info("Received PlayCommand");
-                    PlayCommand command = (PlayCommand) receivedObject;
+                // If it's a cache song command.
+                if(receivedObject instanceof CacheSongCommand) {
+                    this.logger.info("Received CacheSongCommand");
+                    CacheSongCommand command = (CacheSongCommand) receivedObject;
                     this.cache.writeData(command.data);
                     this.setCurrentServiceStatus(ServiceStatus.READY);
-                    this.onPlayCommandReceived(command.songTitle, command.artist);
                 }
+                // A play command
+                else if(receivedObject instanceof PlayCommand) {
+                    this.logger.info("Received PlayCommand");
+                    PlayCommand command = (PlayCommand) receivedObject;
+                    this.onPlayCommandReceived(command.title, command.artist);
+                }
+                // A stop command
                 else if(receivedObject instanceof StopCommand) {
                     this.logger.info("Received StopCommand");
                     this.onStopCommandReceived();
                 }
+                // A rename command
                 else if(receivedObject instanceof RenameCommand) {
                     this.logger.info("Received RenameCommand");
 

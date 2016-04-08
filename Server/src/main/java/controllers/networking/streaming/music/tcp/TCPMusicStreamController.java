@@ -3,6 +3,7 @@ package controllers.networking.streaming.music.tcp;
 import controllers.clients.ClientController;
 import controllers.networking.streaming.music.MusicStreamController;
 import models.networking.clients.NetworkClient;
+import models.networking.dtos.CacheSongCommand;
 import models.networking.dtos.PlayCommand;
 import models.networking.dtos.StopCommand;
 import models.songs.Song;
@@ -52,13 +53,21 @@ public class TCPMusicStreamController implements MusicStreamController {
     public void play(Song song) throws IOException {
         byte[] songData = SongUtils.getSongData(song);
 
-        PlayCommand playCommand = new PlayCommand(song.getTitle(), song.getArtist(), songData);
+        CacheSongCommand cacheSongCommand = new CacheSongCommand(songData);
+        PlayCommand playCommand = new PlayCommand(song.getTitle(), song.getArtist());
 
+        // First send the cache song command to make the clients ready.
+        for(NetworkClient client : this.clientController.getClients()) {
+            client.send(cacheSongCommand);
+        }
+
+        // Then wait for the clients until they all received the song completely.
+        this.waitForClientsReceived();
+
+        // Then send all clients the play command.
         for(NetworkClient client : this.clientController.getClients()) {
             client.send(playCommand);
         }
-
-        this.waitForClientsReceived();
     }
 
     /**
@@ -70,7 +79,6 @@ public class TCPMusicStreamController implements MusicStreamController {
         for(NetworkClient client : this.clientController.getClients()) {
             client.send(stopCommand);
         }
-        this.waitForClientsReceived();
     }
 
     /**

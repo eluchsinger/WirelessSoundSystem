@@ -21,7 +21,6 @@ public class StaticFileCacheService implements FileCacheService {
 
     private File rootFile = null;
 
-
     /**
      * Default constructor
      * @throws IOException
