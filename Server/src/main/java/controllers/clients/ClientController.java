@@ -8,12 +8,15 @@ import models.networking.clients.NetworkClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Closeable;
+import java.io.IOException;
+
 
 /**
  * Created by Esteban Luchsinger on 26.03.2016.
  * This controller handles the clients connected to the server.
  */
-public class ClientController {
+public class ClientController implements Closeable{
     private final Logger logger;
     private final ObservableList<NetworkClient> clients;
 
@@ -60,4 +63,23 @@ public class ClientController {
         return this.clients;
     }
 
+    /**
+     * Closes this stream and releases any system resources associated
+     * with it. If the stream is already closed then invoking this
+     * method has no effect.
+     * <p>
+     * <p> As noted in {@link AutoCloseable#close()}, cases where the
+     * close may fail require careful attention. It is strongly advised
+     * to relinquish the underlying resources and to internally
+     * <em>mark</em> the {@code Closeable} as closed, prior to throwing
+     * the {@code IOException}.
+     *
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    public void close() throws IOException {
+        for(NetworkClient client : this.getClients()) {
+            client.close();
+        }
+    }
 }

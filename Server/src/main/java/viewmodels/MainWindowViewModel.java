@@ -161,12 +161,14 @@ public class MainWindowViewModel {
                 if(this.serverDiscoveryService != null) {
                     this.serverDiscoveryService.stop();
                     this.logger.info("Stopped Discovery Service!");
-                    if(this.musicStreamController != null && this.musicStreamController instanceof Closeable) {
-                        try {
-                            ((Closeable)this.musicStreamController).close();
-                        } catch (IOException e) {
-                            this.logger.error("Could not close the StreamController", e);
-                        }
+
+                }
+
+                if(this.musicStreamController != null && this.musicStreamController instanceof Closeable) {
+                    try {
+                        ((Closeable)this.musicStreamController).close();
+                    } catch (IOException e) {
+                        this.logger.error("Could not close the StreamController", e);
                     }
                 }
 
@@ -175,6 +177,14 @@ public class MainWindowViewModel {
                         this.tcpServer.close();
                     } catch (IOException e) {
                         this.logger.error("Could not close TCP Server", e);
+                    }
+                }
+
+                if(this.clientController != null) {
+                    try {
+                        this.clientController.close();
+                    } catch (IOException e) {
+                        this.logger.error("Could not close client controller", e);
                     }
                 }
             });
@@ -206,9 +216,22 @@ public class MainWindowViewModel {
 
         if (this.mediaPlayer.isPlaying()) {
             this.mediaPlayer.pause();
+            this.musicStreamController.stop();
         } else if (this.getSelectedSong() != null) {
             this.logger.info("Trying to play: " + this.getSelectedSong().getTitle());
-            this.mediaPlayer.play(this.getSelectedSong(), true);
+
+            if(this.getSelectedSong() != null) {
+                // Start streaming...
+                this.logger.info("Streaming the new song: " + this.getSelectedSong().getTitle());
+                try {
+                    this.musicStreamController.play(this.getSelectedSong());
+                    this.mediaPlayer.play(this.getSelectedSong(), true);
+                }
+                catch(IOException ioException) {
+                    this.logger.error("Error trying to stream", ioException);
+                }
+            }
+
         }
     }
 
@@ -251,20 +274,9 @@ public class MainWindowViewModel {
             this.buttonPlayPause.setId("pause-button");
             this.buttonPlayPause.setSelected(true);
 
-            if(this.getSelectedSong() != null) {
-                // Start streaming...
-                this.logger.info("Streaming the new song: " + this.getSelectedSong().getTitle());
-                try {
-                    this.musicStreamController.play(this.getSelectedSong());
-                }
-                catch(IOException ioException) {
-                    this.logger.error("Error trying to stream", ioException);
-                }
-            }
         } else {
             this.buttonPlayPause.setId("play-button");
             this.buttonPlayPause.setSelected(false);
-            this.musicStreamController.stop();
         }
     }
     //endregion
