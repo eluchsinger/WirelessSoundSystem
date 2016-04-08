@@ -218,20 +218,7 @@ public class MainWindowViewModel {
             this.mediaPlayer.pause();
             this.musicStreamController.stop();
         } else if (this.getSelectedSong() != null) {
-            this.logger.info("Trying to play: " + this.getSelectedSong().getTitle());
-
-            if(this.getSelectedSong() != null) {
-                // Start streaming...
-                this.logger.info("Streaming the new song: " + this.getSelectedSong().getTitle());
-                try {
-                    this.musicStreamController.play(this.getSelectedSong());
-                    this.mediaPlayer.play(this.getSelectedSong(), true);
-                }
-                catch(IOException ioException) {
-                    this.logger.error("Error trying to stream", ioException);
-                }
-            }
-
+            this.startPlaying(this.getSelectedSong());
         }
     }
 
@@ -258,14 +245,6 @@ public class MainWindowViewModel {
     }
 
     /**
-     * This method is called, when a client is renamed, using the ListView.
-     */
-    @FXML
-    public void onListViewClientEditCommit() {
-        System.out.println("Client edit commit");
-    }
-
-    /**
      * This method gets called, when the isPlaying property of the mediaPlayer changes.
      * It handles the play/pause button behavior.
      */
@@ -277,6 +256,28 @@ public class MainWindowViewModel {
         } else {
             this.buttonPlayPause.setId("play-button");
             this.buttonPlayPause.setSelected(false);
+        }
+    }
+
+    /**
+     * Starts playing the song.
+     * Unites the Table-Double-Click function and the play button.
+     * @param song The song that should start playing.
+     */
+    private void startPlaying(Song song) {
+
+        this.logger.info("Trying to play: " + song);
+
+        if(this.getSelectedSong() != null) {
+            // Start streaming...
+            this.logger.info("Streaming the new song: " + song.getTitle());
+            try {
+                this.musicStreamController.play(song);
+                this.mediaPlayer.play(song, true);
+            }
+            catch(IOException ioException) {
+                this.logger.error("Error trying to stream", ioException);
+            }
         }
     }
     //endregion
@@ -300,11 +301,11 @@ public class MainWindowViewModel {
         this.tableViewSongs.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
         tableColumnTitle.setCellValueFactory(
-                new PropertyValueFactory<Song, String>("title")
+                new PropertyValueFactory<>("title")
         );
 
         tableColumnArtist.setCellValueFactory(
-                new PropertyValueFactory<Song, String>("artist")
+                new PropertyValueFactory<>("artist")
         );
 
         // Implement DoubleClick for rows.
@@ -314,7 +315,7 @@ public class MainWindowViewModel {
                 if (event.getClickCount() >= 2 && (!row.isEmpty())) {
                     // Check if its a song.
                     if (Song.class.isInstance(row.getItem()))
-                        this.mediaPlayer.play(row.getItem());
+                        this.startPlaying(row.getItem());
                 }
             });
             return row;
