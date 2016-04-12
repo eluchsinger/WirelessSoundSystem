@@ -37,6 +37,7 @@ import java.util.Optional;
  * Created by Esteban Luchsinger on 30.11.2015.
  */
 public class MainWindowViewModel {
+    //region Members
     private final Logger logger;
 
     private MediaPlayer<Song> mediaPlayer;
@@ -45,49 +46,100 @@ public class MainWindowViewModel {
 
     private TCPSocketServer tcpServer;
     private ClientController clientController;
+    //endregion Members
 
-    // Properties
+    //region Properties
+    /**
+     * Property containing the path to the song folder.
+     */
     private StringProperty pathToFolder;
-    private ObservableList<Song> songObservableList;
 
-    /* Elements */
+    /**
+     * List containing the songs.
+     */
+    private ObservableList<Song> songObservableList;
+    //endregion Properties
+
+    //region Elements
+    /**
+     * The search button provides the user with an option to search for his music.
+     */
     @FXML
     private Button buttonSearch;
 
+    /**
+     * Play and Pause button (Function changes depending on MediaPlayer state).
+     */
     @FXML
     private ToggleButton buttonPlayPause;
 
+    /**
+     * Button to skip to the next song.
+     */
     @FXML
     private Button buttonSkipNext;
 
+    /**
+     * Button to play the previous song.
+     */
     @FXML
     private Button buttonSkipPrevious;
 
+    /**
+     * The textfield containing the song folder.
+     */
     @FXML
     private TextField textFieldFolder;
 
-    @FXML
-    private ListView<NetworkClient> listViewClients;
-
+    /**
+     * The table view containing the songs.
+     */
     @FXML
     private TableView<Song> tableViewSongs;
 
+    /**
+     * The column of the song table containing the title of the song.
+     */
     @FXML
     private TableColumn<Song, String> tableColumnTitle;
 
+    /**
+     * The column of the song table containing the artist.
+     */
     @FXML
     private TableColumn<Song, String> tableColumnArtist;
 
+    /**
+     * The ListView showing the clients (right now: Speakers) connected to this server instance.
+     */
+    @FXML
+    private ListView<NetworkClient> listViewClients;
+
+    /**
+     * The slider that changes the volume (loudness) of the MediaPlayer.
+     */
     @FXML
     private Slider sliderVolume;
 
+    /**
+     * The slider that tracks the song's current playtime.
+     */
     @FXML
     private Slider songTrackerSlider;
 
+    /**
+     * A label describing the current time in the currently playing song.
+     */
     @FXML
     private Label labelCurrentDuration;
+
+    /**
+     * (Workaround)
+     * This is the stage (the window / View) of this ViewModel.
+     */
     private Stage stage;
 
+    //endregion
 
     //region Constructor
     public MainWindowViewModel() {
@@ -98,32 +150,7 @@ public class MainWindowViewModel {
     }
     //endregion Constructor
 
-    /**
-     * Is called, when the window has been initialized.
-     */
-    @FXML
-    protected void initialize() throws IOException {
-
-        this.songObservableList = FXCollections.observableArrayList();
-
-        // Init Media Player
-        this.mediaPlayer = new AudioPlayer(this.songObservableList);
-        this.mediaPlayer.isPlayingProperty().addListener((observable, oldValue, newValue) -> this.onIsPlayingChanged());
-
-        this.tcpServer = new TCPSocketServer();
-        this.clientController = new ClientController(this.tcpServer);
-
-        this.tcpServer.start();
-
-        this.initializeTable();
-        this.initializeClientListView();
-        this.initializeBindings();
-        this.initializeDiscoveryService();
-
-        this.musicStreamController = new TCPMusicStreamController(this.clientController);
-    }
-
-    /* Properties */
+    //region Getters & Setters
     public final String getPathToFolder() {
         return this.pathToFolder.get();
     }
@@ -191,6 +218,8 @@ public class MainWindowViewModel {
         }
     }
 
+    //endregion Getters & Setters
+
     //region Events
 
     @FXML
@@ -214,33 +243,42 @@ public class MainWindowViewModel {
     @FXML
     public void onButtonPlayPauseClicked() {
 
+        // Pause if the pause button was clicked.
         if (this.mediaPlayer.isPlaying()) {
             this.mediaPlayer.pause();
             this.musicStreamController.stop();
         } else if (this.getSelectedSong() != null) {
+            // Play if the play button was clicked.
             this.startPlaying(this.getSelectedSong());
         }
     }
 
     @FXML
     public void onButtonSkipPreviousClicked(){
-
         // First check, if there are items on the list.
-        if(this.songObservableList.size() > 1){
+        if(this.songObservableList != null && this.songObservableList.size() > 1){
             Song previous = this.mediaPlayer.getPreviousTrack();
             if(previous != null){
                 this.mediaPlayer.play(previous);
             }
+        } else {
+            // Error is either null or it's the size.
+            String error = (this.songObservableList == null) ? "not initialized" : Integer.toString(this.songObservableList.size());
+            this.logger.warn("Tried to skip to the previous song, but the song list is currently " + error);
         }
     }
 
     @FXML
     public void onButtonSkipNextClicked(){
-        if(this.songObservableList.size() > 1){
+        if(this.songObservableList != null && this.songObservableList.size() > 1){
             Song next = this.mediaPlayer.getNextTrack();
             if(next != null){
                 this.mediaPlayer.play(next);
             }
+        } else {
+            // Error is either null or it's the size.
+            String error = (this.songObservableList == null) ? "not initialized" : Integer.toString(this.songObservableList.size());
+            this.logger.warn("Tried to skip to the next song, but the song list is currently " + error);
         }
     }
 
@@ -283,6 +321,31 @@ public class MainWindowViewModel {
     //endregion
 
     //region initialization
+
+    /**
+     * Is called, when the window has been initialized.
+     */
+    @FXML
+    protected void initialize() throws IOException {
+
+        this.songObservableList = FXCollections.observableArrayList();
+
+        // Init Media Player
+        this.mediaPlayer = new AudioPlayer(this.songObservableList);
+        this.mediaPlayer.isPlayingProperty().addListener((observable, oldValue, newValue) -> this.onIsPlayingChanged());
+
+        this.tcpServer = new TCPSocketServer();
+        this.clientController = new ClientController(this.tcpServer);
+
+        this.tcpServer.start();
+
+        this.initializeTable();
+        this.initializeClientListView();
+        this.initializeBindings();
+        this.initializeDiscoveryService();
+
+        this.musicStreamController = new TCPMusicStreamController(this.clientController);
+    }
 
     private void initializeDiscoveryService() {
 
