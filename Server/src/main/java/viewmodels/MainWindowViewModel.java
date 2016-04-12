@@ -30,6 +30,8 @@ import utils.DurationStringConverter;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -155,8 +157,14 @@ public class MainWindowViewModel {
         return this.pathToFolder.get();
     }
 
-    public final void setPathToFolder(String path) {
-        this.pathToFolder.set(path);
+    public final void setPathToFolder(File file) {
+        this.pathToFolder.set(file.getAbsolutePath());
+
+
+        // Loads the songs.
+        SongsHandler handler = new SongsHandler();
+        List<Song> songs = handler.loadSongsFromDir(file.getPath());
+        this.songObservableList.setAll(songs);
     }
 
     public StringProperty getPathToFolderProperty() {
@@ -229,14 +237,7 @@ public class MainWindowViewModel {
         File file = directoryChooser.showDialog(this.buttonSearch.getScene().getWindow());
 
         if (file != null) {
-
-            // Sets the property for the textBox.
-            this.setPathToFolder(file.getPath());
-
-            // Loads the songs.
-            SongsHandler handler = new SongsHandler();
-            List<Song> songs = handler.loadSongsFromDir(file.getPath());
-            this.songObservableList.setAll(songs);
+            this.setPathToFolder(file);
         }
     }
 
@@ -345,6 +346,11 @@ public class MainWindowViewModel {
         this.initializeDiscoveryService();
 
         this.musicStreamController = new TCPMusicStreamController(this.clientController);
+
+        File file = this.guessSongsFolder();
+        if(file != null) {
+            this.setPathToFolder(file);
+        }
     }
 
     private void initializeDiscoveryService() {
@@ -455,7 +461,35 @@ public class MainWindowViewModel {
         });
     }
 
+    /**
+     * Guesses the song folder. May return the folder or may not.
+     * @return Returns the songs folder or null, if it was not found.
+     */
+    private File guessSongsFolder() {
+        File file = null;
+        try {
+            String userFolder = System.getProperty("user.home");
+            Path path = Paths.get(userFolder, "Music");
+            file = path.toFile();
 
+            if(file != null) {
+
+                if(file.exists()) {
+                    this.logger.info("Music folder in " +  file.getAbsolutePath() + " was not found.");
+                } else {
+                    this.logger.info("Music Folder (in " + file.getAbsolutePath() + ") was found.");
+                }
+            } else {
+                throw new Exception("The path returned was null");
+            }
+
+        }
+        catch(Exception ex) {
+            this.logger.warn("Failed guessing the users song folder", ex);
+        }
+
+        return file;
+    }
     //endregion
 
 }
