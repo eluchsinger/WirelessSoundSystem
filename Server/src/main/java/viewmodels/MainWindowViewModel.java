@@ -54,7 +54,7 @@ public class MainWindowViewModel {
     /**
      * Property containing the path to the song folder.
      */
-    private StringProperty pathToFolder;
+    private StringProperty pathToSongFolder;
 
     /**
      * List containing the songs.
@@ -153,12 +153,12 @@ public class MainWindowViewModel {
     //endregion Constructor
 
     //region Getters & Setters
-    public final String getPathToFolder() {
-        return this.pathToFolder.get();
+    public final String getPathToSongFolder() {
+        return this.pathToSongFolder.get();
     }
 
-    public final void setPathToFolder(File file) {
-        this.pathToFolder.set(file.getAbsolutePath());
+    public final void setPathToSongFolder(File file) {
+        this.pathToSongFolder.set(file.getAbsolutePath());
 
 
         // Loads the songs.
@@ -168,7 +168,7 @@ public class MainWindowViewModel {
     }
 
     public StringProperty getPathToFolderProperty() {
-        return this.pathToFolder;
+        return this.pathToSongFolder;
     }
 
     /**
@@ -237,7 +237,7 @@ public class MainWindowViewModel {
         File file = directoryChooser.showDialog(this.buttonSearch.getScene().getWindow());
 
         if (file != null) {
-            this.setPathToFolder(file);
+            this.setPathToSongFolder(file);
         }
     }
 
@@ -349,7 +349,7 @@ public class MainWindowViewModel {
 
         File file = this.guessSongsFolder();
         if(file != null) {
-            this.setPathToFolder(file);
+            this.setPathToSongFolder(file);
         }
     }
 
@@ -396,7 +396,7 @@ public class MainWindowViewModel {
      */
     private void initializeBindings(){
         // Do binding for the music folder.
-        this.pathToFolder = new SimpleStringProperty();
+        this.pathToSongFolder = new SimpleStringProperty();
         this.textFieldFolder.textProperty().bindBidirectional(this.getPathToFolderProperty());
 
         // Bind Slider to Volume property
