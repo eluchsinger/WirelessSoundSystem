@@ -14,9 +14,10 @@ import java.io.File;
 import java.util.Optional;
 
 /**
- * Created by eluch on 01.12.2015.
+ * Created by Esteban Luchsinger on 01.12.2015.
+ * This is a simple audio player designed to handle the music playing.
  */
-public class AudioPlayer implements controllers.media.MediaPlayer<Song> {
+public class SimpleAudioPlayer implements controllers.media.MediaPlayer<Song> {
 
     private final Logger logger;
     /**
@@ -33,12 +34,12 @@ public class AudioPlayer implements controllers.media.MediaPlayer<Song> {
     private ObservableList<Song> playlist;
     private Song lastPlayed;
 
-    public AudioPlayer() {
+    public SimpleAudioPlayer() {
         // Call parameterized constructor with a new list.
         this(FXCollections.observableArrayList());
     }
 
-    public AudioPlayer(ObservableList<Song> songs) {
+    public SimpleAudioPlayer(ObservableList<Song> songs) {
         this.logger = LoggerFactory.getLogger(this.getClass());
         this.playlist = songs;
 
@@ -50,8 +51,7 @@ public class AudioPlayer implements controllers.media.MediaPlayer<Song> {
     }
 
     /**
-     * Plays the selected trackc, if found.
-     *
+     * Plays the selected track if found and / or resumes it.
      * @param track The track that should be played. (Must not be the same reference as in the playlist).
      * @param tryResume Tries to resume the song, if it is paused.
      */

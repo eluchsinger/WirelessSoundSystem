@@ -8,6 +8,7 @@ repositories {
 }
 
 mainClassName = "controllers.Main"
+version = 0.2
 
 task executeServer(type: JavaExec){
     main = "controllers.Main"

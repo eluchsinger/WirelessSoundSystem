@@ -3,7 +3,7 @@ package viewmodels;
 import controllers.clients.ClientController;
 import controllers.io.SongsHandler;
 import controllers.media.MediaPlayer;
-import controllers.media.music.AudioPlayer;
+import controllers.media.music.SimpleAudioPlayer;
 import controllers.networking.discovery.ServerDiscoveryService;
 import controllers.networking.streaming.music.MusicStreamController;
 import controllers.networking.streaming.music.tcp.TCPMusicStreamController;
@@ -332,7 +332,7 @@ public class MainWindowViewModel {
         this.songObservableList = FXCollections.observableArrayList();
 
         // Init Media Player
-        this.mediaPlayer = new AudioPlayer(this.songObservableList);
+        this.mediaPlayer = new SimpleAudioPlayer(this.songObservableList);
         this.mediaPlayer.isPlayingProperty().addListener((observable, oldValue, newValue) -> this.onIsPlayingChanged());
 
         this.tcpServer = new TCPSocketServer();

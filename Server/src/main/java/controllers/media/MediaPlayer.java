@@ -8,10 +8,27 @@ import javafx.util.Duration;
 
 /**
  * Created by Esteban Luchsinger on 01.12.2015.
+ * A media player interface built to handle different types of media (music/video).
  */
 public interface MediaPlayer<T> {
+
+    /**
+     * Plays a track and tries to resume it, if desired.
+     * @param track Track to play.
+     * @param tryResume Set this true, if the track should be resumed (only if possible).
+     */
     void play(T track, boolean tryResume);
+
+    /**
+     * Plays a track.
+     * @param track The track to play.
+     */
     void play(T track);
+
+    /**
+     * Pauses the currently played track.
+     * If there is no currently playing track, doesn't do anything.
+     */
     void pause();
 
     /**
@@ -19,7 +36,16 @@ public interface MediaPlayer<T> {
      * Can be used always, without checking the status.
      */
     void stop();
+
+    /**
+     * @return Returns true if the player is currently playing.
+     */
     boolean isPlaying();
+
+    /**
+     * Property to bind the isPlaying value.
+     * @return Returns the property to the corresponding isPlaying field.
+     */
     BooleanProperty isPlayingProperty();
 
     /**
@@ -46,13 +72,40 @@ public interface MediaPlayer<T> {
      */
     T getPreviousTrack();
 
+    /**
+     * @return Returns the current track.
+     */
     T getCurrentTrack();
+
+    /**
+     * @return Returns the property with the value of the current track.
+     */
     SimpleObjectProperty<T> currentTrackProperty();
 
+    /**
+     * @return Returns the current media time ObjectProperty. This property shows the current progress of the currently playing track.
+     */
     ObjectProperty<Duration> currentMediaTime();
+
+    /**
+     * @return Returns the total duration of the currently playing media.
+     */
     ObjectProperty<Duration> totalMediaDuration();
 
+    /**
+     * @return Returns the current volume value.
+     */
     double getVolume();
+
+    /**
+     * Sets the current volume value.
+     * Bigger value = Louder!
+     * @param value New Value
+     */
     void setVolume(double value);
+
+    /**
+     * @return Returns the property containing the current volume. (Write and read possible!)
+     */
     DoubleProperty volumeProperty();
 }
