@@ -28,7 +28,7 @@ import java.util.List;
 
 /**
  * Created by Esteban Luchsinger on 01.03.2016.
- * The old TCP Music Streaming Controller using the old Socket implementation (as opposed to NIO).
+ * The TCP Socket Implementation. Uses normal sockets (Blocking mode).
  */
 public class TCPMusicStreamingController implements MusicStreamingService {
 

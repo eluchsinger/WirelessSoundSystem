@@ -111,7 +111,6 @@ public class StaticFileCacheService implements FileCacheService {
     /**
      * Returns the new file and if it doesn't exist, it creates a new file.
      * @return Returns the cache file.
-     * @throws IOException
      */
     public File getFile() {
         try {
