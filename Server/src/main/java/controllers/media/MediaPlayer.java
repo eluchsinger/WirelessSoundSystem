@@ -14,12 +14,12 @@ import javafx.util.Duration;
  */
 public interface MediaPlayer<T> {
 
-    /**
-     * Plays a track and tries to resume it, if desired.
-     * @param track Track to play.
-     * @param tryResume Set this true, if the track should be resumed (only if possible).
-     */
-    void play(T track, boolean tryResume);
+//    /**
+//     * Plays a track and tries to resume it, if desired.
+//     * @param track Track to play.
+//     * @param tryResume Set this true, if the track should be resumed (only if possible).
+//     */
+//    void play(T track, boolean tryResume);
 
     /**
      * Plays a track.
@@ -59,7 +59,7 @@ public interface MediaPlayer<T> {
         if(this.isPlaying())
             this.pause();
         else
-            this.play(this.getCurrentTrack(), true);
+            this.play(this.getCurrentTrack());
     }
 
     /**
@@ -87,12 +87,12 @@ public interface MediaPlayer<T> {
     /**
      * @return Returns the current media time ObjectProperty. This property shows the current progress of the currently playing track.
      */
-    ObjectProperty<Duration> currentMediaTime();
+    ObjectProperty<Duration> currentMediaTimeProperty();
 
     /**
      * @return Returns the total duration of the currently playing media.
      */
-    ObjectProperty<Duration> totalMediaDuration();
+    ObjectProperty<Duration> totalMediaDurationProperty();
 
     /**
      * @return Returns the current volume value.

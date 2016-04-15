@@ -312,7 +312,7 @@ public class MainWindowViewModel {
             this.logger.info("Streaming the new song: " + song.getTitle());
             try {
                 this.musicStreamController.play(song);
-                this.mediaPlayer.play(song, true);
+                this.mediaPlayer.play(song);
             }
             catch(IOException ioException) {
                 this.logger.error("Error trying to stream", ioException);
@@ -403,7 +403,7 @@ public class MainWindowViewModel {
         this.sliderVolume.valueProperty().bindBidirectional(this.mediaPlayer.volumeProperty());
 
         // Bind CurrentDuration Label to CurrentDuration Property
-        Bindings.bindBidirectional(this.labelCurrentDuration.textProperty(), this.mediaPlayer.currentMediaTime(), new DurationStringConverter());
+        Bindings.bindBidirectional(this.labelCurrentDuration.textProperty(), this.mediaPlayer.currentMediaTimeProperty(), new DurationStringConverter());
 
         this.bindSongTrackerSlider();
     }
@@ -414,13 +414,13 @@ public class MainWindowViewModel {
     private void bindSongTrackerSlider() {
         // Create a DoubleBinding which calculates the value of the duration-slider.
         DoubleBinding durationPercentageBinding = Bindings.createDoubleBinding(() -> {
-                    if (this.mediaPlayer.totalMediaDuration().get() != null && this.mediaPlayer.totalMediaDuration().get().toSeconds() > 0) {
-                        return this.mediaPlayer.currentMediaTime().get().toSeconds() * 100 / this.mediaPlayer.totalMediaDuration().get().toSeconds();
+                    if (this.mediaPlayer.totalMediaDurationProperty().get() != null && this.mediaPlayer.totalMediaDurationProperty().get().toSeconds() > 0) {
+                        return this.mediaPlayer.currentMediaTimeProperty().get().toSeconds() * 100 / this.mediaPlayer.totalMediaDurationProperty().get().toSeconds();
                     } else {
                         return (double) 0;
                     }
                 },
-                this.mediaPlayer.currentMediaTime()
+                this.mediaPlayer.currentMediaTimeProperty()
         );
 
         this.songTrackerSlider.valueProperty().bind(durationPercentageBinding);

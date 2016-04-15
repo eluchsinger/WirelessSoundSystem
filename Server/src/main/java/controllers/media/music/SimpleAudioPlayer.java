@@ -246,23 +246,11 @@ public class SimpleAudioPlayer implements controllers.media.MediaPlayer<Song> {
                 .orElse(null);
     }
 
-    public Duration getCurrentMediaTime() {
-        return this.currentMediaTime.get();
-    }
-
-    public StringProperty currentMediaTimeString() {
-        return this.currentMediaTimeString;
-    }
-
-    public ObjectProperty<Duration> currentMediaTime() {
+    public ObjectProperty<Duration> currentMediaTimeProperty() {
         return this.currentMediaTime;
     }
 
-    public Duration getTotalMediaDuration() {
-        return this.totalMediaDuration.get();
-    }
-
-    public ObjectProperty<Duration> totalMediaDuration() {
+    public ObjectProperty<Duration> totalMediaDurationProperty() {
         return this.totalMediaDuration;
     }
 

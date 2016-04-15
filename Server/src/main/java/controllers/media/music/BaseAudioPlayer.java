@@ -1,9 +1,10 @@
 package controllers.media.music;
 
 import javafx.beans.property.*;
-import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 import models.songs.Song;
+
+import java.util.List;
 
 /**
  * Created by Esteban Luchsinger on 14.04.2016.
@@ -17,9 +18,9 @@ public abstract class BaseAudioPlayer implements controllers.media.MediaPlayer<S
     private ObjectProperty<Duration> totalMediaDuration;
     private DoubleProperty volume;
 
-    private MediaPlayer mediaPlayer;
+    private List<Song> playlist;
 
-    public BaseAudioPlayer() {
+    public BaseAudioPlayer(List<Song> playlist) {
 
         // Init properties
         this.isPlaying = new SimpleBooleanProperty();
@@ -27,20 +28,17 @@ public abstract class BaseAudioPlayer implements controllers.media.MediaPlayer<S
         this.currentMediaTimeString = new SimpleStringProperty();
         this.totalMediaDuration = new SimpleObjectProperty<>();
         this.volume = new SimpleDoubleProperty();
+
+        this.setPlaylist(playlist);
     }
 
-    public boolean getIsPlaying() {
-        return isPlaying.get();
-    }
 
     @Override
     public BooleanProperty isPlayingProperty() {
         return isPlaying;
     }
 
-    protected void setIsPlaying(boolean isPlaying) {
-        this.isPlaying.set(isPlaying);
-    }
+    public boolean isPlaying() { return this.isPlayingProperty().get(); }
 
     public Duration getCurrentMediaTime() {
         return currentMediaTime.get();
@@ -82,5 +80,21 @@ public abstract class BaseAudioPlayer implements controllers.media.MediaPlayer<S
 
     public void setVolume(double volume) {
         this.volume.set(volume);
+    }
+
+    /**
+     * Sets the playlist of songs.
+     * @param playlist new playlist
+     */
+    protected void setPlaylist(List<Song> playlist) {
+        this.playlist = playlist;
+    }
+
+    /**
+     * Retrieves the playlist for this AudioPlayer.
+     * @return The current playlist.
+     */
+    public List<Song> getPlaylist() {
+        return this.playlist;
     }
 }
