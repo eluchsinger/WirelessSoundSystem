@@ -10,8 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * <pre>
  * Created by Esteban on 30.11.2015.
  * Handles songs (ie: Reading songs from files)
+ * </pre>
  */
 public class SongsHandler {
 

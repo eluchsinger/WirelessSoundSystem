@@ -14,8 +14,10 @@ import java.io.File;
 import java.util.Optional;
 
 /**
+ * <pre>
  * Created by Esteban Luchsinger on 01.12.2015.
  * This is a simple audio player designed to handle the music playing.
+ * </pre>
  */
 public class SimpleAudioPlayer implements controllers.media.MediaPlayer<Song> {
 

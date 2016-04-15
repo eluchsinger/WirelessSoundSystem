@@ -1,37 +1,96 @@
 package controllers.media.music;
 
-import controllers.clients.ClientController;
-import controllers.media.MediaPlayer;
+import controllers.networking.streaming.music.MusicStreamController;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 import models.songs.Song;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+
 /**
  * Created by Esteban Luchsinger on 13.04.2016.
  * The simple audio player enhanced for use in network.
+ * The network clients are controlled by the required music stream controller.
  */
-public class NetworkAudioPlayer implements MediaPlayer<Song> {
+public class NetworkAudioPlayer implements controllers.media.MediaPlayer<Song> {
+    //region Members
     private final Logger logger;
 
-    private final ClientController clientController;
+    private final MusicStreamController musicStreamController;
+    private MediaPlayer mediaPlayer;
 
-    public NetworkAudioPlayer(ClientController clientController) {
-        this(FXCollections.observableArrayList(), clientController);
+    //endregion Members
+
+    //region Constructors
+
+    public NetworkAudioPlayer(MusicStreamController musicStreamController) {
+        this(FXCollections.observableArrayList(), musicStreamController);
     }
 
-    public NetworkAudioPlayer(ObservableList<Song> songs, ClientController clientController) {
+    public NetworkAudioPlayer(ObservableList<Song> songs, MusicStreamController musicStreamController) {
         this.logger = LoggerFactory.getLogger(this.getClass());
 
-        this.clientController = clientController;
+        this.musicStreamController = musicStreamController;
     }
 
+    //endregion Constructors
+
+    //region Getters & Setters
+
+    /**
+     * Initializes the media player for the song in the parameters.
+     * If the current MediaPlayer already uses the song in the parameters, it wont be reinitialized.
+     * If the current MediaPlayer is playing, it will be stopped and disposed.
+     * @param song Song for the MediaPlayer
+     * @return the MediaPlayer for the desired song.
+     */
+    private MediaPlayer getMediaPlayer(Song song) {
+        if(this.mediaPlayer == null) {
+            this.mediaPlayer = new MediaPlayer(this.createMediaFromSong(song));
+        }
+
+        return this.mediaPlayer;
+    }
+
+    /**
+     * Retrieves the current MediaPlayer with whatever song it may have initialized (null possible).
+     * @return Current MediaPlayer (null possible).
+     */
+    private MediaPlayer getCurrentMediaPlayer() {
+        return this.mediaPlayer;
+    }
+
+    //endregion Getters & Setters
+
+    //region Private methods
+
+    /**
+     * Creates a JavaFX Media Object from a Song object.
+     * This method is not in the shared code module, because it uses JavaFX.
+     * @param song The song object containing the path.
+     * @return Returns a Media object with the Song.
+     */
+    private Media createMediaFromSong(Song song) {
+
+        // Have to create a temporary file to convert the path to a URI.
+        File tempFile = new File(song.getPath());
+
+        Media media = new Media(tempFile.toURI().toString());
+        return media;
+    }
+
+    //endregion Private methods
+
+    //region MediaPlayer Interface
     /**
      * Plays a track and tries to resume it, if desired.
      *
@@ -50,7 +109,6 @@ public class NetworkAudioPlayer implements MediaPlayer<Song> {
      */
     @Override
     public void play(Song track) {
-
     }
 
     /**
@@ -69,6 +127,11 @@ public class NetworkAudioPlayer implements MediaPlayer<Song> {
     @Override
     public void stop() {
 
+        // Check, if the MediaPlayer needs to get disposed first.
+        if (this.mediaPlayer != null) {
+            this.mediaPlayer.dispose();
+            this.mediaPlayer = null;
+        }
     }
 
     /**
@@ -167,4 +230,6 @@ public class NetworkAudioPlayer implements MediaPlayer<Song> {
     public DoubleProperty volumeProperty() {
         return null;
     }
+
+    //endregion MediaPlayer Interface
 }

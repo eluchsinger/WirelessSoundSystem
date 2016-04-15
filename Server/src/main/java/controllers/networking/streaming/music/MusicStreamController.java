@@ -5,8 +5,10 @@ import models.songs.Song;
 import java.io.IOException;
 
 /**
+ * <pre>
  * Created by Esteban Luchsinger on 16.12.2015.
  * This interface controls the song streaming.
+ * </pre>
  */
 public interface MusicStreamController {
 

@@ -14,9 +14,11 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * <pre>
  * Created by Esteban Luchsinger on 04.12.2015.
  * Discovery Service Handler.
  * Sends out beacons in an interval.
+ * </pre>
  */
 public class ServerDiscoveryService implements Closeable {
 

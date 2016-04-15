@@ -7,8 +7,10 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.util.Duration;
 
 /**
+ * <pre>
  * Created by Esteban Luchsinger on 01.12.2015.
  * A media player interface built to handle different types of media (music/video).
+ * </pre>
  */
 public interface MediaPlayer<T> {
 

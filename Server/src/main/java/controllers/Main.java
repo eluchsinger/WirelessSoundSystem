@@ -8,6 +8,10 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import viewmodels.MainWindowViewModel;
 
+/**
+ * Main Class.
+ * This class starts the JavaFX application.
+ */
 public class Main extends Application {
 
     @Override

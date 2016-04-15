@@ -11,10 +11,11 @@ import org.slf4j.LoggerFactory;
 import java.io.Closeable;
 import java.io.IOException;
 
-
 /**
+ * <pre>
  * Created by Esteban Luchsinger on 26.03.2016.
  * This controller handles the clients connected to the server.
+ * </pre>
  */
 public class ClientController implements Closeable{
     private final Logger logger;
