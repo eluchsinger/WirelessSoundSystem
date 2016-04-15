@@ -1,37 +1,61 @@
 package models.networking.messages;
 
-import java.util.*;
-import java.util.regex.MatchResult;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 /**
+ * <pre>
  * Created by Esteban Luchsinger on 18.12.2015.
  * This class contains static messages used for the streaming network protocols
  *
  * Change 04.03.2016 (ELU):
- * Changed the messages to be used in a continuous stream. (TCP is continious, UDP is Datagram-oriented).
+ * Changed the messages to be used in a continuous stream. (TCP is continuous, UDP is Datagram-oriented).
+ * </pre>
  */
 public final class StreamingMessage {
 
     // INITIALIZATION example: <start length=100>
+    /**
+     * The initial bracket for the stream initialization message.
+     */
     public final static String STREAMING_INITIALIZATION_MESSAGE = "<stream>";
+
+    /**
+     * The length attribute for the initialization message.
+     */
     public final static String STREAMING_INITIALIZATION_LENGTH_ATTRIBUTE = "length";
+
+    /**
+     * The acknowledge message for a streaming initialization message (The response from the client to the server).
+     */
     public final static String STREAMING_INITIALIZATION_ACKNOWLEDGED_MESSAGE = "<ack>stream</ack>";
 
     // QUALITY
+    /**
+     * This message is sent when there are packages missing.
+     * This is the starting bracket.
+     */
     public final static String MISSING_PACKETS_MESSAGE = "<missing>";
+
+    /**
+     * This message is sent when there are packages missing.
+     * This is the closing bracket of the MISSING_PACKETS MESSAGE.
+     */
     public final static String MISSING_PACKETS_CLOSE = "</missing>";
 
     // FINALIZATION
+    /**
+     * The stream finalization message is sent when the stream is finished.
+     */
     public final static String STREAMING_FINALIZATION_MESSAGE = "</stream>";
 
     //region Initialization
     /**
      * The Streaming Initialization Message is sent before the server starts streaming a song.
      * It contains the amount of packets for UDP and bytes for TCP that are going to be sent.
-     * Example: <start length=100>
+     * Example:  {@code <start length=100> }
      * @param amountOfPackets Amount of packets that are going to be sent in the stream.
      * @return Returns the correct message corresponding with the parameters.
      */
@@ -43,7 +67,7 @@ public final class StreamingMessage {
 
     /**
      * The message sent when the streaming finished.
-     * Example: </stream>
+     * Example: {@code </stream>}
      * @return
      */
     public static String streamingEndedMessage() {
@@ -88,10 +112,10 @@ public final class StreamingMessage {
     /**
      * Returns a string list with all attributes (with values) in the tag.
      * Example:
-     *  Input: <start length=100 size=300>
-     *  Output: ["length=100", "size=300"]
-     * @param tag
-     * @return
+     *  Input: {@code <start length=100 size=300>}
+     *  Output: {@code {"length=100", "size=300"}}
+     * @param tag The tag you want to check. (Complete tag with brackets)
+     * @return Returns a list of strings with the attributes and corresponding values in the tag.
      */
     public static List<String> getAttributes(String tag){
         Pattern pattern = Pattern.compile("(?<attribute>[a-zA-Z]*=(?<value>[0-9]*))");

@@ -9,8 +9,10 @@ import java.net.SocketException;
 import java.util.Enumeration;
 
 /**
+ * <pre>
  * Created by Esteban Luchsinger on 03.12.2015.
  * Provides some basic functionality.
+ * </pre>
  */
 public class NetUtil {
     private static InetAddress broadcastAddress;
@@ -78,7 +80,6 @@ public class NetUtil {
      *
      * Threadsafe.
      * @return
-     * @throws SocketException
      */
     public static InetAddress getBroadcastAddress4() {
         return broadcastAddress;

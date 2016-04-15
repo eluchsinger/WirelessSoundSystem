@@ -4,7 +4,6 @@ import javafx.beans.property.SimpleStringProperty;
 import models.networking.clients.callbacks.OnDisconnected;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -28,7 +27,6 @@ public interface NetworkClient extends Closeable {
     /**
      * Sends an object to the connected socket.
      * @param object Object to send. Must implement the serializable interface.
-     * @throws IOException
      */
     void send(Object object);
 
@@ -59,7 +57,7 @@ public interface NetworkClient extends Closeable {
     String getName();
 
     /**
-     * @return Sets the name of the Network Client.
+     * Sets the name of the Network Client.
      */
     void setName(String name);
 

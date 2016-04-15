@@ -1,7 +1,7 @@
 package models.songs;
 
 /**
- * Created by eluch on 30.11.2015.
+ * Created by Esteban Luchsinger on 30.11.2015.
  */
 public interface Song extends Comparable<Song> {
     /**
@@ -18,7 +18,7 @@ public interface Song extends Comparable<Song> {
 
     /**
      * Returns the file extension without the dot.
-     * @return i.e. MP3 --> "mp3"
+     * @return i.e. MP3 --&gt; "mp3"
      */
     String getExtension();
 

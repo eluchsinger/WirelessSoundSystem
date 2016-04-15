@@ -106,7 +106,7 @@ public class Server {
 
     /**
      * Creates a string with representing the server Object.
-     * @return String: "<HostAddress> (Port: <Port>)"
+     * @return String: "&lt;HostAddress&lt; (Port: &lt;Port&lt;)"
      */
     @Override
     public String toString() {

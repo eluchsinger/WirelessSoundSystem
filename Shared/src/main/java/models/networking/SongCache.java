@@ -13,8 +13,10 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
+ * <pre>
  * Created by Esteban Luchsinger on 18.12.2015.
  * The cache stores the Songs inside a TreeSet.
+ * </pre>
  */
 public class SongCache {
     private Set<SongDatagram> cache;
@@ -72,7 +74,7 @@ public class SongCache {
      * Gets the missing sequence numbers.
      * @return List of the missing sequence numbers. If there are no missing numbers,
      * returns an empty list.
-     * If there are no missing datagrams, returns an empty List<Integer>.
+     * If there are no missing datagrams, returns an empty List&lt;Integer&gt;.
      */
     public List<Integer> getMissingSequenceNumbers() throws Exception /*throws CacheOverflowException */{
 
