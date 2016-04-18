@@ -3,7 +3,7 @@ plugins {
 }
 
 repositories {
-    mavenCentral()
+    jcenter()
 }
 allprojects {
     sourceCompatibility = 1.8
