@@ -3,8 +3,8 @@ package controllers.media;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.util.Duration;
+import models.songs.Song;
 
 /**
  * <pre>
@@ -75,14 +75,14 @@ public interface MediaPlayer<T> {
     T getPreviousTrack();
 
     /**
-     * @return Returns the current track.
+     * @return Returns the current track or null if the player has got no current track.
      */
     T getCurrentTrack();
 
     /**
      * @return Returns the property with the value of the current track.
      */
-    SimpleObjectProperty<T> currentTrackProperty();
+    ObjectProperty<Song> currentTrackProperty();
 
     /**
      * @return Returns the current media time ObjectProperty. This property shows the current progress of the currently playing track.

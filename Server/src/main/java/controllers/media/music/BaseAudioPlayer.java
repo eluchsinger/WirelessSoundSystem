@@ -16,6 +16,7 @@ public abstract class BaseAudioPlayer implements controllers.media.MediaPlayer<S
     private ObjectProperty<Duration> currentMediaTime;
     private StringProperty currentMediaTimeString;
     private ObjectProperty<Duration> totalMediaDuration;
+    private ObjectProperty<Song> currentTrack;
     private DoubleProperty volume;
 
     private List<Song> playlist;
@@ -41,7 +42,7 @@ public abstract class BaseAudioPlayer implements controllers.media.MediaPlayer<S
     public boolean isPlaying() { return this.isPlayingProperty().get(); }
 
     public Duration getCurrentMediaTime() {
-        return currentMediaTime.get();
+        return currentMediaTimeProperty().get();
     }
 
     public ObjectProperty<Duration> currentMediaTimeProperty() {
@@ -57,7 +58,7 @@ public abstract class BaseAudioPlayer implements controllers.media.MediaPlayer<S
     }
 
     public Duration getTotalMediaDuration() {
-        return totalMediaDuration.get();
+        return totalMediaDurationProperty().get();
     }
 
     public ObjectProperty<Duration> totalMediaDurationProperty() {
@@ -65,7 +66,46 @@ public abstract class BaseAudioPlayer implements controllers.media.MediaPlayer<S
     }
 
     public void setTotalMediaDuration(Duration totalMediaDuration) {
-        this.totalMediaDuration.set(totalMediaDuration);
+        this.totalMediaDurationProperty().set(totalMediaDuration);
+    }
+
+    @Override
+    public Song getCurrentTrack() {
+        return currentTrackProperty().get();
+    }
+
+    @Override
+    public ObjectProperty<Song> currentTrackProperty() {
+        return currentTrack;
+    }
+
+    public void setCurrentTrack(Song currentTrack) {
+        this.currentTrackProperty().set(currentTrack);
+    }
+
+    @Override
+    public Song getNextTrack() {
+        if(this.getCurrentTrack() != null) {
+            int currentIndex = this.getPlaylist().indexOf(this.getCurrentTrack());
+
+            if(this.getPlaylist().size() >= currentIndex) {
+                return this.getPlaylist().get(currentIndex + 1);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Song getPreviousTrack() {
+        if(this.getCurrentTrack() != null) {
+            int currentIndex = this.getPlaylist().indexOf(this.getCurrentTrack());
+
+            if(currentIndex > 0) {
+                return this.getPlaylist().get(currentIndex - 1);
+            }
+        }
+
+        return null;
     }
 
     @Override

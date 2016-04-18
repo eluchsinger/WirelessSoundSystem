@@ -1,9 +1,6 @@
 package controllers.media.music;
 
 import controllers.networking.streaming.music.MusicStreamController;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.media.Media;
@@ -15,9 +12,12 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 
 /**
+ * <pre>
  * Created by Esteban Luchsinger on 13.04.2016.
- * The simple audio player enhanced for use in network.
+ * The simple audio player enhanced for use in network. This means that this controller will
+ * handle the streaming of the right songs with the clients.
  * The network clients are controlled by the required music stream controller.
+ * </pre>
  */
 public class NetworkAudioPlayer extends BaseAudioPlayer implements controllers.media.MediaPlayer<Song> {
     //region Members
@@ -39,6 +39,11 @@ public class NetworkAudioPlayer extends BaseAudioPlayer implements controllers.m
         this(FXCollections.observableArrayList(), musicStreamController);
     }
 
+    /**
+     * Advanced Constructor with parameters.
+     * @param songs
+     * @param musicStreamController
+     */
     public NetworkAudioPlayer(ObservableList<Song> songs, MusicStreamController musicStreamController) {
         super(songs);
         this.logger = LoggerFactory.getLogger(this.getClass());
@@ -69,6 +74,8 @@ public class NetworkAudioPlayer extends BaseAudioPlayer implements controllers.m
                 this.mediaPlayer = this.initializeMediaPlayer(possibleMedia);
             }
         }
+
+        this.currentTrackProperty().setValue(song);
 
         return this.mediaPlayer;
     }
@@ -163,67 +170,6 @@ public class NetworkAudioPlayer extends BaseAudioPlayer implements controllers.m
         if(this.getMediaPlayer() != null) {
             this.getMediaPlayer().stop();
         }
-    }
-
-    /**
-     * @return Returns true if the player is currently playing, false if not.
-     */
-    public boolean isPlaying() {
-        return this.isPlayingProperty().get();
-    }
-
-    /**
-     * Property to bind the isPlaying value.
-     *
-     * @return Returns the property to the corresponding isPlaying field.
-     */
-    @Override
-    public BooleanProperty isPlayingProperty() {
-        return null;
-    }
-
-    /**
-     * Tries to find the next track.
-     *
-     * @return Returns the next track on the playlist, or null if it wasn't found.
-     */
-    @Override
-    public Song getNextTrack() {
-        return null;
-    }
-
-    /**
-     * Tries to find the previous track.
-     *
-     * @return Returns the previous track on the playlist, or null if it wasn't found.
-     */
-    @Override
-    public Song getPreviousTrack() {
-        return null;
-    }
-
-    /**
-     * @return Returns the current track.
-     */
-    @Override
-    public Song getCurrentTrack() {
-        return null;
-    }
-
-    /**
-     * @return Returns the property with the value of the current track.
-     */
-    @Override
-    public SimpleObjectProperty<Song> currentTrackProperty() {
-        return null;
-    }
-
-    /**
-     * @return Returns the property containing the current volume. (Write and read possible!)
-     */
-    @Override
-    public DoubleProperty volumeProperty() {
-        return null;
     }
 
     //endregion MediaPlayer Interface
