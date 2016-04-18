@@ -36,7 +36,10 @@ import java.util.List;
 import java.util.Optional;
 
 /**
+ * <pre>
  * Created by Esteban Luchsinger on 30.11.2015.
+ * This is the ViewModel for the MainWindow view.
+ * </pre>
  */
 public class MainWindowViewModel {
     //region Members
@@ -144,6 +147,10 @@ public class MainWindowViewModel {
     //endregion
 
     //region Constructor
+
+    /**
+     * Default constructor
+     */
     public MainWindowViewModel() {
 
         // Init SLF4J logger
@@ -153,11 +160,20 @@ public class MainWindowViewModel {
     //endregion Constructor
 
     //region Getters & Setters
-    public final String getPathToSongFolder() {
+
+    /**
+     * Retrieves the path to the song folder (in the file system).
+     * @return a string containing the path to the song folder.
+     */
+    public String getPathToSongFolder() {
         return this.pathToSongFolder.get();
     }
 
-    public final void setPathToSongFolder(File file) {
+    /**
+     * Sets the path to the song folder (in the file system).
+     * @param file File object to set the path to. (This object must be a folder!)
+     */
+    public void setPathToSongFolder(File file) {
         this.pathToSongFolder.set(file.getAbsolutePath());
 
 
@@ -167,6 +183,10 @@ public class MainWindowViewModel {
         this.songObservableList.setAll(songs);
     }
 
+    /**
+     * Gets the Property containing the song folder (in the File System).
+     * @return StringProperty object containing the path to the song folder.
+     */
     public StringProperty getPathToFolderProperty() {
         return this.pathToSongFolder;
     }
@@ -230,6 +250,10 @@ public class MainWindowViewModel {
 
     //region Events
 
+    /**
+     * This event gets called, when the button <code>search</code> is clicked.
+     * Provides the user with a possibility to choose the songs folder.
+     */
     @FXML
     public void onSearchButtonClicked() {
         DirectoryChooser directoryChooser = new DirectoryChooser();
@@ -241,6 +265,17 @@ public class MainWindowViewModel {
         }
     }
 
+    /**
+     * This event gets called, when the button PlayPause is clicked.
+     * The button's action depends on the current state of the MediaPlayer.
+     * <pre>
+     * There are two possible actions:
+     * <ul>
+     *  <li>If the player is playing, the button will pause the MediaPlayer.</li>
+     *  <li>If the player is not playing (paused or stopped), the button will <strong>resume</strong> the MediaPlayer.</li>
+     * </ul>
+     * </pre>
+     */
     @FXML
     public void onButtonPlayPauseClicked() {
 
@@ -254,6 +289,10 @@ public class MainWindowViewModel {
         }
     }
 
+    /**
+     * This event gets called, when the button SkipPrevious is clicked.
+     * The button's action is to go back to the previous song.
+     */
     @FXML
     public void onButtonSkipPreviousClicked(){
         // First check, if there are items on the list.
@@ -269,6 +308,10 @@ public class MainWindowViewModel {
         }
     }
 
+    /**
+     * This event gets called, when the button SkipNext ist clicked.
+     * The button's action is to skip to the next track.
+     */
     @FXML
     public void onButtonSkipNextClicked(){
         if(this.songObservableList != null && this.songObservableList.size() > 1){
@@ -353,6 +396,9 @@ public class MainWindowViewModel {
         }
     }
 
+    /**
+     * Initializes the discovery service.
+     */
     private void initializeDiscoveryService() {
 
         this.serverDiscoveryService = new ServerDiscoveryService();
@@ -409,7 +455,10 @@ public class MainWindowViewModel {
     }
 
     /**
-     * Initializes specifically the tracker slider for the song.
+     * <pre>
+     * Initializes the tracker slider for the song.
+     * (The tracker that changes the current media time.)
+     * </pre>
      */
     private void bindSongTrackerSlider() {
         // Create a DoubleBinding which calculates the value of the duration-slider.
@@ -462,7 +511,7 @@ public class MainWindowViewModel {
     }
 
     /**
-     * Guesses the song folder. May return the folder or may not.
+     * Guesses the song folder. May return the folder or may return null, if there was no good guess.
      * @return Returns the songs folder or null, if it was not found.
      */
     private File guessSongsFolder() {
