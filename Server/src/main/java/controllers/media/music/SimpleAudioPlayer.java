@@ -36,11 +36,18 @@ public class SimpleAudioPlayer implements controllers.media.MediaPlayer<Song> {
     private ObservableList<Song> playlist;
     private Song lastPlayed;
 
+    /**
+     * Default Constructor
+     */
     public SimpleAudioPlayer() {
         // Call parameterized constructor with a new list.
         this(FXCollections.observableArrayList());
     }
 
+    /**
+     * Constructor with a song list. This will be the playlist.
+     * @param songs Songs for the playlist.
+     */
     public SimpleAudioPlayer(ObservableList<Song> songs) {
         this.logger = LoggerFactory.getLogger(this.getClass());
         this.playlist = songs;

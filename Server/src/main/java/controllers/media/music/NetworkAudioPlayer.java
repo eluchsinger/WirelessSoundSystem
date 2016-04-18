@@ -33,7 +33,7 @@ public class NetworkAudioPlayer extends BaseAudioPlayer implements controllers.m
 
     /**
      * Calls the advanced constructor. Initialized with an empty song list.
-     * @param musicStreamController MusicStreamController used to use all the
+     * @param musicStreamController MusicStreamController used to control the music stream to the clients.
      */
     public NetworkAudioPlayer(MusicStreamController musicStreamController) {
         this(FXCollections.observableArrayList(), musicStreamController);
@@ -41,8 +41,8 @@ public class NetworkAudioPlayer extends BaseAudioPlayer implements controllers.m
 
     /**
      * Advanced Constructor with parameters.
-     * @param songs
-     * @param musicStreamController
+     * @param songs List of songs for the playlist.
+     * @param musicStreamController MusicStreamController used to control the music stream to the clients.
      */
     public NetworkAudioPlayer(ObservableList<Song> songs, MusicStreamController musicStreamController) {
         super(songs);

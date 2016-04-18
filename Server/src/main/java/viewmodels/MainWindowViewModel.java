@@ -266,15 +266,13 @@ public class MainWindowViewModel {
     }
 
     /**
-     * This event gets called, when the button PlayPause is clicked.
+     * This event gets called, when the button <code>buttonPlayPause</code> is clicked.
      * The button's action depends on the current state of the MediaPlayer.
-     * <pre>
      * There are two possible actions:
      * <ul>
      *  <li>If the player is playing, the button will pause the MediaPlayer.</li>
      *  <li>If the player is not playing (paused or stopped), the button will <strong>resume</strong> the MediaPlayer.</li>
      * </ul>
-     * </pre>
      */
     @FXML
     public void onButtonPlayPauseClicked() {
@@ -290,7 +288,7 @@ public class MainWindowViewModel {
     }
 
     /**
-     * This event gets called, when the button SkipPrevious is clicked.
+     * This event gets called, when the button <code>buttonSkipPrevious</code> is clicked.
      * The button's action is to go back to the previous song.
      */
     @FXML
@@ -309,7 +307,7 @@ public class MainWindowViewModel {
     }
 
     /**
-     * This event gets called, when the button SkipNext ist clicked.
+     * This event gets called, when the button <code>buttonSkipNext</code> ist clicked.
      * The button's action is to skip to the next track.
      */
     @FXML
@@ -327,7 +325,7 @@ public class MainWindowViewModel {
     }
 
     /**
-     * This method gets called, when the isPlaying property of the mediaPlayer changes.
+     * This method gets called, when the isPlaying property of the MediaPlayer changes.
      * It handles the play/pause button behavior.
      */
     public void onIsPlayingChanged() {
@@ -368,6 +366,7 @@ public class MainWindowViewModel {
 
     /**
      * Is called, when the window has been initialized.
+     * @throws IOException Throws an exception if there was an I/O problem.
      */
     @FXML
     protected void initialize() throws IOException {

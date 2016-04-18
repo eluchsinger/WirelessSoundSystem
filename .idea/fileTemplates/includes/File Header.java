@@ -1,5 +1,5 @@
 /**
  * <pre>
- * Created by ${MyName} on ${DATE}.
+ * Created by $CU on ${DATE}.
  * </pre>
  */
