@@ -4,8 +4,7 @@ plugins {
 }
 
 repositories {
-<<<<<<< HEAD
-    mavenCentral()
+    jcenter()
 
     flatDir {
         dirs 'resources/libs'
@@ -15,13 +14,8 @@ repositories {
 mainClassName = "controllers.MainApp"
 version = 0.2
 
-=======
-    jcenter()
-}
-
 mainClassName = "controllers.MainApp"
 
->>>>>>> refs/remotes/origin/master-gradle
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
     compile files('resources/libs/jl1.0.1.jar')

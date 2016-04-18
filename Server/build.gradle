@@ -10,11 +10,6 @@ repositories {
 mainClassName = "controllers.Main"
 version = 0.2
 
-task executeServer(type: JavaExec){
-    main = "controllers.Main"
-    classpath = sourceSets.main.runtimeClasspath
-}
-
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.+'
