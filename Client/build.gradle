@@ -6,7 +6,7 @@ plugins {
 }
 
 repositories {
-    mavenCentral()
+    jcenter()
 }
 
 mainClassName = "controllers.MainApp"
