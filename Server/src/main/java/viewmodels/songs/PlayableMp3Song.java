@@ -11,6 +11,7 @@ import java.io.IOException;
 /**
  * <pre>
  * Created by $MyName on 20.04.2016.
+ * Extends the <code>Mp3Song</code> class. Adds functionality to save the current playing status.
  * </pre>
  */
 public class PlayableMp3Song extends Mp3Song implements PlayableSong {

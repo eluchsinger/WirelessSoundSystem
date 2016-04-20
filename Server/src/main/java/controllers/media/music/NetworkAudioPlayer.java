@@ -147,6 +147,9 @@ public class NetworkAudioPlayer extends BaseAudioPlayer implements controllers.m
      */
     @Override
     public void play(PlayableSong track) {
+        if(this.getMediaPlayer() != null) {
+            this.getMediaPlayer().stop();
+        }
         if(this.getCurrentTrack() != null) {
             this.getCurrentTrack().setIsPlaying(false);
         }

@@ -402,18 +402,14 @@ public class MainWindowViewModel {
         this.initializeClientListView();
         this.initializeDiscoveryService();
 
-
         // Init Media Player
-//        this.mediaPlayer = new SimpleAudioPlayer(this.songObservableList);
         this.mediaPlayer = new NetworkAudioPlayer(this.songObservableList, this.musicStreamController);
         this.mediaPlayer.isPlayingProperty().addListener((observable, oldValue, newValue) -> this.onIsPlayingChanged());
-        this.mediaPlayer.currentTrackProperty().addListener((observable, oldValue, newValue) -> {
-        });
-
 
         // Bindings must be initialized after media player.
         this.initializeBindings();
 
+        // Try to guess the Music folder.
         File file = this.guessSongsFolder();
         if(file != null) {
             this.setPathToSongFolder(file);
