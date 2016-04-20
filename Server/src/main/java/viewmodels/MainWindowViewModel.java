@@ -1,9 +1,11 @@
 package viewmodels;
 
+import com.mpatric.mp3agic.InvalidDataException;
+import com.mpatric.mp3agic.UnsupportedTagException;
 import controllers.clients.ClientController;
 import controllers.io.SongsHandler;
 import controllers.media.MediaPlayer;
-import controllers.media.music.SimpleAudioPlayer;
+import controllers.media.music.NetworkAudioPlayer;
 import controllers.networking.discovery.ServerDiscoveryService;
 import controllers.networking.streaming.music.MusicStreamController;
 import controllers.networking.streaming.music.tcp.TCPMusicStreamController;
@@ -22,16 +24,20 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import models.networking.clients.NetworkClient;
 import models.networking.dtos.RenameCommand;
+import models.songs.Mp3Song;
 import models.songs.Song;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.DurationStringConverter;
+import viewmodels.songs.PlayableMp3Song;
+import viewmodels.songs.PlayableSong;
 
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,7 +51,7 @@ public class MainWindowViewModel {
     //region Members
     private final Logger logger;
 
-    private MediaPlayer<Song> mediaPlayer;
+    private MediaPlayer<PlayableSong> mediaPlayer;
     private MusicStreamController musicStreamController;
     private ServerDiscoveryService serverDiscoveryService;
 
@@ -62,7 +68,7 @@ public class MainWindowViewModel {
     /**
      * List containing the songs.
      */
-    private ObservableList<Song> songObservableList;
+    private ObservableList<PlayableSong> songObservableList;
     //endregion Properties
 
     //region Elements
@@ -100,19 +106,19 @@ public class MainWindowViewModel {
      * The table view containing the songs.
      */
     @FXML
-    private TableView<Song> tableViewSongs;
+    private TableView<PlayableSong> tableViewSongs;
 
     /**
      * The column of the song table containing the title of the song.
      */
     @FXML
-    private TableColumn<Song, String> tableColumnTitle;
+    private TableColumn<PlayableSong, String> tableColumnTitle;
 
     /**
      * The column of the song table containing the artist.
      */
     @FXML
-    private TableColumn<Song, String> tableColumnArtist;
+    private TableColumn<PlayableSong, String> tableColumnArtist;
 
     /**
      * The ListView showing the clients (right now: Speakers) connected to this server instance.
@@ -180,7 +186,19 @@ public class MainWindowViewModel {
         // Loads the songs.
         SongsHandler handler = new SongsHandler();
         List<Song> songs = handler.loadSongsFromDir(file.getPath());
-        this.songObservableList.setAll(songs);
+
+
+        List<PlayableSong> playableSongs = new ArrayList<>(songs.size());
+        // Fixme: This will throw a RuntimeException, if the object Song is not of type PlayableSong.
+        songs.forEach(song -> {
+            try {
+                playableSongs.add(PlayableMp3Song.fromMp3Song((Mp3Song) song));
+            } catch (InvalidDataException | IOException | UnsupportedTagException e) {
+                this.logger.error("Error loading the new song list from the folder " + file.getAbsolutePath(), e);
+            }
+        });
+
+        this.songObservableList.setAll(playableSongs);
     }
 
     /**
@@ -196,7 +214,7 @@ public class MainWindowViewModel {
      *
      * @return Returns the selected song item. If there many items selected, the last one selected is returned.
      */
-    public final Song getSelectedSong() {
+    public final PlayableSong getSelectedSong() {
         return this.tableViewSongs.getSelectionModel().getSelectedItem();
     }
 
@@ -216,7 +234,6 @@ public class MainWindowViewModel {
                 if(this.serverDiscoveryService != null) {
                     this.serverDiscoveryService.stop();
                     this.logger.info("Stopped Discovery Service!");
-
                 }
 
                 if(this.musicStreamController != null && this.musicStreamController instanceof Closeable) {
@@ -251,7 +268,7 @@ public class MainWindowViewModel {
     //region Events
 
     /**
-     * This event gets called, when the button <code>search</code> is clicked.
+     * This event gets called, when the button <code>buttonSearch</code> is clicked.
      * Provides the user with a possibility to choose the songs folder.
      */
     @FXML
@@ -292,18 +309,20 @@ public class MainWindowViewModel {
      * The button's action is to go back to the previous song.
      */
     @FXML
-    public void onButtonSkipPreviousClicked(){
-        // First check, if there are items on the list.
-        if(this.songObservableList != null && this.songObservableList.size() > 1){
-            Song previous = this.mediaPlayer.getPreviousTrack();
-            if(previous != null){
-                this.mediaPlayer.play(previous);
-            }
-        } else {
-            // Error is either null or it's the size.
-            String error = (this.songObservableList == null) ? "not initialized" : Integer.toString(this.songObservableList.size());
-            this.logger.warn("Tried to skip to the previous song, but the song list is currently " + error);
-        }
+    public void onButtonSkipPreviousClicked() {
+        this.mediaPlayer.playPreviousTrack();
+//        Todo: Legacy!!
+//        // First check, if there are items on the list.
+//        if(this.songObservableList != null && this.songObservableList.size() > 1){
+//            Song previous = this.mediaPlayer.getPreviousTrack();
+//            if(previous != null){
+//                this.mediaPlayer.play(previous);
+//            }
+//        } else {
+//            // Error is either null or it's the size.
+//            String error = (this.songObservableList == null) ? "not initialized" : Integer.toString(this.songObservableList.size());
+//            this.logger.warn("Tried to skip to the previous song, but the song list is currently " + error);
+//        }
     }
 
     /**
@@ -312,16 +331,18 @@ public class MainWindowViewModel {
      */
     @FXML
     public void onButtonSkipNextClicked(){
-        if(this.songObservableList != null && this.songObservableList.size() > 1){
-            Song next = this.mediaPlayer.getNextTrack();
-            if(next != null){
-                this.mediaPlayer.play(next);
-            }
-        } else {
-            // Error is either null or it's the size.
-            String error = (this.songObservableList == null) ? "not initialized" : Integer.toString(this.songObservableList.size());
-            this.logger.warn("Tried to skip to the next song, but the song list is currently " + error);
-        }
+        this.mediaPlayer.playNextTrack();
+//        Todo: Legacy!
+//        if(this.songObservableList != null && this.songObservableList.size() > 1){
+//            Song next = this.mediaPlayer.getNextTrack();
+//            if(next != null){
+//                this.mediaPlayer.play(next);
+//            }
+//        } else {
+//            // Error is either null or it's the size.
+//            String error = (this.songObservableList == null) ? "not initialized" : Integer.toString(this.songObservableList.size());
+//            this.logger.warn("Tried to skip to the next song, but the song list is currently " + error);
+//        }
     }
 
     /**
@@ -341,12 +362,10 @@ public class MainWindowViewModel {
 
     /**
      * Starts playing the song.
-     * Unites the Table-Double-Click function and the play button.
+     * Unites the SongTable's double click function, the play button and whatever other objects can trigger a play action.
      * @param song The song that should start playing.
      */
-    private void startPlaying(Song song) {
-
-        this.logger.info("Trying to play: " + song);
+    private void startPlaying(PlayableSong song) {
 
         if(this.getSelectedSong() != null) {
             // Start streaming...
@@ -365,7 +384,7 @@ public class MainWindowViewModel {
     //region initialization
 
     /**
-     * Is called, when the window has been initialized.
+     * This method is called, when the window has been initialized.
      * @throws IOException Throws an exception if there was an I/O problem.
      */
     @FXML
@@ -373,21 +392,27 @@ public class MainWindowViewModel {
 
         this.songObservableList = FXCollections.observableArrayList();
 
-        // Init Media Player
-        this.mediaPlayer = new SimpleAudioPlayer(this.songObservableList);
-        this.mediaPlayer.isPlayingProperty().addListener((observable, oldValue, newValue) -> this.onIsPlayingChanged());
-
         this.tcpServer = new TCPSocketServer();
         this.clientController = new ClientController(this.tcpServer);
 
+        this.musicStreamController = new TCPMusicStreamController(this.clientController);
         this.tcpServer.start();
 
-        this.initializeTable();
+        this.initializeSongTable();
         this.initializeClientListView();
-        this.initializeBindings();
         this.initializeDiscoveryService();
 
-        this.musicStreamController = new TCPMusicStreamController(this.clientController);
+
+        // Init Media Player
+//        this.mediaPlayer = new SimpleAudioPlayer(this.songObservableList);
+        this.mediaPlayer = new NetworkAudioPlayer(this.songObservableList, this.musicStreamController);
+        this.mediaPlayer.isPlayingProperty().addListener((observable, oldValue, newValue) -> this.onIsPlayingChanged());
+        this.mediaPlayer.currentTrackProperty().addListener((observable, oldValue, newValue) -> {
+        });
+
+
+        // Bindings must be initialized after media player.
+        this.initializeBindings();
 
         File file = this.guessSongsFolder();
         if(file != null) {
@@ -409,7 +434,7 @@ public class MainWindowViewModel {
     /**
      * Initializes the table containing the songs.
      */
-    private void initializeTable() {
+    private void initializeSongTable() {
 
         this.tableViewSongs.setItems(this.songObservableList);
         this.tableViewSongs.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
@@ -424,7 +449,7 @@ public class MainWindowViewModel {
 
         // Implement DoubleClick for rows.
         this.tableViewSongs.setRowFactory(tv -> {
-            TableRow<Song> row = new TableRow<>();
+            SongTableRow row = new SongTableRow();
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() >= 2 && (!row.isEmpty())) {
                     // Check if its a song.
@@ -432,6 +457,7 @@ public class MainWindowViewModel {
                         this.startPlaying(row.getItem());
                 }
             });
+
             return row;
         });
     }

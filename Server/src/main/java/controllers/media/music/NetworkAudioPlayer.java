@@ -8,6 +8,7 @@ import javafx.scene.media.MediaPlayer;
 import models.songs.Song;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import viewmodels.songs.PlayableSong;
 
 import java.io.File;
 
@@ -19,7 +20,7 @@ import java.io.File;
  * The network clients are controlled by the required music stream controller.
  * </pre>
  */
-public class NetworkAudioPlayer extends BaseAudioPlayer implements controllers.media.MediaPlayer<Song> {
+public class NetworkAudioPlayer extends BaseAudioPlayer implements controllers.media.MediaPlayer<PlayableSong> {
     //region Members
 
     private final Logger logger;
@@ -44,7 +45,7 @@ public class NetworkAudioPlayer extends BaseAudioPlayer implements controllers.m
      * @param songs List of songs for the playlist.
      * @param musicStreamController MusicStreamController used to control the music stream to the clients.
      */
-    public NetworkAudioPlayer(ObservableList<Song> songs, MusicStreamController musicStreamController) {
+    public NetworkAudioPlayer(ObservableList<PlayableSong> songs, MusicStreamController musicStreamController) {
         super(songs);
         this.logger = LoggerFactory.getLogger(this.getClass());
 
@@ -62,7 +63,7 @@ public class NetworkAudioPlayer extends BaseAudioPlayer implements controllers.m
      * @param song Song for the MediaPlayer
      * @return the MediaPlayer for the desired song.
      */
-    private MediaPlayer getMediaPlayer(Song song) {
+    private MediaPlayer getMediaPlayer(PlayableSong song) {
         Media possibleMedia = this.createMediaFromSong(song);
         if(this.mediaPlayer == null) {
             this.mediaPlayer = this.initializeMediaPlayer(possibleMedia);
@@ -145,8 +146,13 @@ public class NetworkAudioPlayer extends BaseAudioPlayer implements controllers.m
      * @param track The track to play.
      */
     @Override
-    public void play(Song track) {
+    public void play(PlayableSong track) {
+        if(this.getCurrentTrack() != null) {
+            this.getCurrentTrack().setIsPlaying(false);
+        }
+
         this.getMediaPlayer(track).play();
+        track.setIsPlaying(true);
     }
 
     /**
@@ -169,6 +175,10 @@ public class NetworkAudioPlayer extends BaseAudioPlayer implements controllers.m
 
         if(this.getMediaPlayer() != null) {
             this.getMediaPlayer().stop();
+
+            if(this.getCurrentTrack() != null) {
+                this.getCurrentTrack().setIsPlaying(false);
+            }
         }
     }
 

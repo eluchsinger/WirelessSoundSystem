@@ -1,13 +1,15 @@
 package models.songs;
 
-import com.mpatric.mp3agic.*;
+import com.mpatric.mp3agic.InvalidDataException;
+import com.mpatric.mp3agic.Mp3File;
+import com.mpatric.mp3agic.UnsupportedTagException;
 
 import java.io.IOException;
 
 /**
  * Created by Esteban Luchsinger on 30.11.2015.
  */
-public class Mp3Song implements Song, Comparable<Song> {
+public class Mp3Song extends BaseSong implements Comparable<Song> {
     private final String extension = "mp3";
     private Mp3File file;
     private String path;

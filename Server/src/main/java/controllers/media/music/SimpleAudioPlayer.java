@@ -9,6 +9,7 @@ import javafx.util.Duration;
 import models.songs.Song;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.exceptions.NotImplementedException;
 
 import java.io.File;
 import java.util.Optional;
@@ -157,6 +158,11 @@ public class SimpleAudioPlayer implements controllers.media.MediaPlayer<Song> {
     }
 
     @Override
+    public boolean playNextTrack() {
+        throw new NotImplementedException();
+    }
+
+    @Override
     public Song getPreviousTrack() {
         if (this.lastPlayed != null) {
             Song song = null;
@@ -173,6 +179,11 @@ public class SimpleAudioPlayer implements controllers.media.MediaPlayer<Song> {
         else {
             return null;
         }
+    }
+
+    @Override
+    public boolean playPreviousTrack() {
+        throw new NotImplementedException();
     }
 
     @Override

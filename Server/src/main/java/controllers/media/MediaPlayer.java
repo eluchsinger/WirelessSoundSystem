@@ -4,7 +4,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.util.Duration;
-import models.songs.Song;
 
 /**
  * <pre>
@@ -69,10 +68,22 @@ public interface MediaPlayer<T> {
     T getNextTrack();
 
     /**
+     * Tries to play the next track.
+     * @return True, if next track could be played.
+     */
+    boolean playNextTrack();
+
+    /**
      * Tries to find the previous track.
      * @return Returns the previous track on the playlist, or null if it wasn't found.
      */
     T getPreviousTrack();
+
+    /**
+     * Tries to play the previous track.
+     * @return True, if previous track could be played.
+     */
+    boolean playPreviousTrack();
 
     /**
      * @return Returns the current track or null if the player has got no current track.
@@ -82,7 +93,7 @@ public interface MediaPlayer<T> {
     /**
      * @return Returns the property with the value of the current track.
      */
-    ObjectProperty<Song> currentTrackProperty();
+    ObjectProperty<T> currentTrackProperty();
 
     /**
      * @return Returns the current media time ObjectProperty. This property shows the current progress of the currently playing track.

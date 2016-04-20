@@ -2,33 +2,36 @@ package controllers.media.music;
 
 import javafx.beans.property.*;
 import javafx.util.Duration;
-import models.songs.Song;
+import viewmodels.songs.PlayableSong;
 
 import java.util.List;
 
 /**
+ * <pre>
  * Created by Esteban Luchsinger on 14.04.2016.
  * This is a base class for an audio player. It provides the needed properties.
+ * </pre>
  */
-public abstract class BaseAudioPlayer implements controllers.media.MediaPlayer<Song> {
+public abstract class BaseAudioPlayer implements controllers.media.MediaPlayer<PlayableSong> {
 
     private BooleanProperty isPlaying;
     private ObjectProperty<Duration> currentMediaTime;
     private StringProperty currentMediaTimeString;
     private ObjectProperty<Duration> totalMediaDuration;
-    private ObjectProperty<Song> currentTrack;
+    private ObjectProperty<PlayableSong> currentTrack;
     private DoubleProperty volume;
 
-    private List<Song> playlist;
+    private List<PlayableSong> playlist;
 
-    public BaseAudioPlayer(List<Song> playlist) {
+    public BaseAudioPlayer(List<PlayableSong> playlist) {
 
         // Init properties
         this.isPlaying = new SimpleBooleanProperty();
         this.currentMediaTime = new SimpleObjectProperty<>();
         this.currentMediaTimeString = new SimpleStringProperty();
         this.totalMediaDuration = new SimpleObjectProperty<>();
-        this.volume = new SimpleDoubleProperty();
+        this.volume = new SimpleDoubleProperty(.5);
+        this.currentTrack = new SimpleObjectProperty<>();
 
         this.setPlaylist(playlist);
     }
@@ -70,25 +73,25 @@ public abstract class BaseAudioPlayer implements controllers.media.MediaPlayer<S
     }
 
     @Override
-    public Song getCurrentTrack() {
+    public PlayableSong getCurrentTrack() {
         return currentTrackProperty().get();
     }
 
     @Override
-    public ObjectProperty<Song> currentTrackProperty() {
+    public ObjectProperty<PlayableSong> currentTrackProperty() {
         return currentTrack;
     }
 
-    public void setCurrentTrack(Song currentTrack) {
+    public void setCurrentTrack(PlayableSong currentTrack) {
         this.currentTrackProperty().set(currentTrack);
     }
 
     @Override
-    public Song getNextTrack() {
+    public PlayableSong getNextTrack() {
         if(this.getCurrentTrack() != null) {
             int currentIndex = this.getPlaylist().indexOf(this.getCurrentTrack());
 
-            if(this.getPlaylist().size() >= currentIndex) {
+            if((this.getPlaylist().size() - 1) > currentIndex) {
                 return this.getPlaylist().get(currentIndex + 1);
             }
         }
@@ -96,7 +99,18 @@ public abstract class BaseAudioPlayer implements controllers.media.MediaPlayer<S
     }
 
     @Override
-    public Song getPreviousTrack() {
+    public boolean playNextTrack() {
+        if(this.getNextTrack() != null) {
+            this.stop();
+            this.play(this.getNextTrack());
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public PlayableSong getPreviousTrack() {
         if(this.getCurrentTrack() != null) {
             int currentIndex = this.getPlaylist().indexOf(this.getCurrentTrack());
 
@@ -106,6 +120,17 @@ public abstract class BaseAudioPlayer implements controllers.media.MediaPlayer<S
         }
 
         return null;
+    }
+
+    @Override
+    public boolean playPreviousTrack() {
+        if(this.getPreviousTrack() != null) {
+            this.stop();
+            this.play(this.getPreviousTrack());
+            return true;
+        }
+
+        return false;
     }
 
     @Override
@@ -126,7 +151,7 @@ public abstract class BaseAudioPlayer implements controllers.media.MediaPlayer<S
      * Sets the playlist of songs.
      * @param playlist new playlist
      */
-    protected void setPlaylist(List<Song> playlist) {
+    protected void setPlaylist(List<PlayableSong> playlist) {
         this.playlist = playlist;
     }
 
@@ -134,7 +159,7 @@ public abstract class BaseAudioPlayer implements controllers.media.MediaPlayer<S
      * Retrieves the playlist for this AudioPlayer.
      * @return The current playlist.
      */
-    public List<Song> getPlaylist() {
+    public List<PlayableSong> getPlaylist() {
         return this.playlist;
     }
 }

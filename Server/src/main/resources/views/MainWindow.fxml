@@ -33,7 +33,7 @@
       </BorderPane>
    </top>
    <center>
-      <TableView fx:id="tableViewSongs" style="-fx-border-color: BBB;" BorderPane.alignment="CENTER">
+      <TableView fx:id="tableViewSongs" style="-fx-border-color: BBB;" stylesheets="@styles/SongTableControlStyles.css" BorderPane.alignment="CENTER">
          <columns>
             <TableColumn fx:id="tableColumnTitle" editable="false" prefWidth="168.0" sortable="false" text="SONG" />
             <TableColumn fx:id="tableColumnArtist" editable="false" prefWidth="75.0" sortable="false" text="KÜNSTLER" />
