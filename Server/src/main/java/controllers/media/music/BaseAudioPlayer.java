@@ -101,7 +101,6 @@ public abstract class BaseAudioPlayer implements controllers.media.MediaPlayer<P
     @Override
     public boolean playNextTrack() {
         if(this.getNextTrack() != null) {
-            this.stop();
             this.play(this.getNextTrack());
             return true;
         }

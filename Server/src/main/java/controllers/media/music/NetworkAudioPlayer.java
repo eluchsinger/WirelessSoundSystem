@@ -82,7 +82,9 @@ public class NetworkAudioPlayer extends BaseAudioPlayer implements controllers.m
 
         this.currentTrackProperty().setValue(song);
 
-        this.mediaPlayer.setOnEndOfMedia(this::playNextTrack);
+        // Only set it if a new media player was created. If the MediaPlayer already existed, it should already been set.
+        if(mediaPlayerCreated)
+            this.mediaPlayer.setOnEndOfMedia(this::playNextTrack);
 
         return this.mediaPlayer;
     }
@@ -153,10 +155,11 @@ public class NetworkAudioPlayer extends BaseAudioPlayer implements controllers.m
      */
     @Override
     public void play(PlayableSong track) {
-        if(this.getMediaPlayer() != null) {
+        if(this.getMediaPlayer() != null && !this.getCurrentTrack().equals(track)) {
             this.getMediaPlayer().stop();
         }
 
+        // Sets the isPlaying value of the old track to false (this would cause the UI to change to "not playing" state.
         if(this.getCurrentTrack() != null) {
             this.getCurrentTrack().setIsPlaying(false);
         }
