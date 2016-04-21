@@ -22,7 +22,6 @@ import java.io.File;
  */
 public class NetworkAudioPlayer extends BaseAudioPlayer implements controllers.media.MediaPlayer<PlayableSong> {
     //region Members
-
     private final Logger logger;
 
     private final MusicStreamController musicStreamController;
@@ -64,19 +63,26 @@ public class NetworkAudioPlayer extends BaseAudioPlayer implements controllers.m
      * @return the MediaPlayer for the desired song.
      */
     private MediaPlayer getMediaPlayer(PlayableSong song) {
+        // If a media player was created.
+        boolean mediaPlayerCreated = false;
+
         Media possibleMedia = this.createMediaFromSong(song);
         if(this.mediaPlayer == null) {
             this.mediaPlayer = this.initializeMediaPlayer(possibleMedia);
+            mediaPlayerCreated = true;
         } else {
             // Check if the current MediaPlayer is playing the correct song.
             if (!possibleMedia.getSource().equals(this.mediaPlayer.getMedia().getSource())) {
 
                 // If it's not the correct song, initialize new MediaPlayer.
                 this.mediaPlayer = this.initializeMediaPlayer(possibleMedia);
+                mediaPlayerCreated = true;
             }
         }
 
         this.currentTrackProperty().setValue(song);
+
+        this.mediaPlayer.setOnEndOfMedia(this::playNextTrack);
 
         return this.mediaPlayer;
     }
@@ -150,6 +156,7 @@ public class NetworkAudioPlayer extends BaseAudioPlayer implements controllers.m
         if(this.getMediaPlayer() != null) {
             this.getMediaPlayer().stop();
         }
+
         if(this.getCurrentTrack() != null) {
             this.getCurrentTrack().setIsPlaying(false);
         }
