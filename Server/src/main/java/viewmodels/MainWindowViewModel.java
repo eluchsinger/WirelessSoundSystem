@@ -121,6 +121,12 @@ public class MainWindowViewModel {
     private TableColumn<PlayableSong, String> tableColumnArtist;
 
     /**
+     * The column of the song table containing the song duration.
+     */
+    @FXML
+    private TableColumn<PlayableSong, String> tableColumnDuration;
+
+    /**
      * The ListView showing the clients (right now: Speakers) connected to this server instance.
      */
     @FXML
@@ -435,12 +441,20 @@ public class MainWindowViewModel {
         this.tableViewSongs.setItems(this.songObservableList);
         this.tableViewSongs.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
-        tableColumnTitle.setCellValueFactory(
+        /**
+         * The PropertyValueFactory maps the parameter to a possible property [Name].
+         * The property needs to have the pattern "get[Name]", where Name is in pascal-case.
+         */
+        this.tableColumnTitle.setCellValueFactory(
                 new PropertyValueFactory<>("title")
         );
 
-        tableColumnArtist.setCellValueFactory(
+        this.tableColumnArtist.setCellValueFactory(
                 new PropertyValueFactory<>("artist")
+        );
+
+        this.tableColumnDuration.setCellValueFactory(
+                new PropertyValueFactory<>("duration")
         );
 
         // Implement DoubleClick for rows.

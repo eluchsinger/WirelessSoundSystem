@@ -30,7 +30,7 @@ public class SongTableRow extends TableRow<PlayableSong> {
                 if(newValue) {
                     this.getStyleClass().add(PLAYING_STYLE);
                 } else {
-                    this.getStyleClass().clear();
+                    this.getStyleClass().removeAll(PLAYING_STYLE);
                 }
             });
         }

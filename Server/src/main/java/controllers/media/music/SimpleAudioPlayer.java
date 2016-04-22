@@ -18,6 +18,8 @@ import java.util.Optional;
  * <pre>
  * Created by Esteban Luchsinger on 01.12.2015.
  * This is a simple audio player designed to handle the music playing.
+ *
+ * If you need to use this MediaPlayer for streaming, you should evaluate using the <code>NetworkAudioPlayer</code>.
  * </pre>
  */
 public class SimpleAudioPlayer implements controllers.media.MediaPlayer<Song> {
