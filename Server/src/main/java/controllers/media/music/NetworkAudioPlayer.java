@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import viewmodels.songs.PlayableSong;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * <pre>
@@ -64,27 +65,30 @@ public class NetworkAudioPlayer extends BaseAudioPlayer implements controllers.m
      */
     private MediaPlayer getMediaPlayer(PlayableSong song) {
         // If a media player was created.
-        boolean mediaPlayerCreated = false;
+        boolean newMediaPlayerCreated = false;
 
         Media possibleMedia = this.createMediaFromSong(song);
         if(this.mediaPlayer == null) {
             this.mediaPlayer = this.initializeMediaPlayer(possibleMedia);
-            mediaPlayerCreated = true;
+            newMediaPlayerCreated = true;
         } else {
             // Check if the current MediaPlayer is playing the correct song.
             if (!possibleMedia.getSource().equals(this.mediaPlayer.getMedia().getSource())) {
 
                 // If it's not the correct song, initialize new MediaPlayer.
                 this.mediaPlayer = this.initializeMediaPlayer(possibleMedia);
-                mediaPlayerCreated = true;
+                newMediaPlayerCreated = true;
             }
         }
 
         this.currentTrackProperty().setValue(song);
 
         // Only set it if a new media player was created. If the MediaPlayer already existed, it should already been set.
-        if(mediaPlayerCreated)
+        if(newMediaPlayerCreated) {
             this.mediaPlayer.setOnEndOfMedia(this::playNextTrack);
+
+            // Todo: Cache the new song on the client-side for it to be ready to use when needed.
+        }
 
         return this.mediaPlayer;
     }
@@ -164,6 +168,12 @@ public class NetworkAudioPlayer extends BaseAudioPlayer implements controllers.m
             this.getCurrentTrack().setIsPlaying(false);
         }
 
+        try {
+            this.musicStreamController.play(track);
+        } catch (IOException e) {
+            this.logger.error("Failed streaming the song to the clients!", e);
+        }
+
         this.getMediaPlayer(track).play();
         track.setIsPlaying(true);
     }
@@ -176,6 +186,9 @@ public class NetworkAudioPlayer extends BaseAudioPlayer implements controllers.m
     public void pause() {
         if(this.getMediaPlayer() != null) {
             this.getMediaPlayer().pause();
+
+            //Fixme: Do pause instead of stop.
+            this.musicStreamController.stop();
         }
     }
 
@@ -188,6 +201,8 @@ public class NetworkAudioPlayer extends BaseAudioPlayer implements controllers.m
 
         if(this.getMediaPlayer() != null) {
             this.getMediaPlayer().stop();
+
+            this.musicStreamController.stop();
 
             if(this.getCurrentTrack() != null) {
                 this.getCurrentTrack().setIsPlaying(false);

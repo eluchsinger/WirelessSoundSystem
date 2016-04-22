@@ -188,11 +188,9 @@ public class MainWindowViewModel {
     public void setPathToSongFolder(File file) {
         this.pathToSongFolder.set(file.getAbsolutePath());
 
-
         // Loads the songs.
         SongsHandler handler = new SongsHandler();
         List<Song> songs = handler.loadSongsFromDir(file.getPath());
-
 
         List<PlayableSong> playableSongs = new ArrayList<>(songs.size());
         // Fixme: This will throw a RuntimeException, if the object Song is not of type PlayableSong.
@@ -303,7 +301,6 @@ public class MainWindowViewModel {
         // Pause if the pause button was clicked.
         if (this.mediaPlayer.isPlaying()) {
             this.mediaPlayer.pause();
-            this.musicStreamController.stop();
         } else if (this.getSelectedSong() != null) {
             // Play if the play button was clicked.
             this.startPlaying(this.getSelectedSong());
@@ -376,13 +373,7 @@ public class MainWindowViewModel {
         if(this.getSelectedSong() != null) {
             // Start streaming...
             this.logger.info("Streaming the new song: " + song.getTitle());
-            try {
-                this.musicStreamController.play(song);
-                this.mediaPlayer.play(song);
-            }
-            catch(IOException ioException) {
-                this.logger.error("Error trying to stream", ioException);
-            }
+            this.mediaPlayer.play(song);
         }
     }
     //endregion
@@ -566,7 +557,6 @@ public class MainWindowViewModel {
             } else {
                 throw new Exception("The path returned was null");
             }
-
         }
         catch(Exception ex) {
             this.logger.warn("Failed guessing the users song folder", ex);

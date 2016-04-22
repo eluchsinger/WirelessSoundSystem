@@ -23,4 +23,10 @@ public interface MusicStreamController {
      * Stops playing the song on the client.
      */
     void stop();
+
+    /**
+     * Caches a song on the clients.
+     * @param song The song to cache on the clients.
+     */
+    void cacheSong(Song song) throws IOException;
 }
