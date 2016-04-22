@@ -4,6 +4,7 @@ import controllers.clients.ClientController;
 import controllers.networking.streaming.music.MusicStreamController;
 import models.networking.clients.NetworkClient;
 import models.networking.dtos.CacheSongCommand;
+import models.networking.dtos.PauseCommand;
 import models.networking.dtos.PlayCommand;
 import models.networking.dtos.StopCommand;
 import models.songs.Song;
@@ -75,6 +76,17 @@ public class TCPMusicStreamController implements MusicStreamController {
         StopCommand stopCommand = new StopCommand();
         for(NetworkClient client : this.clientController.getClients()) {
             client.send(stopCommand);
+        }
+    }
+
+    /**
+     * Pauses the song on the client.
+     */
+    @Override
+    public void pause() {
+        PauseCommand pauseCommand = new PauseCommand();
+        for(NetworkClient client : this.clientController.getClients()) {
+            client.send(pauseCommand);
         }
     }
 

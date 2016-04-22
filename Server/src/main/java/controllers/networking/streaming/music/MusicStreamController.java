@@ -25,6 +25,11 @@ public interface MusicStreamController {
     void stop();
 
     /**
+     * Pauses the song on the client.
+     */
+    void pause();
+
+    /**
      * Caches a song on the clients.
      * @param song The song to cache on the clients.
      */

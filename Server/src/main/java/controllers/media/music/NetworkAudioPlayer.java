@@ -187,8 +187,7 @@ public class NetworkAudioPlayer extends BaseAudioPlayer implements controllers.m
         if(this.getMediaPlayer() != null) {
             this.getMediaPlayer().pause();
 
-            //Fixme: Do pause instead of stop.
-            this.musicStreamController.stop();
+            this.musicStreamController.pause();
         }
     }
 

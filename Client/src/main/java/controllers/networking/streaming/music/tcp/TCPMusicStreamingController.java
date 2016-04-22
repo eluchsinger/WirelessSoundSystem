@@ -4,15 +4,9 @@ import controllers.io.cache.file.FileCacheService;
 import controllers.io.cache.file.StaticFileCacheService;
 import controllers.networking.streaming.music.MusicStreamingService;
 import controllers.networking.streaming.music.ServiceStatus;
-import controllers.networking.streaming.music.callback.OnMusicStreamingStatusChanged;
-import controllers.networking.streaming.music.callback.OnPlay;
-import controllers.networking.streaming.music.callback.OnRename;
-import controllers.networking.streaming.music.callback.OnStop;
+import controllers.networking.streaming.music.callback.*;
 import models.clients.Server;
-import models.networking.dtos.CacheSongCommand;
-import models.networking.dtos.PlayCommand;
-import models.networking.dtos.RenameCommand;
-import models.networking.dtos.StopCommand;
+import models.networking.dtos.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,6 +98,8 @@ public class TCPMusicStreamingController implements MusicStreamingService {
      */
     private final List<OnPlay> playCommandListeners;
 
+    private final List<OnPause> pauseCommandListeners;
+
     /**
      * List of listeners listening for stopCommands received.
      */
@@ -122,6 +118,7 @@ public class TCPMusicStreamingController implements MusicStreamingService {
         // Initialize Listeners
         this.statusChangedListeners = new ArrayList<>();
         this.playCommandListeners = new ArrayList<>();
+        this.pauseCommandListeners = new ArrayList<>();
         this.stopCommandListeners = new ArrayList<>();
         this.renameCommandListeners = new ArrayList<>();
 
@@ -200,6 +197,11 @@ public class TCPMusicStreamingController implements MusicStreamingService {
                     this.logger.info("Received PlayCommand");
                     PlayCommand command = (PlayCommand) receivedObject;
                     this.onPlayCommandReceived(command.title, command.artist);
+                }
+                else if(receivedObject instanceof PauseCommand) {
+                    this.logger.info("Received PauseCommand");
+                    PauseCommand command = (PauseCommand) receivedObject;
+                    this.onPauseCommandReceived();
                 }
                 // A stop command
                 else if(receivedObject instanceof StopCommand) {
@@ -364,6 +366,12 @@ public class TCPMusicStreamingController implements MusicStreamingService {
     public void removeOnPlayListener(OnPlay listener) { this.playCommandListeners.remove(listener); }
 
     @Override
+    public void addOnPauseListener(OnPause listener) { this.pauseCommandListeners.add(listener); }
+
+    @Override
+    public void removeOnPauseListener(OnPause listener) { this.pauseCommandListeners.remove(listener); }
+
+    @Override
     public void addOnStopListener(OnStop listener) { this.stopCommandListeners.add(listener); }
 
     @Override
@@ -417,6 +425,10 @@ public class TCPMusicStreamingController implements MusicStreamingService {
      */
     private void onPlayCommandReceived(String songTitle, String artist) {
         this.playCommandListeners.forEach(onPlay -> onPlay.play(songTitle, artist));
+    }
+
+    private void onPauseCommandReceived() {
+        this.pauseCommandListeners.forEach(OnPause::pause);
     }
 
     /**
