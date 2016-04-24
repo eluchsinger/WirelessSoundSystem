@@ -314,18 +314,6 @@ public class MainWindowViewModel {
     @FXML
     public void onButtonSkipPreviousClicked() {
         this.mediaPlayer.playPreviousTrack();
-//        Todo: Legacy!!
-//        // First check, if there are items on the list.
-//        if(this.songObservableList != null && this.songObservableList.size() > 1){
-//            Song previous = this.mediaPlayer.getPreviousTrack();
-//            if(previous != null){
-//                this.mediaPlayer.play(previous);
-//            }
-//        } else {
-//            // Error is either null or it's the size.
-//            String error = (this.songObservableList == null) ? "not initialized" : Integer.toString(this.songObservableList.size());
-//            this.logger.warn("Tried to skip to the previous song, but the song list is currently " + error);
-//        }
     }
 
     /**
@@ -335,17 +323,6 @@ public class MainWindowViewModel {
     @FXML
     public void onButtonSkipNextClicked(){
         this.mediaPlayer.playNextTrack();
-//        Todo: Legacy!
-//        if(this.songObservableList != null && this.songObservableList.size() > 1){
-//            Song next = this.mediaPlayer.getNextTrack();
-//            if(next != null){
-//                this.mediaPlayer.play(next);
-//            }
-//        } else {
-//            // Error is either null or it's the size.
-//            String error = (this.songObservableList == null) ? "not initialized" : Integer.toString(this.songObservableList.size());
-//            this.logger.warn("Tried to skip to the next song, but the song list is currently " + error);
-//        }
     }
 
     /**
