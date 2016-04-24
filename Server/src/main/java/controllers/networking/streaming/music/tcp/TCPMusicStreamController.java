@@ -4,6 +4,7 @@ import controllers.clients.ClientController;
 import controllers.networking.streaming.music.MusicStreamController;
 import models.networking.clients.NetworkClient;
 import models.networking.dtos.CacheSongCommand;
+import models.networking.dtos.PauseCommand;
 import models.networking.dtos.PlayCommand;
 import models.networking.dtos.StopCommand;
 import models.songs.Song;
@@ -53,13 +54,10 @@ public class TCPMusicStreamController implements MusicStreamController {
     public void play(Song song) throws IOException {
         byte[] songData = SongUtils.getSongData(song);
 
-        CacheSongCommand cacheSongCommand = new CacheSongCommand(songData);
+        // Initialize this here, so we have less delay between sending of the objects.
         PlayCommand playCommand = new PlayCommand(song.getTitle(), song.getArtist());
 
-        // First send the cache song command to make the clients ready.
-        for(NetworkClient client : this.clientController.getClients()) {
-            client.send(cacheSongCommand);
-        }
+        this.cacheSong(songData);
 
         // Then wait for the clients until they all received the song completely.
         this.waitForClientsReceived();
@@ -82,7 +80,44 @@ public class TCPMusicStreamController implements MusicStreamController {
     }
 
     /**
-     * Waits for all clients to receive the sent messages.
+     * Pauses the song on the client.
+     */
+    @Override
+    public void pause() {
+        PauseCommand pauseCommand = new PauseCommand();
+        for(NetworkClient client : this.clientController.getClients()) {
+            client.send(pauseCommand);
+        }
+    }
+
+    /**
+     * Caches a song on the clients.
+     *
+     * @param song The song to cache on the clients.
+     */
+    @Override
+    public void cacheSong(Song song) throws IOException {
+        byte[] songData = SongUtils.getSongData(song);
+        this.cacheSong(songData);
+    }
+
+    /**
+     * Caches a song on the clients.
+     *
+     * @param songData The bytes containing the song data.
+     */
+    private void cacheSong(byte[] songData) {
+        CacheSongCommand command = new CacheSongCommand(songData);
+
+        // Send the cache song command to make the clients ready.
+        for(NetworkClient client : this.clientController.getClients()) {
+            client.send(command);
+        }
+    }
+
+    /**
+     * Waits, until all clients have received pending messages.
+     * Used to synchronize asynchronous sending of objects.
      */
     private void waitForClientsReceived() {
 

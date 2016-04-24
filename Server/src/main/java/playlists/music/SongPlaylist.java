@@ -1,9 +1,9 @@
 package playlists.music;
 
-import playlists.Playlist;
-import models.songs.Song;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import models.songs.Song;
+import playlists.Playlist;
 
 import java.util.Collection;
 import java.util.Optional;

@@ -1,7 +1,16 @@
 #Idea Projects
 **/.idea/workspace.xml
+**/.idea/dictionaries/eluch.xml
 **/.idea/tasks.xml
-**/.idea
+**/.idea/modules
+**/.idea/libraries
+**/.idea/compiler.xml
+**/.idea/gradle.xml
+**/.idea/misc.xml
+**/.idea/modules.xml
+**/.idea/vcs.xml
+**/.idea/uiDesigner.xml
+
 #WirelessSoundSystem.iml
 
 # Windows image file caches
@@ -10,6 +19,7 @@ ehthumbs.db
 
 # Folder config file
 Desktop.ini
+
 
 # Recycle Bin used on file shares
 $RECYCLE.BIN/

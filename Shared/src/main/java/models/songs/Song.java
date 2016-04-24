@@ -1,7 +1,10 @@
 package models.songs;
 
+import javafx.util.Duration;
+import utils.DurationStringConverter;
+
 /**
- * Created by eluch on 30.11.2015.
+ * Created by Esteban Luchsinger on 30.11.2015.
  */
 public interface Song extends Comparable<Song> {
     /**
@@ -17,8 +20,21 @@ public interface Song extends Comparable<Song> {
     String getArtist();
 
     /**
+     * Gets the songs length in seconds.
+     * @return Returns the length of the song in seconds.
+     */
+    long getLengthInSeconds();
+
+    default String getDuration() {
+        Duration duration = Duration.seconds(this.getLengthInSeconds());
+
+        DurationStringConverter converter = new DurationStringConverter();
+        return converter.toString(duration);
+    }
+
+    /**
      * Returns the file extension without the dot.
-     * @return i.e. MP3 --> "mp3"
+     * @return i.e. MP3 --&gt; "mp3"
      */
     String getExtension();
 

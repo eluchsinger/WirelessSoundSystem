@@ -8,6 +8,10 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import viewmodels.MainWindowViewModel;
 
+/**
+ * Main Class.
+ * This class starts the JavaFX application.
+ */
 public class Main extends Application {
 
     @Override
@@ -19,8 +23,8 @@ public class Main extends Application {
 
         // Set the stage to handle closing even inside the viewmodel.
         Object o = loader.getController();
-        if(o.getClass() == MainWindowViewModel.class){
-            ((MainWindowViewModel)o).setStage(primaryStage);
+        if (o.getClass() == MainWindowViewModel.class) {
+            ((MainWindowViewModel) o).setStage(primaryStage);
         }
 
         primaryStage.setTitle("Wireless Sound System");

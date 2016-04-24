@@ -3,15 +3,26 @@ package controllers.media;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.util.Duration;
 
 /**
+ * <pre>
  * Created by Esteban Luchsinger on 01.12.2015.
+ * A media player interface built to handle different types of media (music/video).
+ * </pre>
  */
 public interface MediaPlayer<T> {
-    void play(T track, boolean tryResume);
+
+    /**
+     * Plays a track.
+     * @param track The track to play.
+     */
     void play(T track);
+
+    /**
+     * Pauses the currently played track.
+     * If there is no currently playing track, doesn't do anything.
+     */
     void pause();
 
     /**
@@ -19,7 +30,16 @@ public interface MediaPlayer<T> {
      * Can be used always, without checking the status.
      */
     void stop();
+
+    /**
+     * @return Returns true if the player is currently playing.
+     */
     boolean isPlaying();
+
+    /**
+     * Property to bind the isPlaying value.
+     * @return Returns the property to the corresponding isPlaying field.
+     */
     BooleanProperty isPlayingProperty();
 
     /**
@@ -31,7 +51,7 @@ public interface MediaPlayer<T> {
         if(this.isPlaying())
             this.pause();
         else
-            this.play(this.getCurrentTrack(), true);
+            this.play(this.getCurrentTrack());
     }
 
     /**
@@ -41,18 +61,57 @@ public interface MediaPlayer<T> {
     T getNextTrack();
 
     /**
+     * Tries to play the next track.
+     * @return True, if next track could be played.
+     */
+    boolean playNextTrack();
+
+    /**
      * Tries to find the previous track.
      * @return Returns the previous track on the playlist, or null if it wasn't found.
      */
     T getPreviousTrack();
 
+    /**
+     * Tries to play the previous track.
+     * @return True, if previous track could be played.
+     */
+    boolean playPreviousTrack();
+
+    /**
+     * @return Returns the current track or null if the player has got no current track.
+     */
     T getCurrentTrack();
-    SimpleObjectProperty<T> currentTrackProperty();
 
-    ObjectProperty<Duration> currentMediaTime();
-    ObjectProperty<Duration> totalMediaDuration();
+    /**
+     * @return Returns the property with the value of the current track.
+     */
+    ObjectProperty<T> currentTrackProperty();
 
+    /**
+     * @return Returns the current media time ObjectProperty. This property shows the current progress of the currently playing track.
+     */
+    ObjectProperty<Duration> currentMediaTimeProperty();
+
+    /**
+     * @return Returns the total duration of the currently playing media.
+     */
+    ObjectProperty<Duration> totalMediaDurationProperty();
+
+    /**
+     * @return Returns the current volume value.
+     */
     double getVolume();
+
+    /**
+     * Sets the current volume value.
+     * Bigger value = Louder!
+     * @param value New Value
+     */
     void setVolume(double value);
+
+    /**
+     * @return Returns the property containing the current volume. (Write and read possible!)
+     */
     DoubleProperty volumeProperty();
 }

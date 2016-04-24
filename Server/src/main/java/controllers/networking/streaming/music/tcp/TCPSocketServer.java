@@ -58,7 +58,7 @@ public class TCPSocketServer implements Closeable {
 
     /**
      * Starts the TCP Server.
-     * Beginns accepting connections.
+     * Begins accepting connections.
      */
     public void start() {
 
@@ -75,10 +75,12 @@ public class TCPSocketServer implements Closeable {
     }
 
     /**
+     * <pre>
      * Stops the TCP Server.
      * This method does the same as the close() method. It is just here to keep consistence between
      * start() and stop().
      * The server cannot be restarted after stop or close.
+     * </pre>
      * @throws IOException Throws an IO Exception if there are any problems.
      */
     public void stop() throws IOException {
@@ -131,16 +133,16 @@ public class TCPSocketServer implements Closeable {
     }
 
     /**
+     * <pre>
      * Closes this stream and releases any system resources associated
      * with it. If the stream is already closed then invoking this
      * method has no effect.
-     * <p>
-     * <p> As noted in {@link AutoCloseable#close()}, cases where the
+     * As noted in {@link AutoCloseable#close()}, cases where the
      * close may fail require careful attention. It is strongly advised
      * to relinquish the underlying resources and to internally
      * <em>mark</em> the {@code Closeable} as closed, prior to throwing
      * the {@code IOException}.
-     *
+     * </pre>
      * @throws IOException if an I/O error occurs
      */
     @Override

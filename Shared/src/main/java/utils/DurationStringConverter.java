@@ -4,7 +4,10 @@ import javafx.util.Duration;
 import javafx.util.StringConverter;
 
 /**
- * Created by Esteban on 11.12.2015.
+ * <pre>
+ * Created by Esteban Luchsinger on 11.12.2015.
+ * Converts a <code>Duration</code> object into a String.
+ * </pre>
  */
 public class DurationStringConverter extends StringConverter<Duration> {
     @Override

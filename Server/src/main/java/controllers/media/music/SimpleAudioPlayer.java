@@ -9,14 +9,20 @@ import javafx.util.Duration;
 import models.songs.Song;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.exceptions.NotImplementedException;
 
 import java.io.File;
 import java.util.Optional;
 
 /**
- * Created by eluch on 01.12.2015.
+ * <pre>
+ * Created by Esteban Luchsinger on 01.12.2015.
+ * This is a simple audio player designed to handle the music playing.
+ *
+ * If you need to use this MediaPlayer for streaming, you should evaluate using the <code>NetworkAudioPlayer</code>.
+ * </pre>
  */
-public class AudioPlayer implements controllers.media.MediaPlayer<Song> {
+public class SimpleAudioPlayer implements controllers.media.MediaPlayer<Song> {
 
     private final Logger logger;
     /**
@@ -33,12 +39,19 @@ public class AudioPlayer implements controllers.media.MediaPlayer<Song> {
     private ObservableList<Song> playlist;
     private Song lastPlayed;
 
-    public AudioPlayer() {
+    /**
+     * Default Constructor
+     */
+    public SimpleAudioPlayer() {
         // Call parameterized constructor with a new list.
         this(FXCollections.observableArrayList());
     }
 
-    public AudioPlayer(ObservableList<Song> songs) {
+    /**
+     * Constructor with a song list. This will be the playlist.
+     * @param songs Songs for the playlist.
+     */
+    public SimpleAudioPlayer(ObservableList<Song> songs) {
         this.logger = LoggerFactory.getLogger(this.getClass());
         this.playlist = songs;
 
@@ -50,8 +63,7 @@ public class AudioPlayer implements controllers.media.MediaPlayer<Song> {
     }
 
     /**
-     * Plays the selected trackc, if found.
-     *
+     * Plays the selected track if found and / or resumes it.
      * @param track The track that should be played. (Must not be the same reference as in the playlist).
      * @param tryResume Tries to resume the song, if it is paused.
      */
@@ -148,6 +160,11 @@ public class AudioPlayer implements controllers.media.MediaPlayer<Song> {
     }
 
     @Override
+    public boolean playNextTrack() {
+        throw new NotImplementedException();
+    }
+
+    @Override
     public Song getPreviousTrack() {
         if (this.lastPlayed != null) {
             Song song = null;
@@ -164,6 +181,11 @@ public class AudioPlayer implements controllers.media.MediaPlayer<Song> {
         else {
             return null;
         }
+    }
+
+    @Override
+    public boolean playPreviousTrack() {
+        throw new NotImplementedException();
     }
 
     @Override
@@ -244,23 +266,11 @@ public class AudioPlayer implements controllers.media.MediaPlayer<Song> {
                 .orElse(null);
     }
 
-    public Duration getCurrentMediaTime() {
-        return this.currentMediaTime.get();
-    }
-
-    public StringProperty currentMediaTimeString() {
-        return this.currentMediaTimeString;
-    }
-
-    public ObjectProperty<Duration> currentMediaTime() {
+    public ObjectProperty<Duration> currentMediaTimeProperty() {
         return this.currentMediaTime;
     }
 
-    public Duration getTotalMediaDuration() {
-        return this.totalMediaDuration.get();
-    }
-
-    public ObjectProperty<Duration> totalMediaDuration() {
+    public ObjectProperty<Duration> totalMediaDurationProperty() {
         return this.totalMediaDuration;
     }
 

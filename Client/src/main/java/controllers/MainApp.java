@@ -16,7 +16,7 @@ public class MainApp extends Application {
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ClientWindow.fxml"));
         Parent root = loader.load();
-
+        
         // Add Stage object to the client window view model.
         Object o = loader.getController();
         if(ClientWindowViewModel.class == o.getClass()){

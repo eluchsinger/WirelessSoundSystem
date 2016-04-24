@@ -1,15 +1,14 @@
 package controllers.networking.streaming.music;
 
 import controllers.io.cache.file.FileCacheService;
-import controllers.networking.streaming.music.callback.OnMusicStreamingStatusChanged;
-import controllers.networking.streaming.music.callback.OnPlay;
-import controllers.networking.streaming.music.callback.OnRename;
-import controllers.networking.streaming.music.callback.OnStop;
+import controllers.networking.streaming.music.callback.*;
 import models.clients.Server;
 
 /**
+ * <pre>
  * Created by Esteban Luchsinger on 01.03.2016.
  * Interface provides all needed public methods.
+ * </pre>
  */
 public interface MusicStreamingService {
 
@@ -34,6 +33,9 @@ public interface MusicStreamingService {
 
     void addOnPlayListener(OnPlay listener);
     void removeOnPlayListener(OnPlay listener);
+
+    void addOnPauseListener(OnPause listener);
+    void removeOnPauseListener(OnPause listener);
 
     void addOnStopListener(OnStop listener);
     void removeOnStopListener(OnStop listener);

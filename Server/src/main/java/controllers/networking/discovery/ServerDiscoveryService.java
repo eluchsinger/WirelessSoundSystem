@@ -14,9 +14,11 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * <pre>
  * Created by Esteban Luchsinger on 04.12.2015.
  * Discovery Service Handler.
  * Sends out beacons in an interval.
+ * </pre>
  */
 public class ServerDiscoveryService implements Closeable {
 
@@ -62,6 +64,7 @@ public class ServerDiscoveryService implements Closeable {
     public ServerDiscoveryService() {
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
+
     //endregion Constructor
 
     /**
@@ -133,16 +136,17 @@ public class ServerDiscoveryService implements Closeable {
     }
 
     /**
+     * <pre>
      * Redundant with stop().
      * Closes this stream and releases any system resources associated
      * with it. If the stream is already closed then invoking this
      * method has no effect.
-     * <p>
-     * <p> As noted in {@link AutoCloseable#close()}, cases where the
+     * As noted in {@link AutoCloseable#close()}, cases where the
      * close may fail require careful attention. It is strongly advised
      * to relinquish the underlying resources and to internally
      * <em>mark</em> the {@code Closeable} as closed, prior to throwing
      * the {@code IOException}.
+     * </pre>
      *
      * @throws IOException if an I/O error occurs
      */

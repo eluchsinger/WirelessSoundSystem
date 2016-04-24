@@ -7,12 +7,15 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
+ * <pre>
  * Created by Esteban Luchsinger on 16.03.2016.
  * The static cache service uses an immutable cache.
  * The cache can only be written once. If the cache is already used, and writeData
  * is called again, it overwrites all the data.
+ * </pre>
  */
 public class StaticFileCacheService implements FileCacheService {
     private final Logger logger;
@@ -20,6 +23,12 @@ public class StaticFileCacheService implements FileCacheService {
     private final static String FILE_SUFFIX = ".mp3";
 
     private File rootFile = null;
+
+    /**
+     * Workaround: This field marks the cache as "USED".
+     * This is a workaround for the MediaPlayer to detect, if the song was already played.
+     */
+    private final AtomicBoolean cacheWasUsed = new AtomicBoolean();
 
     /**
      * Default constructor
@@ -31,7 +40,6 @@ public class StaticFileCacheService implements FileCacheService {
         String tempDir = System.getProperty("java.io.tmpdir");
 
         this.rootFile = File.createTempFile(FILE_PREFIX, FILE_SUFFIX, new File(tempDir));
-
     }
 
     /**
@@ -111,7 +119,6 @@ public class StaticFileCacheService implements FileCacheService {
     /**
      * Returns the new file and if it doesn't exist, it creates a new file.
      * @return Returns the cache file.
-     * @throws IOException
      */
     public File getFile() {
         try {
@@ -139,5 +146,13 @@ public class StaticFileCacheService implements FileCacheService {
     @Override
     public URI getFileURI() {
         return this.rootFile.toURI();
+    }
+
+    public void setCacheUsed() {
+        this.cacheWasUsed.set(true);
+    }
+
+    public boolean isCacheUsed() {
+        return this.cacheWasUsed.get();
     }
 }

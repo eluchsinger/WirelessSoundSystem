@@ -5,8 +5,10 @@ import models.songs.Song;
 import java.io.IOException;
 
 /**
+ * <pre>
  * Created by Esteban Luchsinger on 16.12.2015.
  * This interface controls the song streaming.
+ * </pre>
  */
 public interface MusicStreamController {
 
@@ -21,4 +23,15 @@ public interface MusicStreamController {
      * Stops playing the song on the client.
      */
     void stop();
+
+    /**
+     * Pauses the song on the client.
+     */
+    void pause();
+
+    /**
+     * Caches a song on the clients.
+     * @param song The song to cache on the clients.
+     */
+    void cacheSong(Song song) throws IOException;
 }

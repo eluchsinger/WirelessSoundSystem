@@ -19,7 +19,10 @@ import java.time.Duration;
 import java.util.Properties;
 
 /**
+ * <pre>
  * Created by Esteban Luchsinger on 08.12.2015.
+ * The ViewModel of the ClientWindow view.
+ * </pre>
  */
 public class ClientWindowViewModel {
 
@@ -102,8 +105,6 @@ public class ClientWindowViewModel {
      * Starts playing the song in the cache from the beginnning.
      */
     private void startPlaying() {
-        this.stopPlaying();
-
         this.mediaPlayer = new MediaPlayer(new Media(this.musicStreamingService.getCache()
                 .getFileURI()
                 .toString()));
@@ -111,16 +112,19 @@ public class ClientWindowViewModel {
         this.logger.info("Now Playing");
     }
 
-    private void startPlaying(Duration startTime) {
-        this.stopPlaying();
+    private void play() {
+        if(this.mediaPlayer != null) {
+            this.mediaPlayer.play();
+            this.logger.info("Now Playing");
+        }
+    }
 
+    private void startPlaying(Duration startTime) {
         this.mediaPlayer = new MediaPlayer(new Media(this.musicStreamingService.getCache()
                 .getFileURI()
                 .toString()));
-
         this.mediaPlayer.play();
         this.logger.info("Now Playing from " + startTime);
-
     }
 
     /**
@@ -164,7 +168,9 @@ public class ClientWindowViewModel {
      * Pauses playing the song.
      */
     private void pausePlaying() {
-
+        if(this.mediaPlayer != null) {
+            this.mediaPlayer.pause();
+        }
     }
 
     //region initializers
@@ -182,6 +188,13 @@ public class ClientWindowViewModel {
             this.labelArtist.setText(artist);
             this.labelStatus.setText("PLAYING");
             this.startPlaying();
+        }));
+
+        // Handle onPause message
+        this.musicStreamingService.addOnPauseListener(() -> Platform.runLater(() -> {
+            this.labelStatus.setText("PAUSED");
+            this.pausePlaying();
+            // Todo: Make handling of "dirty cache" or a mechanism to resume a paused song.
         }));
 
         // Handle onStop

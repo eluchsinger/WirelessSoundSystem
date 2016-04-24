@@ -1,13 +1,16 @@
 package models.songs;
 
-import com.mpatric.mp3agic.*;
+import com.mpatric.mp3agic.InvalidDataException;
+import com.mpatric.mp3agic.Mp3File;
+import com.mpatric.mp3agic.UnsupportedTagException;
 
 import java.io.IOException;
 
 /**
  * Created by Esteban Luchsinger on 30.11.2015.
+ * This class represents an Mp3Song.
  */
-public class Mp3Song implements Song, Comparable<Song> {
+public class Mp3Song extends BaseSong implements Comparable<Song> {
     private final String extension = "mp3";
     private Mp3File file;
     private String path;
@@ -45,8 +48,8 @@ public class Mp3Song implements Song, Comparable<Song> {
     }
 
     @Override
-    public String getArtist(){
-        if(this.file == null){
+    public String getArtist() {
+        if(this.file == null) {
             return "unknown title";
         }
 
@@ -56,6 +59,15 @@ public class Mp3Song implements Song, Comparable<Song> {
             return file.getId3v2Tag().getArtist();
         else
             return "unknown artist";
+    }
+
+    @Override
+    public long getLengthInSeconds() {
+        if(this.file == null) {
+            return 0;
+        }
+
+        return this.file.getLengthInSeconds();
     }
 
     @Override
@@ -101,6 +113,8 @@ public class Mp3Song implements Song, Comparable<Song> {
         return this.getTitle().equals(mp3Song.getTitle())
                 && this.getPath().equals(mp3Song.getPath());
     }
+
+
 
     @Override
     public int hashCode() {

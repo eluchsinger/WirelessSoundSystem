@@ -10,10 +10,12 @@ import java.util.Arrays;
 import java.util.Objects;
 
 /**
+ * <pre>
  * Created by Esteban Luchsinger on 16.12.2015.
  * This datagram contains a part of the complete song.
  * It is only some bytes long and a song is usually composed by
  * hundreds or thousands of SongDatagrams.
+ * </pre>
  */
 public class SongDatagram implements Comparable{
 
