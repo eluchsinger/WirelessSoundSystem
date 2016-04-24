@@ -21,8 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * <pre>
  * Created by Esteban Luchsinger on 01.03.2016.
- * The TCP Socket Implementation. Uses normal sockets (Blocking mode).
+ * The TCP Socket Implementation. Uses conventional sockets (Blocking mode).
+ * </pre>
  */
 public class TCPMusicStreamingController implements MusicStreamingService {
 

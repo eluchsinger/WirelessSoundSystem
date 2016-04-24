@@ -16,8 +16,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
+ * <pre>
  * Created by Esteban Luchsinger on 08.12.2015.
  * This is the ClientDiscoveryService of the Client.
+ * </pre>
  */
 public class ClientDiscoveryService implements Closeable {
 

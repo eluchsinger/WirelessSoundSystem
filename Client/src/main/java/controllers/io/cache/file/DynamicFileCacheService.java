@@ -13,8 +13,10 @@ import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
 
 /**
+ * <pre>
  * Created by Esteban Luchsinger on 15.12.2015.
  * This class handles the handling of the cache that can grow and shrink dynamically.
+ * </pre>
  */
 public class DynamicFileCacheService implements FileCacheService {
     private final Logger logger;

@@ -5,8 +5,10 @@ import controllers.networking.streaming.music.callback.*;
 import models.clients.Server;
 
 /**
+ * <pre>
  * Created by Esteban Luchsinger on 01.03.2016.
  * Interface provides all needed public methods.
+ * </pre>
  */
 public interface MusicStreamingService {
 

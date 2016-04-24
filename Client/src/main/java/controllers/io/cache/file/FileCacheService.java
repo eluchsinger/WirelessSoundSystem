@@ -5,9 +5,11 @@ import controllers.io.cache.CacheService;
 import java.net.URI;
 
 /**
+ * <pre>
  * Created by Esteban Luchsinger on 16.03.2016.
  * The File Cache Service provides an interface to write and read
  * cache data in a file based cache.
+ * </pre>
  */
 public interface FileCacheService extends CacheService {
 

@@ -3,9 +3,11 @@ package controllers.io.cache;
 import java.io.IOException;
 
 /**
+ * <pre>
  * Created by Esteban Luchsinger on 15.03.2016.
  * The Cache Service provides an interface to cache data into whatever kind of
  * cache is needed.
+ * </pre>
  */
 public interface CacheService {
 
@@ -17,10 +19,12 @@ public interface CacheService {
     void writeData(byte[] data) throws IOException;
 
     /**
+     * <pre>
      * Resets the cache.
      * All data currently cached is lost.
      *
-     * (Depending on the cache, may be good to use before closing the application)
+     * (Depending on the cache, this might be required to use before closing the application)
+     * </pre>
      */
     void reset();
 }

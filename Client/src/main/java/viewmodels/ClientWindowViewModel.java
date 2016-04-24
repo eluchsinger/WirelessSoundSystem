@@ -19,7 +19,10 @@ import java.time.Duration;
 import java.util.Properties;
 
 /**
+ * <pre>
  * Created by Esteban Luchsinger on 08.12.2015.
+ * The ViewModel of the ClientWindow view.
+ * </pre>
  */
 public class ClientWindowViewModel {
 
