@@ -1,8 +1,9 @@
 package controllers.media.music;
 
+import controllers.media.MediaPlayer;
 import javafx.beans.property.*;
 import javafx.util.Duration;
-import viewmodels.songs.PlayableSong;
+import models.songs.PlayableSong;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
  * This is a base class for an audio player. It provides the needed properties.
  * </pre>
  */
-public abstract class BaseAudioPlayer implements controllers.media.MediaPlayer<PlayableSong> {
+public abstract class BaseAudioPlayer implements MediaPlayer<PlayableSong> {
 
     private BooleanProperty isPlaying;
     private ObjectProperty<Duration> currentMediaTime;

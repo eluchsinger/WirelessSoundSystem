@@ -1,7 +1,7 @@
 package viewmodels;
 
 import javafx.scene.control.TableRow;
-import viewmodels.songs.PlayableSong;
+import models.songs.PlayableSong;
 
 /**
  * <pre>

@@ -13,13 +13,6 @@ import javafx.util.Duration;
  */
 public interface MediaPlayer<T> {
 
-//    /**
-//     * Plays a track and tries to resume it, if desired.
-//     * @param track Track to play.
-//     * @param tryResume Set this true, if the track should be resumed (only if possible).
-//     */
-//    void play(T track, boolean tryResume);
-
     /**
      * Plays a track.
      * @param track The track to play.

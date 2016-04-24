@@ -202,7 +202,6 @@ public class TCPMusicStreamingController implements MusicStreamingService {
                 }
                 else if(receivedObject instanceof PauseCommand) {
                     this.logger.info("Received PauseCommand");
-                    PauseCommand command = (PauseCommand) receivedObject;
                     this.onPauseCommandReceived();
                 }
                 // A stop command

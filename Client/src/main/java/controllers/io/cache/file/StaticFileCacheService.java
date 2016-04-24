@@ -24,6 +24,10 @@ public class StaticFileCacheService implements FileCacheService {
 
     private File rootFile = null;
 
+    /**
+     * Workaround: This field marks the cache as "USED".
+     * This is a workaround for the MediaPlayer to detect, if the song was already played.
+     */
     private final AtomicBoolean cacheWasUsed = new AtomicBoolean();
 
     /**

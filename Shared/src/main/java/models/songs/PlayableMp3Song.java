@@ -1,10 +1,9 @@
-package viewmodels.songs;
+package models.songs;
 
 import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.UnsupportedTagException;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import models.songs.Mp3Song;
 
 import java.io.IOException;
 

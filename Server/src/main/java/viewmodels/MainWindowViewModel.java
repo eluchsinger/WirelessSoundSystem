@@ -25,12 +25,12 @@ import javafx.stage.Stage;
 import models.networking.clients.NetworkClient;
 import models.networking.dtos.RenameCommand;
 import models.songs.Mp3Song;
+import models.songs.PlayableMp3Song;
+import models.songs.PlayableSong;
 import models.songs.Song;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.DurationStringConverter;
-import viewmodels.songs.PlayableMp3Song;
-import viewmodels.songs.PlayableSong;
 
 import java.io.Closeable;
 import java.io.File;

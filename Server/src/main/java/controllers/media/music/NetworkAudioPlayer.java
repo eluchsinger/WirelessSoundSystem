@@ -5,10 +5,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import models.songs.PlayableSong;
 import models.songs.Song;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import viewmodels.songs.PlayableSong;
 
 import java.io.File;
 import java.io.IOException;

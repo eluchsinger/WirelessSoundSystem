@@ -1,7 +1,6 @@
-package viewmodels.songs;
+package models.songs;
 
 import javafx.beans.property.BooleanProperty;
-import models.songs.Song;
 
 /**
  * <pre>
