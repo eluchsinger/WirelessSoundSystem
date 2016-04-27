@@ -1,6 +1,7 @@
 package controllers.networking.streaming.music;
 
 import controllers.io.cache.file.FileCacheService;
+import controllers.io.cache.file.SongCacheManager;
 import controllers.networking.streaming.music.callback.*;
 import models.clients.Server;
 
@@ -47,7 +48,7 @@ public interface MusicStreamingService {
      * Returns the cache (FileCache) of the MusicStreamingService.
      * @return FileCacheService.
      */
-    FileCacheService getCache();
+    SongCacheManager getCache();
 
     void sendName(String name);
 }

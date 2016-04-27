@@ -9,8 +9,10 @@ import javafx.scene.control.Label;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
+import models.songs.Song;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.media.SongUtils;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -105,9 +107,8 @@ public class ClientWindowViewModel {
      * Starts playing the song in the cache from the beginnning.
      */
     private void startPlaying(int songHash) {
-        this.mediaPlayer = new MediaPlayer(new Media(this.musicStreamingService.getCache()
-                .getFileURI()
-                .toString()));
+        Song song = this.musicStreamingService.getCache().retrieve(songHash);
+        this.mediaPlayer = new MediaPlayer(new Media(SongUtils.getSongURI(song).toString()));
         this.mediaPlayer.play();
         this.logger.info("Now Playing");
     }
@@ -119,13 +120,13 @@ public class ClientWindowViewModel {
         }
     }
 
-    private void startPlaying(Duration startTime) {
-        this.mediaPlayer = new MediaPlayer(new Media(this.musicStreamingService.getCache()
-                .getFileURI()
-                .toString()));
-        this.mediaPlayer.play();
-        this.logger.info("Now Playing from " + startTime);
-    }
+//    private void startPlaying(Duration startTime) {
+//        this.mediaPlayer = new MediaPlayer(new Media(this.musicStreamingService.getCache()
+//                .getFileURI()
+//                .toString()));
+//        this.mediaPlayer.play();
+//        this.logger.info("Now Playing from " + startTime);
+//    }
 
     /**
      * Stops playing the currently played song.
@@ -192,7 +193,6 @@ public class ClientWindowViewModel {
         this.musicStreamingService.addOnPauseListener(() -> Platform.runLater(() -> {
             this.labelStatus.setText("PAUSED");
             this.pausePlaying();
-            // Todo: Make handling of "dirty cache" or a mechanism to resume a paused song.
         }));
 
         // Handle onStop

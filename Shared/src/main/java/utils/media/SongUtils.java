@@ -4,6 +4,7 @@ import models.songs.Song;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 
 /**
@@ -22,6 +23,16 @@ public class SongUtils {
         // Get File Data.
         File songFile = new File(song.getPath());
         return Files.readAllBytes(songFile.toPath());
+    }
+
+    /**
+     * Returns the song URI.
+     * @param song Song of whom the URI will be returned.
+     * @return Returns the URI of the song.
+     */
+    public static URI getSongURI(Song song) {
+        File f = new File(song.getPath());
+        return f.toURI();
     }
 
 

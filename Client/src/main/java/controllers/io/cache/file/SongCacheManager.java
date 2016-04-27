@@ -104,19 +104,24 @@ public class SongCacheManager {
         return p.toFile().exists();
     }
 
+    public boolean exists(int hash) {
+        Path p = this.tempFolderPath.resolve(this.calculateSongFileName(hash));
+        return p.toFile().exists();
+    }
+
     /**
-     * Retrieves the <code>Song</code> object of the cachedSong in the parameters.
-     * @param cachedSong The cachedSong to retrieve
+     * Retrieves the <code>Song</code> object from the hash in the parameters.
+     * @param hash The cachedSong to retrieve
      * @return Returns a <code>Song</code> object that contains the URI of the file.
      */
-    public Song retrieve(CachedSong cachedSong) {
+    public Song retrieve(int hash) {
         Song song = null;
 
-        if(this.exists(cachedSong)) {
+        if(this.exists(hash)) {
             try {
-                song = new Mp3Song(this.getFullSongPath(cachedSong));
+                song = new Mp3Song(this.getFullSongPath(hash));
             } catch (InvalidDataException | IOException | UnsupportedTagException e) {
-                this.logger.error("Failed retrieving the song (Title = " + cachedSong.title + ")", e);
+                this.logger.error("Failed retrieving the song (Hash = " + hash + ")", e);
             }
         }
 
@@ -132,6 +137,10 @@ public class SongCacheManager {
         return PREFIX + song.hashCode() + SUFFIX;
     }
 
+    private String calculateSongFileName(int hash) {
+        return PREFIX + hash + SUFFIX;
+    }
+
     /**
      * Returns the full song path, including the song name and extension.
      * The song path is just calculated. <strong>The file must not exist.</strong>
@@ -140,6 +149,11 @@ public class SongCacheManager {
      */
     private String getFullSongPath(CachedSong song) {
         Path p = this.tempFolderPath.resolve(this.calculateSongFileName(song));
+        return p.toString();
+    }
+
+    private String getFullSongPath(int hash) {
+        Path p = this.tempFolderPath.resolve(this.calculateSongFileName(hash));
         return p.toString();
     }
 }

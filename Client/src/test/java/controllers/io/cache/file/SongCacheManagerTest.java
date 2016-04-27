@@ -43,7 +43,7 @@ public class SongCacheManagerTest {
 
         manager.store(cachedSong);
 
-        Song song = manager.retrieve(cachedSong);
+        Song song = manager.retrieve(cachedSong.hashCode());
 
         Assert.assertNotNull(song);
     }

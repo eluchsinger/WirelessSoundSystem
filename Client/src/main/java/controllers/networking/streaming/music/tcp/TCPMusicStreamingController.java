@@ -1,6 +1,5 @@
 package controllers.networking.streaming.music.tcp;
 
-import controllers.io.cache.file.FileCacheService;
 import controllers.io.cache.file.SongCacheManager;
 import controllers.io.cache.file.StaticFileCacheService;
 import controllers.networking.streaming.music.MusicStreamingService;
@@ -11,6 +10,7 @@ import models.networking.dtos.commands.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -85,12 +85,9 @@ public class TCPMusicStreamingController implements MusicStreamingService {
     private ObjectOutputStream objectOutputStream;
 
     /**
-     * File cache. The songs have to be cached here when they
-     * were received completely.
+     * The cache manager that handles the cache.
      */
-    private final FileCacheService cache;
-
-    private final SongCacheManager songCacheManager;
+    private final SongCacheManager cache;
 
     //region Listeners
     /**
@@ -127,8 +124,7 @@ public class TCPMusicStreamingController implements MusicStreamingService {
         this.stopCommandListeners = new ArrayList<>();
         this.renameCommandListeners = new ArrayList<>();
 
-        this.cache = new StaticFileCacheService();
-        this.songCacheManager = new SongCacheManager();
+        this.cache = new SongCacheManager();
         this.setCurrentServiceStatus(ServiceStatus.STOPPED);
     }
 
@@ -184,6 +180,7 @@ public class TCPMusicStreamingController implements MusicStreamingService {
      * (Multithreaded!)
      */
     private void listen() {
+        boolean EOFExceptionHandled = false;
 
         while (this.isRunning && !this.getSocket().isClosed()) {
 
@@ -195,8 +192,7 @@ public class TCPMusicStreamingController implements MusicStreamingService {
                 if(receivedObject instanceof CacheSongCommand) {
                     this.logger.info("Received CacheSongCommand");
                     CacheSongCommand command = (CacheSongCommand) receivedObject;
-                    this.cache.writeData(command.cachedSong.data);
-                    this.songCacheManager.store(command.cachedSong);
+                    this.cache.store(command.cachedSong);
                     this.setCurrentServiceStatus(ServiceStatus.READY);
                 }
                 // A play command
@@ -234,6 +230,14 @@ public class TCPMusicStreamingController implements MusicStreamingService {
                 }
                 catch(Exception e) {
                     this.logger.error("Error in the TCPStreaming listener!", e);
+                }
+            }
+            catch(EOFException e) {
+                // Server disconnected.
+//                this.stop();
+                if(!EOFExceptionHandled) {
+                    this.logger.error("Handle this exception gracefully! (And delete this boolean)", e);
+                    EOFExceptionHandled = true;
                 }
             }
             catch (IOException | ClassNotFoundException e) {
@@ -395,7 +399,7 @@ public class TCPMusicStreamingController implements MusicStreamingService {
      * @return FileCacheService.
      */
     @Override
-    public FileCacheService getCache() {
+    public SongCacheManager getCache() {
         return this.cache;
     }
 
