@@ -24,12 +24,7 @@ public class Mp3Song extends BaseSong implements Comparable<Song> {
      */
     public Mp3Song(String path) throws InvalidDataException, IOException, UnsupportedTagException {
 
-        try {
-            this.file = new Mp3File(path);
-        }
-        catch(InvalidDataException ide){
-
-        }
+        this.file = new Mp3File(path);
         this.path = path;
     }
 
@@ -78,7 +73,6 @@ public class Mp3Song extends BaseSong implements Comparable<Song> {
     @Override
     public String getPath(){
         return this.path;
-//        return this.file.getFilename();
     }
 
     @Override
