@@ -23,7 +23,7 @@ import javafx.scene.image.Image;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import models.networking.clients.NetworkClient;
-import models.networking.dtos.RenameCommand;
+import models.networking.dtos.commands.RenameCommand;
 import models.songs.Mp3Song;
 import models.songs.PlayableMp3Song;
 import models.songs.PlayableSong;

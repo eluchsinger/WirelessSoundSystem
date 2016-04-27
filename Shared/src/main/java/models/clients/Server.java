@@ -95,7 +95,7 @@ public class Server {
     }
 
     /**
-     * Creates the hashCode of this Server Object.
+     * Creates the hash of this Server Object.
      * The hashcode are made of the server address and the port.
      * @return Hashcode.
      */

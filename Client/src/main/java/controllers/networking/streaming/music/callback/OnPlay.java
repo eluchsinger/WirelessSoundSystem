@@ -8,5 +8,9 @@ package controllers.networking.streaming.music.callback;
  */
 @FunctionalInterface
 public interface OnPlay {
-    void play(String songTitle, String artist);
+    /**
+     * Plays the song with the hashcode corresponding to the parameter.
+     * @param hash Hashcode of the song to be played.
+     */
+    void play(int hash);
 }

@@ -1,10 +1,12 @@
-package models.networking.dtos;
+package models.networking.dtos.commands;
 
 import java.io.Serializable;
 
 /**
+ * <pre>
  * Created by Esteban on 01.04.2016.
  * This command tells the client to rename.
+ * </pre>
  */
 public class RenameCommand implements Serializable {
     private static final long serialVersionUID = 5279400950017797772L;

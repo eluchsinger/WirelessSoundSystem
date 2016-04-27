@@ -2,7 +2,8 @@ package controllers.io.cache.file;
 
 import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.UnsupportedTagException;
-import models.networking.dtos.CacheSongCommand;
+import models.networking.dtos.commands.CacheSongCommand;
+import models.networking.dtos.models.CachedSong;
 import models.songs.Mp3Song;
 import models.songs.Song;
 import org.slf4j.Logger;
@@ -75,47 +76,47 @@ public class SongCacheManager {
     }
 
     /**
-     * Stores the cacheSongCommand in the cache.
-     * If the cacheSongCommand already existed, it will be replaced.
-     * @param cacheSongCommand The cacheSongCommand to store in the cache.
+     * Stores the cachedSong in the cache.
+     * If the cachedSong already existed, it will be replaced.
+     * @param cachedSong The cachedSong to store in the cache.
      * @return Returns a <code>Song</code> object that contains the URI of the file.
      */
-    public Song store(CacheSongCommand cacheSongCommand) {
+    public Song store(CachedSong cachedSong) {
         Song song = null;
 
-        try(FileOutputStream fos = new FileOutputStream(this.getFullSongPath(cacheSongCommand))) {
-            fos.write(cacheSongCommand.data);
-            song = new Mp3Song(this.getFullSongPath(cacheSongCommand));
+        try(FileOutputStream fos = new FileOutputStream(this.getFullSongPath(cachedSong))) {
+            fos.write(cachedSong.data);
+            song = new Mp3Song(this.getFullSongPath(cachedSong));
         } catch (IOException | UnsupportedTagException | InvalidDataException e) {
-            this.logger.error("Failed saving the cacheSongCommand (Title: " + cacheSongCommand.title + ")", e);
+            this.logger.error("Failed saving the cachedSong (Title: " + cachedSong.title + ")", e);
         }
 
         return song;
     }
 
     /**
-     * Checks, if there exists a cacheSongCommand (already cached), like the cacheSongCommand in the parameter.
-     * @param cacheSongCommand The cacheSongCommand to check for existence.
-     * @return Returns true, if the cacheSongCommand exists. False if the cacheSongCommand was not found in the cache.
+     * Checks, if there exists a cachedSong (already cached), like the cachedSong in the parameter.
+     * @param cachedSong The cachedSong to check for existence.
+     * @return Returns true, if the cachedSong exists. False if the cachedSong was not found in the cache.
      */
-    public boolean exists(CacheSongCommand cacheSongCommand) {
-        Path p = this.tempFolderPath.resolve(this.calculateSongFileName(cacheSongCommand));
+    public boolean exists(CachedSong cachedSong) {
+        Path p = this.tempFolderPath.resolve(this.calculateSongFileName(cachedSong));
         return p.toFile().exists();
     }
 
     /**
-     * Retrieves the <code>Song</code> object of the cacheSongCommand in the parameters.
-     * @param cacheSongCommand The cacheSongCommand to retrieve
+     * Retrieves the <code>Song</code> object of the cachedSong in the parameters.
+     * @param cachedSong The cachedSong to retrieve
      * @return Returns a <code>Song</code> object that contains the URI of the file.
      */
-    public Song retrieve(CacheSongCommand cacheSongCommand) {
+    public Song retrieve(CachedSong cachedSong) {
         Song song = null;
 
-        if(this.exists(cacheSongCommand)) {
+        if(this.exists(cachedSong)) {
             try {
-                song = new Mp3Song(this.getFullSongPath(cacheSongCommand));
+                song = new Mp3Song(this.getFullSongPath(cachedSong));
             } catch (InvalidDataException | IOException | UnsupportedTagException e) {
-                this.logger.error("Failed retrieving the song (Title = " + cacheSongCommand.title + ")", e);
+                this.logger.error("Failed retrieving the song (Title = " + cachedSong.title + ")", e);
             }
         }
 
@@ -123,11 +124,11 @@ public class SongCacheManager {
     }
 
     /**
-     * Calculates the song file name (only the name, not a full path) using the <code>hashCode</code> of the <code>Song</code>.
+     * Calculates the song file name (only the name, not a full path) using the <code>hash</code> of the <code>Song</code>.
      * @param song The <code>song</code> object.
      * @return Returns the filename of the <code>Song</code> object.
      */
-    private String calculateSongFileName(CacheSongCommand song) {
+    private String calculateSongFileName(CachedSong song) {
         return PREFIX + song.hashCode() + SUFFIX;
     }
 
@@ -137,7 +138,7 @@ public class SongCacheManager {
      * @param song The song to get the path from.
      * @return Returns the full song path as a string.
      */
-    private String getFullSongPath(CacheSongCommand song) {
+    private String getFullSongPath(CachedSong song) {
         Path p = this.tempFolderPath.resolve(this.calculateSongFileName(song));
         return p.toString();
     }

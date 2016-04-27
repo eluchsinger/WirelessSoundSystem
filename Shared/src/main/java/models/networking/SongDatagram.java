@@ -208,7 +208,7 @@ public class SongDatagram implements Comparable{
     }
 
     /**
-     * Generates the hashCode for the SongDatagram.
+     * Generates the hash for the SongDatagram.
      * Observes only the song data and sequence number.
      * @return
      */

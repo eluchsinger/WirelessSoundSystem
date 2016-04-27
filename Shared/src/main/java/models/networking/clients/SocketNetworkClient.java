@@ -2,8 +2,8 @@ package models.networking.clients;
 
 import models.clients.Client;
 import models.networking.clients.callbacks.OnDisconnected;
-import models.networking.dtos.KeepAliveBeacon;
-import models.networking.dtos.RenameCommand;
+import models.networking.dtos.commands.KeepAliveBeacon;
+import models.networking.dtos.commands.RenameCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.concurrent.ExecutorServiceUtils;

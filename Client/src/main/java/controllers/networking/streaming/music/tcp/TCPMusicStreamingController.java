@@ -1,12 +1,13 @@
 package controllers.networking.streaming.music.tcp;
 
 import controllers.io.cache.file.FileCacheService;
+import controllers.io.cache.file.SongCacheManager;
 import controllers.io.cache.file.StaticFileCacheService;
 import controllers.networking.streaming.music.MusicStreamingService;
 import controllers.networking.streaming.music.ServiceStatus;
 import controllers.networking.streaming.music.callback.*;
 import models.clients.Server;
-import models.networking.dtos.*;
+import models.networking.dtos.commands.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,6 +90,8 @@ public class TCPMusicStreamingController implements MusicStreamingService {
      */
     private final FileCacheService cache;
 
+    private final SongCacheManager songCacheManager;
+
     //region Listeners
     /**
      * List of listeners listening for currentServiceStatus changes.
@@ -125,6 +128,7 @@ public class TCPMusicStreamingController implements MusicStreamingService {
         this.renameCommandListeners = new ArrayList<>();
 
         this.cache = new StaticFileCacheService();
+        this.songCacheManager = new SongCacheManager();
         this.setCurrentServiceStatus(ServiceStatus.STOPPED);
     }
 
@@ -191,14 +195,15 @@ public class TCPMusicStreamingController implements MusicStreamingService {
                 if(receivedObject instanceof CacheSongCommand) {
                     this.logger.info("Received CacheSongCommand");
                     CacheSongCommand command = (CacheSongCommand) receivedObject;
-                    this.cache.writeData(command.data);
+                    this.cache.writeData(command.cachedSong.data);
+                    this.songCacheManager.store(command.cachedSong);
                     this.setCurrentServiceStatus(ServiceStatus.READY);
                 }
                 // A play command
                 else if(receivedObject instanceof PlayCommand) {
                     this.logger.info("Received PlayCommand");
                     PlayCommand command = (PlayCommand) receivedObject;
-                    this.onPlayCommandReceived(command.title, command.artist);
+                    this.onPlayCommandReceived(command.hash);
                 }
                 else if(receivedObject instanceof PauseCommand) {
                     this.logger.info("Received PauseCommand");
@@ -421,11 +426,10 @@ public class TCPMusicStreamingController implements MusicStreamingService {
     /**
      *
      * Fires the corresponding event to all the listeners.
-     * @param songTitle The title of the received song. (May be null)
-     * @param artist The artist of the received song. (May be null)
+     * @param hashCode The hashCode of the song to be played.
      */
-    private void onPlayCommandReceived(String songTitle, String artist) {
-        this.playCommandListeners.forEach(onPlay -> onPlay.play(songTitle, artist));
+    private void onPlayCommandReceived(int hashCode) {
+        this.playCommandListeners.forEach(onPlay -> onPlay.play(hashCode));
     }
 
     private void onPauseCommandReceived() {

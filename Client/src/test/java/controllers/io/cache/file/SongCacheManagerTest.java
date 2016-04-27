@@ -2,7 +2,8 @@ package controllers.io.cache.file;
 
 import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.UnsupportedTagException;
-import models.networking.dtos.CacheSongCommand;
+import models.networking.dtos.commands.CacheSongCommand;
+import models.networking.dtos.models.CachedSong;
 import models.songs.Mp3Song;
 import models.songs.Song;
 import org.junit.Assert;
@@ -20,37 +21,37 @@ public class SongCacheManagerTest {
     @Test
     public void store() throws Exception {
         SongCacheManager manager = new SongCacheManager();
-        CacheSongCommand cmd = this.initCacheSongCommand();
-        manager.store(cmd);
+        CachedSong cachedSong = this.initCachedSong();
+        manager.store(cachedSong);
     }
 
     @Test
     public void exists() throws Exception {
         SongCacheManager manager = new SongCacheManager();
-        CacheSongCommand cmd = this.initCacheSongCommand();
+        CachedSong cachedSong = this.initCachedSong();
 
-        manager.store(cmd);
+        manager.store(cachedSong);
 
-        Assert.assertTrue(manager.exists(cmd));
+        Assert.assertTrue(manager.exists(cachedSong));
     }
 
     @Test
     public void retrieve() throws Exception {
 
         SongCacheManager manager = new SongCacheManager();
-        CacheSongCommand cmd = this.initCacheSongCommand();
+        CachedSong cachedSong = this.initCachedSong();
 
-        manager.store(cmd);
+        manager.store(cachedSong);
 
-        Song song = manager.retrieve(cmd);
+        Song song = manager.retrieve(cachedSong);
 
         Assert.assertNotNull(song);
     }
 
-    private CacheSongCommand initCacheSongCommand() throws InvalidDataException, IOException, UnsupportedTagException {
+    private CachedSong initCachedSong() throws InvalidDataException, IOException, UnsupportedTagException {
 
         Song song = new Mp3Song(this.getClass().getResource("/music/AnchorsAweighChorusOnly.mp3").getPath());
-        return new CacheSongCommand(SongUtils.getSongData(song));
+        return new CachedSong(SongUtils.getSongData(song));
     }
 
 }

@@ -104,7 +104,7 @@ public class ClientWindowViewModel {
     /**
      * Starts playing the song in the cache from the beginnning.
      */
-    private void startPlaying() {
+    private void startPlaying(int songHash) {
         this.mediaPlayer = new MediaPlayer(new Media(this.musicStreamingService.getCache()
                 .getFileURI()
                 .toString()));
@@ -183,11 +183,9 @@ public class ClientWindowViewModel {
         this.musicStreamingService.addServiceStatusChangedListener(newStatus -> logger.info("New Status: " + newStatus.name()));
 
         // Handle onPlay message.
-        this.musicStreamingService.addOnPlayListener((songTitle, artist) -> Platform.runLater(() -> {
-            this.labelSongTitle.setText(songTitle);
-            this.labelArtist.setText(artist);
+        this.musicStreamingService.addOnPlayListener((hash) -> Platform.runLater(() -> {
             this.labelStatus.setText("PLAYING");
-            this.startPlaying();
+            this.startPlaying(hash);
         }));
 
         // Handle onPause message
