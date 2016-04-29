@@ -15,6 +15,7 @@ public interface FileCacheService extends CacheService {
 
     /**
      * @return Returns the absolute path of cache.
+     * @throws Exception Throws an exception if the absolute file path could not be found.
      */
     String getAbsoluteFilePath() throws Exception;
 

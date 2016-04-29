@@ -50,7 +50,7 @@ public class ClientWindowViewModel {
 
     /**
      * Constructor
-     * @throws IOException
+     * @throws IOException Throws an IOException if there was an error on startup.
      */
     public ClientWindowViewModel() throws IOException {
 

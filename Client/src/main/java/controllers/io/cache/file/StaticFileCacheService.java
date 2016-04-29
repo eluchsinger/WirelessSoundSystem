@@ -32,7 +32,7 @@ public class StaticFileCacheService implements FileCacheService {
 
     /**
      * Default constructor
-     * @throws IOException
+     * @throws IOException Throws an <code>IOException</code> if there was an error on init.
      */
     public StaticFileCacheService() throws IOException {
         this.logger = LoggerFactory.getLogger(this.getClass());

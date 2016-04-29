@@ -13,14 +13,20 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Queue;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.regex.Pattern;
 
 /**
  * <pre>
  * Created by Esteban Luchsinger on 25.04.2016.
  * A cache manager for Songs.
+ * The cache creates a file for the song. The file name concatenates a prefix,
+ * the hash of the song and the file format.
  * </pre>
- * @implNote The cache creates a file for the song. The file name concatenates a prefix, the hash of the song and the file format.
  * @author Esteban Luchsinger
  * @since 25.04.2016
  */
@@ -41,6 +47,13 @@ public class SongCacheManager {
      * Regex part for the capturing of the HASH-CODE of the song.
      */
     private final static String REGEX_HASH_GROUP = "(?<HASH>[0-9]*)";
+
+    /**
+     * The preferred maximum cache size (<strong>in Megabytes</strong>).
+     * @implNote "preferred" means, the cache will try to stay inside the maximum size,
+     * but when caching a new song, it might be over that size briefly.
+     */
+    private final static long PREFERRED_MAX_CACHE_SIZE = 30;
     //endregion Constants
 
     private final Logger logger;
@@ -57,7 +70,9 @@ public class SongCacheManager {
     public SongCacheManager() {
         this.logger = LoggerFactory.getLogger(this.getClass());
 
-        this.tempFolderPath = Paths.get(System.getProperty("java.io.tmpdir") + "wss/cache");
+        this.tempFolderPath = Paths.get(System.getProperty("java.io.tmpdir"), "wss", "cache");
+
+        this.logger.info("Started cache at " + this.tempFolderPath.toString());
 
         // Creates the folder structure.
         //noinspection ResultOfMethodCallIgnored
@@ -77,6 +92,7 @@ public class SongCacheManager {
     /**
      * Stores the cachedSong in the cache.
      * If the cachedSong already existed, it will be replaced.
+     * <strong>Every time a song is cached, a cleanup will be done.</strong>
      * @param cachedSong The cachedSong to store in the cache.
      * @return Returns a <code>Song</code> object that contains the URI of the file.
      */
@@ -89,6 +105,8 @@ public class SongCacheManager {
         } catch (IOException | UnsupportedTagException | InvalidDataException e) {
             this.logger.error("Failed saving the cachedSong (Title: " + cachedSong.title + ")", e);
         }
+
+        cleanCache();
 
         return song;
     }
@@ -170,5 +188,78 @@ public class SongCacheManager {
     private String getFullSongPath(int hash) {
         Path p = this.tempFolderPath.resolve(this.calculateSongFileName(hash));
         return p.toString();
+    }
+
+    /**
+     * Cleans the cache according to the field values in the <code>SongCacheManager</code>
+     * @return Returns true, if the method had to do any cleanup.
+     */
+    private boolean cleanCache() {
+        boolean cleanupDone = false;
+
+        File tempFolder = this.tempFolderPath.toFile();
+
+        // Get the current size of the cache in MB.
+        long currentSizeOfCache = this.getFolderSize(tempFolder) / 1000 / 1000;
+
+        if(currentSizeOfCache > PREFERRED_MAX_CACHE_SIZE) {
+            // Only do these operations, if really needed (might be expensive).
+            File[] cacheFiles = tempFolder.listFiles();
+            if(cacheFiles != null && cacheFiles.length > 0) {
+                Queue<File> cleanupQueue = new ArrayDeque<>(cacheFiles.length);
+                Arrays.sort(cacheFiles, (o1, o2) -> Long.valueOf(o1.lastModified()).compareTo(o2.lastModified()));
+
+                // Copy files into the queue
+                Collections.addAll(cleanupQueue, cacheFiles);
+
+                do {
+                    File f;
+                    // Always delete the oldest file in the cache first.
+                    if((f = cleanupQueue.poll()) != null) {
+                        //noinspection ResultOfMethodCallIgnored
+                        f.delete();
+                        cleanupDone = true;
+                    } else {
+                        // If the queue is empty, we will have to quit this loop.
+                        this.logger.warn("There was an error cleaning up the cache");
+                        break;
+                    }
+
+                    // Get the current size of the cache in MB.
+                    currentSizeOfCache = tempFolder.length() / 1000 / 1000;
+                }
+                while (currentSizeOfCache > PREFERRED_MAX_CACHE_SIZE);
+            }
+        }
+
+        if(cleanupDone) {
+            this.logger.info("Cleaned up the cache!");
+        }
+
+        return cleanupDone;
+    }
+
+    /**
+     * Retrieves the size of a folder.
+     * @param folder Folder to search in.
+     * @return Returns the length of the folder in bytes.
+     */
+    private long getFolderSize(File folder) {
+        long length = 0;
+
+        File[] filesInFolder = folder.listFiles();
+
+        if(filesInFolder != null) {
+            for (File file : filesInFolder) {
+                if (file.isFile()) {
+                    length += file.length();
+                } else {
+                    // Recursive
+                    length += getFolderSize(file);
+                }
+            }
+        }
+
+        return length;
     }
 }

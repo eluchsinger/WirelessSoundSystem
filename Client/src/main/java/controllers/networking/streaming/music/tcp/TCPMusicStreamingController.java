@@ -113,6 +113,8 @@ public class TCPMusicStreamingController implements MusicStreamingService {
 
     /**
      * Default constructor
+     *
+     * @throws IOException Throws an IOException if there was an error on init.
      */
     public TCPMusicStreamingController() throws IOException {
         this.logger = LoggerFactory.getLogger(this.getClass());
