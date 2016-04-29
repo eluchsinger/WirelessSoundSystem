@@ -11,6 +11,12 @@
 **/.idea/vcs.xml
 **/.idea/uiDesigner.xml
 
+#Gradle
+**/gradlew
+**/gradlew.bat
+**/gradle/*
+
+
 #WirelessSoundSystem.iml
 
 # Windows image file caches

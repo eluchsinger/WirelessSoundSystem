@@ -2,7 +2,6 @@ package controllers.io.cache.file;
 
 import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.UnsupportedTagException;
-import models.networking.dtos.commands.CacheSongCommand;
 import models.networking.dtos.models.CachedSong;
 import models.songs.Mp3Song;
 import models.songs.Song;
@@ -97,13 +96,18 @@ public class SongCacheManager {
     /**
      * Checks, if there exists a cachedSong (already cached), like the cachedSong in the parameter.
      * @param cachedSong The cachedSong to check for existence.
-     * @return Returns true, if the cachedSong exists. False if the cachedSong was not found in the cache.
+     * @return Returns true, if there is a cached <code>Song</code>. False if the cachedSong was not found in the cache.
      */
     public boolean exists(CachedSong cachedSong) {
         Path p = this.tempFolderPath.resolve(this.calculateSongFileName(cachedSong));
         return p.toFile().exists();
     }
 
+    /**
+     * Checks, if there exists a <code>Song</code> already in the cache, which corresponds to the hashCode in the parameters.
+     * @param hash The hashCode corresponding to the searched song.
+     * @return Returns true, if there is a cached <code>Song</code> with the corresponding hashCode. False if there is no cached <code>Song</code> with corrseponding hashCode.
+     */
     public boolean exists(int hash) {
         Path p = this.tempFolderPath.resolve(this.calculateSongFileName(hash));
         return p.toFile().exists();
@@ -137,6 +141,11 @@ public class SongCacheManager {
         return PREFIX + song.hashCode() + SUFFIX;
     }
 
+    /**
+     * Calculates the song file name (only the name, not a full path) using the <code>hash</code> in the parameter.
+     * @param hash The hashCode of the song.
+     * @return Returns the filename of the corresponding to the hashCode in the parameter.
+     */
     private String calculateSongFileName(int hash) {
         return PREFIX + hash + SUFFIX;
     }
@@ -152,6 +161,12 @@ public class SongCacheManager {
         return p.toString();
     }
 
+    /**
+     * Returns the full song path, including the song name and extension.
+     * The song path is calculated. <strong>The file must not exist.</strong>
+     * @param hash The hashCode of the song path.
+     * @return Returns the full song path as a string.
+     */
     private String getFullSongPath(int hash) {
         Path p = this.tempFolderPath.resolve(this.calculateSongFileName(hash));
         return p.toString();
