@@ -5,6 +5,7 @@ import models.networking.clients.callbacks.OnDisconnected;
 
 import java.io.Closeable;
 import java.net.Socket;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -13,16 +14,6 @@ import java.util.concurrent.TimeoutException;
  * Represents a network client.
  */
 public interface NetworkClient extends Closeable {
-//
-//    /**
-//     * @return Returns the open ObjectOutputStream corresponding to the socket.
-//     */
-//    ObjectOutputStream getObjectOutputStream();
-//
-//    /**
-//     * @return Returns the open ObjectInputStream corresponding to the socket.
-//     */
-//    ObjectInputStream getObjectInputStream();
 
     /**
      * Sends an object to the connected socket.
@@ -50,7 +41,6 @@ public interface NetworkClient extends Closeable {
      */
     Socket getSocket();
 
-
     /**
      * @return Returns the name of the Network Client.
      */
@@ -62,8 +52,16 @@ public interface NetworkClient extends Closeable {
     void setName(String name);
 
     /**
+     * Retrieves the expected cache on the client.
+     * @return Returns a list of the hashCodes of the currently cached songs on the client.
+     */
+    List<Integer> getExpectedCache();
+
+    /**
+     * The name property of the client. Contains the current name of the client.
+     * May be changed by the client with a <code>RenameCommand</code>.
      * Because the name of the NetworkClient must be observable.
-     * @return
+     * @return Returns the name property.
      */
     SimpleStringProperty nameProperty();
 

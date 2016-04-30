@@ -2,8 +2,10 @@ package models.networking.clients;
 
 import models.clients.Client;
 import models.networking.clients.callbacks.OnDisconnected;
+import models.networking.dtos.commands.CurrentCacheCommand;
 import models.networking.dtos.commands.KeepAliveBeacon;
 import models.networking.dtos.commands.RenameCommand;
+import models.networking.dtos.models.CachedSong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.concurrent.ExecutorServiceUtils;
@@ -47,6 +49,12 @@ public class SocketNetworkClient extends Client implements NetworkClient, Closea
     private final List<OnDisconnected> onDisconnectedListeners;
 
     /**
+     * This is a list which contains the expected cache to be on the client.
+     * The cached objects are represented by their corresponding hashCode.
+     */
+    private final List<Integer> expectedCache;
+
+    /**
      * Default Constructor
      * @param inetAddress InetAddress of the client.
      * @param port Port of the client.
@@ -85,6 +93,8 @@ public class SocketNetworkClient extends Client implements NetworkClient, Closea
         // A single thread executor ensures that every submit is executed in
         // the correct order.
         this.sendingExecutor = Executors.newSingleThreadExecutor();
+
+        this.expectedCache = new ArrayList<>();
     }
 
     /**
@@ -92,6 +102,16 @@ public class SocketNetworkClient extends Client implements NetworkClient, Closea
      */
     public Socket getSocket() {
         return this.socket;
+    }
+
+    /**
+     * Retrieves the expected cache on the client.
+     *
+     * @return Returns a list of the hashCodes of the currently cached songs on the client.
+     */
+    @Override
+    public List<Integer> getExpectedCache() {
+        return this.expectedCache;
     }
 
     @Override
@@ -128,7 +148,7 @@ public class SocketNetworkClient extends Client implements NetworkClient, Closea
 
     /**
      * Waits until all object were sent.
-     * If needed, this method returns immediately.
+     * If there are no objects being sent, this method returns immediately.
      * The timeout is not defined.
      */
     @Override
@@ -190,6 +210,13 @@ public class SocketNetworkClient extends Client implements NetworkClient, Closea
                 if(receivedObject instanceof RenameCommand) {
                     RenameCommand command = (RenameCommand) receivedObject;
                     this.setName(command.getName());
+                    this.logger.info("Client " + this + "renamed to " + this.getName());
+                } else if(receivedObject instanceof CurrentCacheCommand) {
+                    CurrentCacheCommand command = (CurrentCacheCommand) receivedObject;
+                    this.expectedCache.clear();
+                    this.expectedCache.addAll(command.currentCache);
+                    this.logger.info("Received the current cache (Client: " + this.toString()
+                            + ") Currently " + this.expectedCache.size() + "Files in cache.");
                 } else {
                     // The received object is unknown.
                     this.logger.info("Received unknown command from client " + this.getName() +

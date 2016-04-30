@@ -13,10 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayDeque;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.regex.Pattern;
 
@@ -43,10 +40,11 @@ public class SongCacheManager {
      */
     private final static String SUFFIX = ".mp3";
 
+    private final static String REGEX_HASH_GROUP_NAME = "HASH";
     /**
      * Regex part for the capturing of the HASH-CODE of the song.
      */
-    private final static String REGEX_HASH_GROUP = "(?<HASH>[0-9]*)";
+    private final static String REGEX_HASH_GROUP = "(?<" + REGEX_HASH_GROUP_NAME + ">[0-9]*)";
 
     /**
      * The preferred maximum cache size (<strong>in Megabytes</strong>).
@@ -261,5 +259,29 @@ public class SongCacheManager {
         }
 
         return length;
+    }
+
+    public List<Integer> getCachedHashes() {
+
+        List<Integer> hashes = null;
+        File[] filesInFolder = this.tempFolderPath.toFile().listFiles();
+
+        if(filesInFolder != null) {
+            hashes = new ArrayList<>(filesInFolder.length);
+            for(File file : filesInFolder) {
+
+                String hashString = this.pattern.matcher(file.getName()).group("HASH");
+                if(hashString != null) {
+                    try {
+                        hashes.add(Integer.valueOf(hashString));
+                    }
+                    catch(NumberFormatException e) {
+                        this.logger.warn("Couldn't get the hashCode of the file " + file.getName());
+                    }
+                }
+            }
+        }
+
+        return hashes;
     }
 }

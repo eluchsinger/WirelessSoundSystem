@@ -51,4 +51,9 @@ public interface MusicStreamingService {
     SongCacheManager getCache();
 
     void sendName(String name);
+
+    /**
+     * Sends the currently cached songs.
+     */
+    void sendCurrentCache();
 }

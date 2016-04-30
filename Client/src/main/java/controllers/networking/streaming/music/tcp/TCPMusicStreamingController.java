@@ -417,6 +417,16 @@ public class TCPMusicStreamingController implements MusicStreamingService {
         }
     }
 
+    @Override
+    public void sendCurrentCache() {
+        try {
+            this.objectOutputStream.writeObject(new CurrentCacheCommand(this.cache.getCachedHashes()));
+        }
+        catch (IOException ioException) {
+            this.logger.error("Failed sending the current cache to the server", ioException);
+        }
+    }
+
     //region Event Launchers
 
     /**
