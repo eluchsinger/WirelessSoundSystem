@@ -18,9 +18,9 @@ public class MainApp extends Application {
         Parent root = loader.load();
         
         // Add Stage object to the client window view model.
-        Object o = loader.getController();
-        if(ClientWindowViewModel.class == o.getClass()){
-            ((ClientWindowViewModel)o).setStage(primaryStage);
+        Object controller = loader.getController();
+        if(controller instanceof ClientWindowViewModel){
+            ((ClientWindowViewModel)controller).setStage(primaryStage);
         }
         primaryStage.setTitle("Wireless Sound System (Client)");
         primaryStage.setScene(new Scene(root, 600, 400));

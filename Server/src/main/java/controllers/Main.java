@@ -22,9 +22,9 @@ public class Main extends Application {
         Parent root = loader.load();
 
         // Set the stage to handle closing even inside the viewmodel.
-        Object o = loader.getController();
-        if (o.getClass() == MainWindowViewModel.class) {
-            ((MainWindowViewModel) o).setStage(primaryStage);
+        Object controller = loader.getController();
+        if (controller instanceof MainWindowViewModel) {
+            ((MainWindowViewModel) controller).setStage(primaryStage);
         }
 
         primaryStage.setTitle("Wireless Sound System");
