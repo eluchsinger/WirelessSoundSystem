@@ -407,7 +407,7 @@ public class TCPMusicStreamingController implements MusicStreamingService {
 
     /**
      * Tells the server the name of this client.
-     * @param name
+     * @param name Name of this client.
      */
     public void sendName(String name) {
         try {
@@ -417,6 +417,9 @@ public class TCPMusicStreamingController implements MusicStreamingService {
         }
     }
 
+    /**
+     * Sends the current cache.
+     */
     @Override
     public void sendCurrentCache() {
         try {

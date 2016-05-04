@@ -216,7 +216,7 @@ public class SocketNetworkClient extends Client implements NetworkClient, Closea
                     this.expectedCache.clear();
                     this.expectedCache.addAll(command.currentCache);
                     this.logger.info("Received the current cache (Client: " + this.toString()
-                            + ") Currently " + this.expectedCache.size() + "Files in cache.");
+                            + ") Currently " + this.expectedCache.size() + " Files in cache.");
                 } else {
                     // The received object is unknown.
                     this.logger.info("Received unknown command from client " + this.getName() +

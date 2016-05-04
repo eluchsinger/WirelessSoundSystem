@@ -6,6 +6,7 @@ import java.util.List;
 /**
  * Created by Esteban Luchsinger on 30.04.2016.
  * This command contains the hashCodes of the current cache.
+ * Using this command, the client can tell the server which songs are currently cashed.
  */
 public class CurrentCacheCommand implements Serializable {
     private static final long serialVersionUID = 5015576093771140120L;

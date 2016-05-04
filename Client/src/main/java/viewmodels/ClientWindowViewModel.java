@@ -221,8 +221,8 @@ public class ClientWindowViewModel {
 
             if(name != null) {
                 this.musicStreamingService.sendName(name);
-                this.musicStreamingService.sendCurrentCache();
             }
+            this.musicStreamingService.sendCurrentCache();
         });
         this.clientDiscoveryService.start();
         logger.info("Check!");
