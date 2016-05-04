@@ -527,9 +527,9 @@ public class MainWindowViewModel {
             if(file != null) {
 
                 if(file.exists()) {
-                    this.logger.info("Music Folder (in " + file.getAbsolutePath() + ") was not found.");
-                } else {
                     this.logger.info("Music Folder (in " + file.getAbsolutePath() + ") was found.");
+                } else {
+                    this.logger.info("Music Folder (in " + file.getAbsolutePath() + ") was not found.");
                 }
             } else {
                 throw new Exception("The path returned was null");
