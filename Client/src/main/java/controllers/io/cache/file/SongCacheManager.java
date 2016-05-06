@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
  * A cache manager for Songs.
  * The cache creates a file for the song. The file name concatenates a prefix,
  * the hash of the song and the file format.
+ * The cache currently saves maximum 3 Song files (no matter what size).
  * </pre>
  * @author Esteban Luchsinger
  * @since 25.04.2016
@@ -48,11 +49,11 @@ public class SongCacheManager {
     private final static String REGEX_HASH_GROUP = "(?<" + REGEX_HASH_GROUP_NAME + ">-?[0-9]*)";
 
     /**
-     * The preferred maximum cache size (<strong>in Megabytes</strong>).
+     * The preferred maximum amount of songs in the cache.
      * @implNote "preferred" means, the cache will try to stay inside the maximum size,
-     * but when caching a new song, it might be over that size briefly.
+     * but when caching a new song, it might get over the maximum size for a short period of time.
      */
-    private final static long PREFERRED_MAX_CACHE_SIZE = 30;
+    private final static long PREFERRED_MAX_CACHE_SIZE = 3;
     //endregion Constants
 
     private final Logger logger;
@@ -198,37 +199,34 @@ public class SongCacheManager {
 
         File tempFolder = this.tempFolderPath.toFile();
 
-        // Get the current size of the cache in MB.
-        long currentSizeOfCache = this.getFolderSize(tempFolder) / 1000 / 1000;
+        // Only do these operations, if really needed (might be expensive).
+        File[] cacheFiles = tempFolder.listFiles();
+        if(cacheFiles != null && cacheFiles.length > PREFERRED_MAX_CACHE_SIZE) {
+            Queue<File> cleanupQueue = new ArrayDeque<>(cacheFiles.length);
 
-        if(currentSizeOfCache > PREFERRED_MAX_CACHE_SIZE) {
-            // Only do these operations, if really needed (might be expensive).
-            File[] cacheFiles = tempFolder.listFiles();
-            if(cacheFiles != null && cacheFiles.length > 0) {
-                Queue<File> cleanupQueue = new ArrayDeque<>(cacheFiles.length);
-                Arrays.sort(cacheFiles, (o1, o2) -> Long.valueOf(o1.lastModified()).compareTo(o2.lastModified()));
+            // Sort by last modified
+            Arrays.sort(cacheFiles, (o1, o2) -> Long.valueOf(o1.lastModified()).compareTo(o2.lastModified()));
 
-                // Copy files into the queue
-                Collections.addAll(cleanupQueue, cacheFiles);
+            // Copy files into the queue
+            Collections.addAll(cleanupQueue, cacheFiles);
 
-                do {
-                    File f;
-                    // Always delete the oldest file in the cache first.
-                    if((f = cleanupQueue.poll()) != null) {
-                        //noinspection ResultOfMethodCallIgnored
-                        f.delete();
-                        cleanupDone = true;
-                    } else {
-                        // If the queue is empty, we will have to quit this loop.
-                        this.logger.warn("There was an error cleaning up the cache");
-                        break;
-                    }
+            do {
+                File f;
+                // Always delete the oldest file in the cache first.
+                if((f = cleanupQueue.poll()) != null) {
+                    //noinspection ResultOfMethodCallIgnored
+                    f.delete();
 
-                    // Get the current size of the cache in MB.
-                    currentSizeOfCache = tempFolder.length() / 1000 / 1000;
+                    // There was a cleanup done.
+                    cleanupDone = true;
+                } else {
+                    // If the queue is empty, we will have to quit this loop.
+                    this.logger.warn("There was an error cleaning up the cache");
+                    break;
                 }
-                while (currentSizeOfCache > PREFERRED_MAX_CACHE_SIZE);
+
             }
+            while (cleanupQueue.size() > PREFERRED_MAX_CACHE_SIZE);
         }
 
         if(cleanupDone) {
