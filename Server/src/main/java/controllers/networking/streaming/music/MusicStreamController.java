@@ -30,8 +30,8 @@ public interface MusicStreamController {
     void pause();
 
     /**
-     * Caches a song on the clients.
+     * Caches a song on the clients, if needed.
      * @param song The song to cache on the clients.
      */
-    void cacheSong(Song song) throws IOException;
+    void resolveSongCaching(Song song) throws IOException;
 }

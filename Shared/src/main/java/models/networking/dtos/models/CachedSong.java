@@ -7,6 +7,7 @@ import java.util.Arrays;
  * <pre>
  * Created by Esteban Luchsinger on 27.04.2016.
  * This class represents a cached song. A cached song is completely in the main memory, not serialized as a file.
+ * The <code>equals</code> and <code>hashCode</code> methods look only at the data in bytes and not at the title or artist.
  * </pre>
  */
 public class CachedSong implements Serializable {
@@ -21,6 +22,12 @@ public class CachedSong implements Serializable {
         this.data = data;
     }
 
+    public CachedSong(byte[] data, String title, String artist) {
+        this(data);
+        this.title = title;
+        this.artist = artist;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -28,17 +35,17 @@ public class CachedSong implements Serializable {
 
         CachedSong that = (CachedSong) o;
 
-        if (!Arrays.equals(data, that.data)) return false;
-        if (title != null ? !title.equals(that.title) : that.title != null) return false;
-        return artist != null ? artist.equals(that.artist) : that.artist == null;
+        return Arrays.equals(data, that.data);
 
     }
 
     @Override
     public int hashCode() {
-        int result = Arrays.hashCode(data);
-        result = 31 * result + (title != null ? title.hashCode() : 0);
-        result = 31 * result + (artist != null ? artist.hashCode() : 0);
-        return result;
+        return Arrays.hashCode(data);
+    }
+
+    @Override
+    public String toString() {
+        return this.title + ", " + this.artist;
     }
 }

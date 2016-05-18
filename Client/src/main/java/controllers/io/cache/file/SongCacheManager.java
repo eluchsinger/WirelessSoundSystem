@@ -11,10 +11,10 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -205,7 +205,7 @@ public class SongCacheManager {
             Queue<File> cleanupQueue = new ArrayDeque<>(cacheFiles.length);
 
             // Sort by last modified
-            Arrays.sort(cacheFiles, (o1, o2) -> Long.valueOf(o1.lastModified()).compareTo(o2.lastModified()));
+            cacheFiles = this.sortFilesByAge(cacheFiles);
 
             // Copy files into the queue
             Collections.addAll(cleanupQueue, cacheFiles);
@@ -214,11 +214,15 @@ public class SongCacheManager {
                 File f;
                 // Always delete the oldest file in the cache first.
                 if((f = cleanupQueue.poll()) != null) {
-                    //noinspection ResultOfMethodCallIgnored
-                    f.delete();
+                    try {
+                        Files.delete(f.toPath());
+                        // There was a cleanup done.
+                        cleanupDone = true;
+                    }
+                    catch(IOException e) {
+                        this.logger.error("The cached song (filename: " + f.getName() + " could not be deleted.", e);
+                    }
 
-                    // There was a cleanup done.
-                    cleanupDone = true;
                 } else {
                     // If the queue is empty, we will have to quit this loop.
                     this.logger.warn("There was an error cleaning up the cache");
@@ -260,10 +264,14 @@ public class SongCacheManager {
         return length;
     }
 
+    /**
+     * Creates a list of cached hashes used for example to tell the server which songs are cached.
+     * @return Returns a list of cached hashes. The list is sorted by the age of the files (oldest first).
+     */
     public List<Integer> getCachedHashes() {
 
         List<Integer> hashes = null;
-        File[] filesInFolder = this.tempFolderPath.toFile().listFiles();
+        File[] filesInFolder = this.sortFilesByAge(this.tempFolderPath.toFile().listFiles());
 
         if(filesInFolder != null) {
             hashes = new ArrayList<>(filesInFolder.length);
@@ -285,5 +293,21 @@ public class SongCacheManager {
         }
 
         return hashes;
+    }
+
+    /**
+     * Convenience method to make sure everything does the same.
+     * @param cacheFiles Array of cached files.
+     * @return Returns the array of cacheFiles sorted by age. <strong>Oldest first</strong>. If the array entered was null, return null.
+     */
+    private File[] sortFilesByAge(File[] cacheFiles) {
+
+        if(cacheFiles == null)
+            return null;
+
+        // Sort by last modified (oldest on index 0).
+        Arrays.sort(cacheFiles, (o1, o2) -> Long.valueOf(o1.lastModified()).compareTo(o2.lastModified()));
+
+        return cacheFiles;
     }
 }

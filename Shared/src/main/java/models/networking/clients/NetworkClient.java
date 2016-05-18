@@ -14,6 +14,7 @@ import java.util.concurrent.TimeoutException;
  * Represents a network client.
  */
 public interface NetworkClient extends Closeable {
+    int PREFERRED_MAX_CACHE_SIZE = 3;
 
     /**
      * Sends an object to the connected socket.
@@ -53,6 +54,7 @@ public interface NetworkClient extends Closeable {
 
     /**
      * Retrieves the expected cache on the client.
+     * This list should ALWAYS be sorted by AGE (oldest hash on index 0!).
      * @return Returns a list of the hashCodes of the currently cached songs on the client.
      */
     List<Integer> getExpectedCache();

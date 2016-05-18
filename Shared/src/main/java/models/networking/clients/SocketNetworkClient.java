@@ -5,7 +5,6 @@ import models.networking.clients.callbacks.OnDisconnected;
 import models.networking.dtos.commands.CurrentCacheCommand;
 import models.networking.dtos.commands.KeepAliveBeacon;
 import models.networking.dtos.commands.RenameCommand;
-import models.networking.dtos.models.CachedSong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.concurrent.ExecutorServiceUtils;
@@ -22,6 +21,7 @@ import java.util.concurrent.*;
  * Wraps a Client on the Network.
  */
 public class SocketNetworkClient extends Client implements NetworkClient, Closeable {
+
     private final Logger logger;
 
     private final Socket socket;

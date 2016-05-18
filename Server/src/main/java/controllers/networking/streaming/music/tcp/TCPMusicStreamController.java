@@ -11,6 +11,7 @@ import models.networking.dtos.models.CachedSong;
 import models.songs.Song;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MarkerFactory;
 import utils.media.SongUtils;
 
 import java.io.IOException;
@@ -54,12 +55,13 @@ public class TCPMusicStreamController implements MusicStreamController {
     @Override
     public void play(Song song) throws IOException {
         byte[] songData = SongUtils.getSongData(song);
-        CachedSong cachedSong = new CachedSong(songData);
+        CachedSong cachedSong = new CachedSong(songData, song.getTitle(), song.getArtist());
 
         // Initialize this here, so we have less delay between sending of the objects.
         PlayCommand playCommand = new PlayCommand(cachedSong);
 
-        this.cacheSong(cachedSong);
+        // Check, if caching is needed
+        this.resolveSongCaching(cachedSong);
 
         // Then wait for the clients until they all received the song completely.
         this.waitForClientsReceived();
@@ -97,10 +99,9 @@ public class TCPMusicStreamController implements MusicStreamController {
      *
      * @param song The song to cache on the clients.
      */
-    @Override
-    public void cacheSong(Song song) throws IOException {
+    public void resolveSongCaching(Song song) throws IOException {
         byte[] songData = SongUtils.getSongData(song);
-        this.cacheSong(songData);
+        this.resolveSongCaching(songData);
     }
 
     /**
@@ -108,21 +109,42 @@ public class TCPMusicStreamController implements MusicStreamController {
      *
      * @param songData The bytes containing the song data.
      */
-    private void cacheSong(byte[] songData) {
-        this.cacheSong(new CachedSong(songData));
+    private void resolveSongCaching(byte[] songData) {
+        this.resolveSongCaching(new CachedSong(songData));
     }
 
     /**
-     * Caches a song on the clients.
+     * Caches a song on the clients, if needed.
      *
      * @param cachedSong The cachedSong to be cached on the clients.
      */
-    private void cacheSong(CachedSong cachedSong) {
+    private void resolveSongCaching(CachedSong cachedSong) {
         CacheSongCommand command = new CacheSongCommand(cachedSong);
 
         // Send the cache song command to make the clients ready.
-        for(NetworkClient client : this.clientController.getClients()) {
-            client.send(command);
+        for (NetworkClient client : this.clientController.getClients()) {
+
+            // Only if the cached song is NOT contained in the client's cache.
+            if (!client.getExpectedCache().contains(cachedSong.hashCode())) {
+                client.send(command);
+
+                // Now add the new hashedSong to the list.
+                client.getExpectedCache().add(cachedSong.hashCode());
+
+                // Now synchronize the remote cache of the client with the new song.
+                // First look at the MAX cache size
+                if(client.getExpectedCache().size() > NetworkClient.PREFERRED_MAX_CACHE_SIZE) {
+                    // Remove oldest item in the list (index 0). Add new Item.
+                    client.getExpectedCache().remove(0);
+                }
+
+            } else {
+                this.logger.info(MarkerFactory.getMarker("CACHE_HANDLING"), "The client \""
+                        + client
+                        + "\" didn't need to cache the song \""
+                        + cachedSong
+                        + "\".");
+            }
         }
     }
 

@@ -17,7 +17,6 @@ import utils.media.SongUtils;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.Properties;
 
 /**
@@ -104,7 +103,7 @@ public class ClientWindowViewModel {
     }
 
     /**
-     * Starts playing the song in the cache from the beginnning.
+     * Starts playing the song in the cache from the beginning.
      */
     private void startPlaying(int songHash) {
         Song song = this.musicStreamingService.getCache().retrieve(songHash);
@@ -113,20 +112,6 @@ public class ClientWindowViewModel {
         this.logger.info("Now Playing");
     }
 
-    private void play() {
-        if(this.mediaPlayer != null) {
-            this.mediaPlayer.play();
-            this.logger.info("Now Playing");
-        }
-    }
-
-//    private void startPlaying(Duration startTime) {
-//        this.mediaPlayer = new MediaPlayer(new Media(this.musicStreamingService.getCache()
-//                .getFileURI()
-//                .toString()));
-//        this.mediaPlayer.play();
-//        this.logger.info("Now Playing from " + startTime);
-//    }
 
     /**
      * Stops playing the currently played song.
