@@ -5,7 +5,7 @@ This is the Wireless Sound System project.
 The goal of this solution is to provide an easy and multi-platform method to stream music between a server and a client.
 
 
-##Technical:
+## Technical:
 - Gradle is doing the automated build part.
 - Logging is done using the Java Logger.
 - Continuous Integration CircleCI
@@ -24,5 +24,5 @@ To install the OracleJDK, it's easiest to use [WebUpd8](http://www.webupd8.org/2
 
 
 
-#Copyright
+# Copyright
 Copyright © 2015 Esteban Luchsinger
